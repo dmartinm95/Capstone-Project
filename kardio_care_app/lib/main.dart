@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/home/home.dart';
+import 'util/bluetooth.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,7 +15,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomeScreen(),
+      debugShowCheckedModeBanner: false,
+      home: BluetoothFeature(),
     );
   }
 }
