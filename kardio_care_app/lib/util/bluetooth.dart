@@ -1,4 +1,3 @@
-import 'package:bezier_chart/bezier_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
@@ -22,7 +21,13 @@ class _BluetoothFeaureState extends State<BluetoothFeature> {
   BluetoothDevice _targetDevice;
   List<BluetoothService> _services = <BluetoothService>[];
   bool _deviceConnected = false;
-  int dataFromDevice;
+  double dataFromDevice;
+
+  int writeLocation = 0;
+  int currWriteBuffer = 0;
+
+  List<double> buffer0 = [for (var i = 0; i < 750; i += 1) 0.0];
+  List<double> buffer1 = [for (var i = 0; i < 750; i += 1) 0.0];
 
   @override
   void initState() {
@@ -49,7 +54,7 @@ class _BluetoothFeaureState extends State<BluetoothFeature> {
                     Text('Ready to connect to: '),
                     (_targetDevice != null)
                         ? Text('${_targetDevice.name}')
-                        : Text('undefined'),
+                        : Text('Not found during scan'),
                   ],
                 ),
               ),
@@ -125,6 +130,19 @@ class _BluetoothFeaureState extends State<BluetoothFeature> {
                   Text(
                     dataFromDevice.toString(),
                   ),
+                  Text('Buffer currently used for plotting data:'),
+                  (currWriteBuffer == 0) ? Text('Buffer 0') : Text('Buffer 1'),
+                  TextButton(
+                    child: Text('Plot Data'),
+                    onPressed: () {
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => DetailsScreen(),
+                      //   ),
+                      // );
+                    },
+                  )
                 ],
               ),
             ),
@@ -245,7 +263,28 @@ class _BluetoothFeaureState extends State<BluetoothFeature> {
                 characteristic.value.listen((value) {
                   print(new String.fromCharCodes(value));
                   setState(() {
-                    dataFromDevice = int.parse(String.fromCharCodes(value));
+                    dataFromDevice = (5 / 1024) *
+                        int.parse(String.fromCharCodes(value)).toDouble();
+                    if (currWriteBuffer == 0) {
+                      buffer0[writeLocation] = dataFromDevice;
+                    } else {
+                      buffer1[writeLocation] = dataFromDevice;
+                    }
+                    writeLocation++;
+
+                    if (writeLocation == buffer0.length) {
+                      if (currWriteBuffer == 0) {
+                        // We have data ready to plot, switch to the second buffer
+                        currWriteBuffer = 1;
+                        writeLocation = 0;
+                        print('Drawing from buffer0...');
+                      } else {
+                        // Second buffer is now full,
+                        currWriteBuffer = 0;
+                        writeLocation = 0;
+                        print('Drawing from buffer1...');
+                      }
+                    }
                   });
                 });
               },
@@ -308,6 +347,7 @@ class _BluetoothFeaureState extends State<BluetoothFeature> {
     }
     setState(() {
       _deviceConnected = true;
+      widget.flutterBlue.stopScan();
     });
   }
 
