@@ -154,7 +154,11 @@ class _BodyState extends State<Body> {
     notifyCharacteristic.value.listen((data) {
       setState(() {
         displayData = String.fromCharCodes(data);
-        incomingData = int.parse(String.fromCharCodes(data)).toDouble();
+        try {
+          incomingData = int.parse(String.fromCharCodes(data)).toDouble();
+        } catch (e) {
+          print('Incorrect data format received');
+        }
       });
       // print(displayData);
     });
