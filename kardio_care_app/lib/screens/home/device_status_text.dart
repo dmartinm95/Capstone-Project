@@ -5,11 +5,11 @@ class DeviceStatusText extends StatelessWidget {
   const DeviceStatusText({
     Key key,
     this.deviceName,
-    this.isConnected,
+    this.message,
   }) : super(key: key);
 
+  final String message;
   final String deviceName;
-  final bool isConnected;
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +20,7 @@ class DeviceStatusText extends StatelessWidget {
       child: Stack(
         children: [
           Container(
+            // width: size.width * 0.85,
             padding: EdgeInsets.only(
               top: kDefaultPadding * 0.25,
               left: kDefaultPadding,
@@ -32,17 +33,26 @@ class DeviceStatusText extends StatelessWidget {
                 Radius.circular(36),
               ),
             ),
-            child: (isConnected)
-                ? Text(
-                    '$deviceName connected',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  )
+            child: (message == null || message.isEmpty)
+                ? (deviceName != "")
+                    ? Text(
+                        '$deviceName ready to connect !',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      )
+                    : Text(
+                        'Check if module is turned on',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      )
                 : Text(
-                    'Not yet connected',
+                    '$message',
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
