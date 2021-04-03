@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
@@ -15,8 +16,6 @@ class Body extends StatefulWidget {
 
   final String deviceName = "DSD TECH";
 
-  // BluetoothDevice bleDevice;
-
   @override
   _BodyState createState() => _BodyState();
 }
@@ -27,6 +26,7 @@ class _BodyState extends State<Body> {
   String statusMessage = "";
   BluetoothCharacteristic notifyCharacteristic;
   double incomingData;
+  String displayData;
   BluetoothDevice bleDevice;
 
   @override
@@ -62,17 +62,17 @@ class _BodyState extends State<Body> {
   }
 
   void pressConnectBtn() async {
-    print('waiting...');
+    print('waiting for scan...');
     await scanForDevice();
-    print('done waiting...');
+    print('done waiting for scan...');
     if (bleDevice == null) {
       setState(() {
         statusMessage = "Cannot find module";
       });
-      print('here');
+      print('device is null');
       return;
     } else {
-      print('here2');
+      print('device found, now attempting to connect');
       connectToDevice();
     }
   }
@@ -125,8 +125,8 @@ class _BodyState extends State<Body> {
   }
 
   void disconnectFromDevice() {
-    // turnOffNotify();
     setState(() {
+      notifyCharacteristic.write(utf8.encode(0.toString()));
       bleDevice.disconnect();
       statusMessage = "Disconnected successfully";
       isConnected = false;
@@ -134,23 +134,6 @@ class _BodyState extends State<Body> {
     });
     print("Disconnected!");
   }
-
-  // Future<bool> findCustomService(BluetoothDevice device) async {
-  //   List<BluetoothService> services = await device.discoverServices();
-  //   services.forEach((service) {
-  //     List<BluetoothCharacteristic> characteristics = service.characteristics;
-  //     for (BluetoothCharacteristic characteristic in characteristics) {
-  //       if (characteristic.properties.notify == true) {
-  //         print("Found characteristic");
-  //         setState(() {
-  //           notifyCharacteristic = characteristic;
-  //         });
-  //       }
-  //     }
-  //   });
-
-  //   print("Done finding characteristic");
-  // }
 
   Future<void> findCustomCharacteristic(List<BluetoothService> services) async {
     services.forEach((service) {
@@ -169,13 +152,18 @@ class _BodyState extends State<Body> {
   void getIncomingData() {
     turnOnNotify();
     notifyCharacteristic.value.listen((data) {
-      // print(String.fromCharCodes(data));
+      setState(() {
+        displayData = String.fromCharCodes(data);
+        incomingData = int.parse(String.fromCharCodes(data)).toDouble();
+      });
+      // print(displayData);
     });
   }
 
   void turnOnNotify() async {
     if (notifyCharacteristic != null) {
       await notifyCharacteristic.setNotifyValue(true);
+      notifyCharacteristic.write(utf8.encode(1.toString()));
     } else {
       print("NotifyCharacteristic is NULL");
     }
@@ -207,7 +195,7 @@ class _BodyState extends State<Body> {
             message: statusMessage,
             deviceName: (bleDevice == null) ? "" : bleDevice.name,
           ),
-          DataCard(dataValue: 5.12345),
+          DataCard(dataValue: incomingData),
         ],
       ),
     );

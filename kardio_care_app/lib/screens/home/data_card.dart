@@ -27,7 +27,7 @@ class DataCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Text('Data:\n$dataValue'),
+      child: (dataValue == null) ? Text('Data:\n') : Text('Data:\n$dataValue'),
     );
   }
 }
