@@ -6,10 +6,12 @@ class ConnectDisconnectBtns extends StatelessWidget {
     Key key,
     this.pressConnectBtn,
     this.pressDisconnectBtn,
+    this.isLoading,
   }) : super(key: key);
 
   final Function pressConnectBtn;
   final Function pressDisconnectBtn;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -20,49 +22,58 @@ class ConnectDisconnectBtns extends StatelessWidget {
           SizedBox(
             width: size.width / 2,
             height: 50,
-            child: TextButton(
-              onPressed: pressConnectBtn,
-              style: TextButton.styleFrom(
-                backgroundColor: kPrimaryColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(10),
-                  ),
-                ),
-              ),
-              child: Text(
-                "Connect",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
-              ),
+            child: BtnWidget(
+              isLoading: isLoading,
+              pressDisconnectBtn: pressConnectBtn,
+              name: "Connect",
             ),
           ),
           Expanded(
             child: SizedBox(
               height: 50,
-              child: TextButton(
-                onPressed: pressDisconnectBtn,
-                style: TextButton.styleFrom(
-                  backgroundColor: kPrimaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(10),
-                    ),
-                  ),
-                ),
-                child: Text(
-                  "Disconnect",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
+              child: BtnWidget(
+                isLoading: isLoading,
+                pressDisconnectBtn: pressDisconnectBtn,
+                name: "Disconnect",
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class BtnWidget extends StatelessWidget {
+  const BtnWidget({
+    Key key,
+    @required this.isLoading,
+    @required this.pressDisconnectBtn,
+    this.name,
+  }) : super(key: key);
+
+  final bool isLoading;
+  final Function pressDisconnectBtn;
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: (isLoading == null || isLoading) ? null : pressDisconnectBtn,
+      style: TextButton.styleFrom(
+        backgroundColor: (isLoading == null || isLoading)
+            ? kPrimaryColor.withOpacity(0.9)
+            : kPrimaryColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(10),
+          ),
+        ),
+      ),
+      child: Text(
+        name,
+        style: TextStyle(
+            color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
       ),
     );
   }

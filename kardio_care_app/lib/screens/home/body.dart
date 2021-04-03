@@ -23,6 +23,7 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   bool isConnected = false;
   bool isFound = false;
+  bool isLoading = false;
   String statusMessage = "";
   BluetoothCharacteristic notifyCharacteristic;
   double incomingData;
@@ -35,8 +36,20 @@ class _BodyState extends State<Body> {
     scanForDevice();
   }
 
+  void showLoadingIndicator() {
+    print('is loading...');
+    setState(() {
+      isLoading = true;
+    });
+    // Future.delayed(const Duration(milliseconds: 1000), () {
+    //   setState(() {
+    //     isLoading = false;
+    //   });
+    //   print(isLoading);
+    // });
+  }
+
   Future<void> scanForDevice() async {
-    // TODO: Need to handle case when two scans happen at the same time, use try catch
     await widget.flutterBlue.startScan(timeout: Duration(seconds: 4));
     widget.flutterBlue.connectedDevices
         .asStream()
@@ -62,12 +75,16 @@ class _BodyState extends State<Body> {
   }
 
   void pressConnectBtn() async {
+    showLoadingIndicator();
+
     print('waiting for scan...');
     await scanForDevice();
     print('done waiting for scan...');
+
     if (bleDevice == null) {
       setState(() {
         statusMessage = "Cannot find module";
+        isLoading = false;
       });
       print('device is null');
       return;
@@ -75,13 +92,20 @@ class _BodyState extends State<Body> {
       print('device found, now attempting to connect');
       connectToDevice();
     }
+
+    // setState(() {
+    //   isLoading = false;
+    // });
   }
 
   void pressDisconnectBtn() {
+    showLoadingIndicator();
+
     print("Disconnect");
-    if (bleDevice == null) {
+    if (bleDevice == null || notifyCharacteristic == null) {
       setState(() {
         statusMessage = "Check if device is turned ON";
+        isLoading = false;
       });
     } else {
       setState(() {
@@ -126,12 +150,18 @@ class _BodyState extends State<Body> {
 
   void disconnectFromDevice() {
     setState(() {
-      notifyCharacteristic.write(utf8.encode(0.toString()));
+      try {
+        notifyCharacteristic.write(utf8.encode(0.toString()));
+      } catch (e) {
+        print("Error observed when trying to send data");
+      }
       bleDevice.disconnect();
       statusMessage = "Disconnected successfully";
       isConnected = false;
       bleDevice = null;
+      isLoading = false;
     });
+
     print("Disconnected!");
   }
 
@@ -151,6 +181,7 @@ class _BodyState extends State<Body> {
 
   void getIncomingData() {
     turnOnNotify();
+    Future.delayed(const Duration(milliseconds: 2000), () {});
     notifyCharacteristic.value.listen((data) {
       setState(() {
         displayData = String.fromCharCodes(data);
@@ -161,6 +192,13 @@ class _BodyState extends State<Body> {
         }
       });
       // print(displayData);
+    });
+
+    setState(() {
+      statusMessage = bleDevice.name + " connected!";
+      isConnected = true;
+      isLoading = false;
+      print("Connected!");
     });
   }
 
@@ -188,6 +226,7 @@ class _BodyState extends State<Body> {
       child: Column(
         children: [
           ConnectDisconnectBtns(
+            isLoading: isLoading,
             pressConnectBtn: () {
               pressConnectBtn();
             },
@@ -198,6 +237,7 @@ class _BodyState extends State<Body> {
           DeviceStatusText(
             message: statusMessage,
             deviceName: (bleDevice == null) ? "" : bleDevice.name,
+            isLoading: isLoading,
           ),
           DataCard(dataValue: incomingData),
         ],
