@@ -35,7 +35,7 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.example.kardio_care_app"
-        minSdkVersion 16
+        minSdkVersion 19    // Flutter_blue is compatible only from version 19 of Android SDK 
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
