@@ -31,8 +31,8 @@ dependencies:
   # Bluetooth plugin for Flutter
   flutter_blue: ^0.8.0
 
-  # Bezier Chart plugin
-  bezier_chart: ^1.0.17+1
+  # Chart plugin
+  fl_chart: ^ 0.12.0
 
 dev_dependencies:
   flutter_test:

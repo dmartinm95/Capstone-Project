@@ -7,6 +7,7 @@ import 'package:kardio_care_app/constants/app_constants.dart';
 
 import 'connect_disconnect_btns.dart';
 import 'data_card.dart';
+import 'ekg_chart.dart';
 import 'device_status_text.dart';
 
 class Body extends StatefulWidget {
@@ -239,7 +240,7 @@ class _BodyState extends State<Body> {
             deviceName: (bleDevice == null) ? "" : bleDevice.name,
             isLoading: isLoading,
           ),
-          DataCard(dataValue: incomingData),
+          EKGChart(dataValue: incomingData),
         ],
       ),
     );
