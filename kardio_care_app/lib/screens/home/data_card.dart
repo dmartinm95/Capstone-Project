@@ -11,19 +11,20 @@ class DataCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Container(
       padding: EdgeInsets.all(kDefaultPadding / 2),
-      height: 60,
-      width: 100,
+      height: size.height * 0.35,
+      width: size.width * 0.9,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(6),
         boxShadow: [
           BoxShadow(
-            offset: Offset(0, 3),
-            blurRadius: 7,
+            offset: Offset(0, 1),
+            blurRadius: 2,
             spreadRadius: 5,
-            color: kPrimaryColor.withOpacity(0.22),
+            color: kPrimaryColor.withOpacity(0.2),
           ),
         ],
       ),
