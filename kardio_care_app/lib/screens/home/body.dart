@@ -9,6 +9,7 @@ import 'connect_disconnect_btns.dart';
 import 'data_card.dart';
 import 'ekg_chart.dart';
 import 'device_status_text.dart';
+import 'heart_rate_card.dart';
 
 class Body extends StatefulWidget {
   Body({Key key}) : super(key: key);
@@ -31,6 +32,14 @@ class _BodyState extends State<Body> {
   String displayData;
   BluetoothDevice bleDevice;
 
+  // From the samples10.csv file, they pass in an array of 5000 elements
+  // we could maybe try 2500 first
+  PanTomkpins panTomkpins;
+  List<double> incomingDataList;
+  int incomingDataListSize = 0;
+  bool isProcessing = false;
+  List<double> rRIntervalList;
+
   @override
   void initState() {
     super.initState();
@@ -42,12 +51,6 @@ class _BodyState extends State<Body> {
     setState(() {
       isLoading = true;
     });
-    // Future.delayed(const Duration(milliseconds: 1000), () {
-    //   setState(() {
-    //     isLoading = false;
-    //   });
-    //   print(isLoading);
-    // });
   }
 
   Future<void> scanForDevice() async {
@@ -188,11 +191,13 @@ class _BodyState extends State<Body> {
         displayData = String.fromCharCodes(data);
         try {
           incomingData = int.parse(String.fromCharCodes(data)).toDouble();
+
+          // addDataToList(incomingData);
         } catch (e) {
           print('Incorrect data format received');
         }
       });
-      // print(displayData);
+      print(displayData);
     });
 
     setState(() {
@@ -220,6 +225,51 @@ class _BodyState extends State<Body> {
     }
   }
 
+  // Pan-Tompkins stuff starts here
+
+  void addDataToList(double data) {
+    setState(() {
+      incomingDataList.add(data);
+      incomingDataListSize++;
+    });
+
+    if (incomingDataListSize >= 500 && !isProcessing) {
+      print("Reached desired list size of 500 elements");
+
+      // Perfom pan-tompkins
+      setState(() {
+        isProcessing = true;
+      });
+
+      print("Starting Pan-Tompkins");
+      performPanTompkins();
+      // we then clear the list and reset the index
+    }
+  }
+
+  void performPanTompkins() async {
+    setState(() {
+      panTomkpins.dataList = incomingDataList;
+      panTomkpins.dataListSize = incomingDataListSize;
+
+      incomingDataList.clear();
+      incomingDataListSize = 0;
+
+      isProcessing = true;
+    });
+
+    print('Waiting for results from pan-tompkins');
+
+    rRIntervalList = await panTomkpins.calculateRRInterval();
+
+    setState(() {
+      isProcessing = false;
+    });
+    print("Results ready!");
+  }
+
+  // Pan-Tompkins stuff ends here
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -241,8 +291,26 @@ class _BodyState extends State<Body> {
             isLoading: isLoading,
           ),
           EKGChart(dataValue: incomingData),
+          HeartRateCard(),
         ],
       ),
     );
+  }
+}
+
+class PanTomkpins {
+  List<double> dataList;
+  int dataListSize;
+
+  PanTomkpins(List<double> dataList, int dataListSize) {
+    this.dataList = dataList;
+    this.dataListSize = dataListSize;
+  }
+
+  Future<List<double>> calculateRRInterval() async {
+    List<double> result = [1, 2, 1.4, 1.3, 2.1, 4.1];
+    // Perfom Pan-Tompkins algorithm and return R-R interval based on the peaks found
+    Future.delayed(const Duration(seconds: 5), () {});
+    return result;
   }
 }
