@@ -1,19 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/constants/app_constants.dart';
 
-class HeartRateCard extends StatefulWidget {
-  final double dataValue;
-
-  const HeartRateCard({
-    Key key,
-    this.dataValue,
-  }) : super(key: key);
-
-  @override
-  _HeartRateCardState createState() => _HeartRateCardState();
-}
-
-class _HeartRateCardState extends State<HeartRateCard> {
+class HeartRateCard extends StatelessWidget {
+  const HeartRateCard({Key key, this.dataValue}) : super(key: key);
+  final int dataValue;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -40,7 +30,7 @@ class _HeartRateCardState extends State<HeartRateCard> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text("Heart Rate"),
-                Text("70 bpm"),
+                Text("$dataValue bpm"),
               ],
             ),
           ),

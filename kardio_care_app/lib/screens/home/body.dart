@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
@@ -35,15 +36,21 @@ class _BodyState extends State<Body> {
   // From the samples10.csv file, they pass in an array of 5000 elements
   // we could maybe try 2500 first
   PanTomkpins panTomkpins;
-  List<double> incomingDataList;
-  int incomingDataListSize = 0;
-  bool isProcessing = false;
+  int dataListSize = 500;
+  List<double> incomingDataList = [for (int i = 0; i < 500; i += 1) 0.0];
+  bool isFull = false;
+  int index = 0;
   List<double> rRIntervalList;
+  int heartRateValue;
 
   @override
   void initState() {
     super.initState();
     scanForDevice();
+    setState(() {
+      isFull = false;
+      index = 0;
+    });
   }
 
   void showLoadingIndicator() {
@@ -191,13 +198,13 @@ class _BodyState extends State<Body> {
         displayData = String.fromCharCodes(data);
         try {
           incomingData = int.parse(String.fromCharCodes(data)).toDouble();
-
-          // addDataToList(incomingData);
         } catch (e) {
           print('Incorrect data format received');
         }
+        // print("IS FULL: $isFull");
+        addDataToList(incomingData);
       });
-      print(displayData);
+      // print(displayData);
     });
 
     setState(() {
@@ -228,44 +235,52 @@ class _BodyState extends State<Body> {
   // Pan-Tompkins stuff starts here
 
   void addDataToList(double data) {
-    setState(() {
-      incomingDataList.add(data);
-      incomingDataListSize++;
-    });
-
-    if (incomingDataListSize >= 500 && !isProcessing) {
-      print("Reached desired list size of 500 elements");
-
-      // Perfom pan-tompkins
+    if (!isFull) {
       setState(() {
-        isProcessing = true;
+        incomingDataList[index] = data;
+        index++;
       });
 
-      print("Starting Pan-Tompkins");
-      performPanTompkins();
-      // we then clear the list and reset the index
+      if (index == dataListSize) {
+        setState(() {
+          isFull = true;
+        });
+        print("Reached desired list size of 500 elements");
+
+        print("Sending data to pan-tompkins class for calculations");
+
+        PanTomkpins pan = PanTomkpins(incomingDataList, dataListSize);
+
+        performPanTompkins(pan);
+
+        setState(() {
+          print("Clearing isFull flag to collect incoming data");
+          isFull = false;
+          index = 0;
+        });
+      }
+    } else {
+      print("isFull == true, cannot store incoming data");
     }
   }
 
-  void performPanTompkins() async {
+  void performPanTompkins(PanTomkpins pan) async {
+    print("Waiting for results from pan-tompkins");
+
+    rRIntervalList = await pan.calculateRRInterval();
+
+    print("Results returned: ${rRIntervalList.toString()}");
+
+    calculateHeartRate();
+  }
+
+  void calculateHeartRate() {
+    print("Calculating heart rate using RRIntervalList");
+    int randomNumber = Random().nextInt(100) + 50;
+
     setState(() {
-      panTomkpins.dataList = incomingDataList;
-      panTomkpins.dataListSize = incomingDataListSize;
-
-      incomingDataList.clear();
-      incomingDataListSize = 0;
-
-      isProcessing = true;
+      heartRateValue = randomNumber;
     });
-
-    print('Waiting for results from pan-tompkins');
-
-    rRIntervalList = await panTomkpins.calculateRRInterval();
-
-    setState(() {
-      isProcessing = false;
-    });
-    print("Results ready!");
   }
 
   // Pan-Tompkins stuff ends here
@@ -291,7 +306,7 @@ class _BodyState extends State<Body> {
             isLoading: isLoading,
           ),
           EKGChart(dataValue: incomingData),
-          HeartRateCard(),
+          HeartRateCard(dataValue: heartRateValue),
         ],
       ),
     );
@@ -310,7 +325,7 @@ class PanTomkpins {
   Future<List<double>> calculateRRInterval() async {
     List<double> result = [1, 2, 1.4, 1.3, 2.1, 4.1];
     // Perfom Pan-Tompkins algorithm and return R-R interval based on the peaks found
-    Future.delayed(const Duration(seconds: 5), () {});
+    await Future.delayed(const Duration(seconds: 3), () {});
     return result;
   }
 }
