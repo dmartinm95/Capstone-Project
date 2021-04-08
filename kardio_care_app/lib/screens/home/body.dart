@@ -46,7 +46,8 @@ class _BodyState extends State<Body> {
   @override
   void initState() {
     super.initState();
-    scanForDevice();
+    // scanForDevice();
+    startScan();
     setState(() {
       isFull = false;
       index = 0;
@@ -57,6 +58,16 @@ class _BodyState extends State<Body> {
     print('is loading...');
     setState(() {
       isLoading = true;
+    });
+  }
+
+  void startScan() async {
+    showLoadingIndicator();
+
+    await scanForDevice();
+
+    setState(() {
+      isLoading = false;
     });
   }
 
@@ -138,7 +149,8 @@ class _BodyState extends State<Body> {
       }
     } finally {
       setState(() {
-        statusMessage = bleDevice.name + " connected!";
+        // TODO: Replace "Kompression" with bleDevice.name
+        statusMessage = "Kompression" + " connected!";
         isConnected = true;
       });
       print("Connected!");
@@ -210,7 +222,8 @@ class _BodyState extends State<Body> {
     });
 
     setState(() {
-      statusMessage = bleDevice.name + " connected!";
+      // TODO: Replace "Kompression" with bleDevice.name later on
+      statusMessage = "Kompression" + " connected!";
       isConnected = true;
       isLoading = false;
       print("Connected!");
@@ -303,9 +316,10 @@ class _BodyState extends State<Body> {
               pressDisconnectBtn();
             },
           ),
+          // TODO: Remove hardcoded "Kompression" value, replace with bleDevice.name
           DeviceStatusText(
             message: statusMessage,
-            deviceName: (bleDevice == null) ? "" : bleDevice.name,
+            deviceName: (bleDevice == null) ? "" : "Kompression",
             isLoading: isLoading,
           ),
           EKGChart(dataValue: incomingData),

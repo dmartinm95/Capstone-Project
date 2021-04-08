@@ -67,6 +67,7 @@ class BtnWidget extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(10),
+            bottomRight: Radius.circular(10),
           ),
         ),
       ),
