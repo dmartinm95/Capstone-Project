@@ -15,17 +15,17 @@ class EKGChart extends StatefulWidget {
   _ChartState createState() => _ChartState();
 }
 
+const int num_samples_plotted = 50;
+
 class _ChartState extends State<EKGChart> {
   final Duration animDuration = const Duration(milliseconds: 0);
-  
-  int touchedIndex; // we can remove if we are not having the touched interaction 
 
-  // list of spots that is updated and shifted for plotting 
+  // list of spots that is updated and shifted for plotting
   List<FlSpot> plottingValues = [
-    for (double i = 0; i < 150; i += 1) FlSpot(i, 0.0)
+    for (double i = 0; i < num_samples_plotted; i += 1) FlSpot(i, 0.0)
   ];
 
-  // some of the layout needs work to be more adaptive to screen size 
+  // some of the layout needs work to be more adaptive to screen size
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
@@ -43,7 +43,7 @@ class _ChartState extends State<EKGChart> {
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   Text(
-                    'EKG Data',
+                    'Lead I Data',
                     style: TextStyle(
                         color: const Color(0xff0f4a3c),
                         fontSize: 24,
@@ -57,7 +57,7 @@ class _ChartState extends State<EKGChart> {
                   ),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 0),
                       child: LineChart(
                         plotData(widget.dataValue),
                         swapAnimationDuration: animDuration,
@@ -79,14 +79,10 @@ class _ChartState extends State<EKGChart> {
   LineChartData plotData(double dataValue) {
     return LineChartData(
       lineTouchData: LineTouchData(
-        touchTooltipData: LineTouchTooltipData(
-          tooltipBgColor: Colors.black.withOpacity(0.8),
-        ),
-        touchCallback: (LineTouchResponse touchResponse) {},
         handleBuiltInTouches: false,
       ),
       borderData: FlBorderData(
-        show: true,
+        show: false,
       ),
       gridData: FlGridData(
         drawVerticalLine: true,
@@ -107,12 +103,12 @@ class _ChartState extends State<EKGChart> {
           //   return getTitles(value);
           // },
         ),
-        leftTitles: SideTitles(showTitles: false, interval: 1),
+        leftTitles: SideTitles(showTitles: true, interval: 100),
       ),
       minX: 0,
       maxX: plottingValues.length.toDouble(),
-      maxY: 1025,
-      minY: 0,
+      maxY: 1250,
+      minY: 900,
       lineBarsData: linesBarDataMain(dataValue),
     );
   }
@@ -122,8 +118,8 @@ class _ChartState extends State<EKGChart> {
       spots: updatePlottingValues(dataValue),
       isCurved: true,
       colors: [kEKGLineColor, kEKGLineColor],
-      curveSmoothness: 0,
-      barWidth: 4,
+      curveSmoothness: 0.4,
+      barWidth: 2,
       isStrokeCapRound: true,
       dotData: FlDotData(
         show: false,
@@ -138,28 +134,27 @@ class _ChartState extends State<EKGChart> {
     ];
   }
 
-  // function to shift a list by the argument amount 
+  // function to shift a list by the argument amount
   List<Object> leftShift(List<Object> list, int shiftAmount) {
     if (list == null || list.isEmpty) return list;
     var i = shiftAmount % list.length;
     return list.sublist(i)..addAll(list.sublist(0, i));
   }
 
-  // update the plotting values with the argument dataValue 
+  // update the plotting values with the argument dataValue
   List<FlSpot> updatePlottingValues(double dataValue) {
-    // shift the plotting values left by one 
+    // shift the plotting values left by one
     plottingValues = leftShift(plottingValues, 1);
 
-    // adjust the x values to match for shift 
+    // adjust the x values to match for shift
     for (var i = 0; i < plottingValues.length; i++) {
       plottingValues[i] =
           plottingValues[i].copyWith(x: plottingValues[i].x - 1);
     }
 
-    // update the last plot point with the data from the bluetooth 
+    // update the last plot point with the data from the bluetooth
     plottingValues.last = FlSpot(plottingValues.length.toDouble(), dataValue);
 
     return plottingValues;
   }
-
 }
