@@ -202,7 +202,9 @@ class _BodyState extends State<Body> {
           print('Incorrect data format received');
         }
         // print("IS FULL: $isFull");
-        addDataToList(incomingData);
+
+        // TODO: Uncomment line below when pan_tompkins.dart is fully integrated
+        // addDataToList(incomingData);
       });
       // print(displayData);
     });
@@ -233,7 +235,7 @@ class _BodyState extends State<Body> {
   }
 
   // Pan-Tompkins stuff starts here
-
+  // TODO: Need to work on integrating pan_tompkins into this file
   void addDataToList(double data) {
     if (!isFull) {
       setState(() {
@@ -249,9 +251,10 @@ class _BodyState extends State<Body> {
 
         print("Sending data to pan-tompkins class for calculations");
 
-        PanTomkpins pan = PanTomkpins(incomingDataList, dataListSize);
+        PanTomkpins panTompkinsObject =
+            PanTomkpins(incomingDataList, dataListSize);
 
-        performPanTompkins(pan);
+        performPanTompkins(panTompkinsObject);
 
         setState(() {
           print("Clearing isFull flag to collect incoming data");
