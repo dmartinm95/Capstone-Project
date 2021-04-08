@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
@@ -9,6 +10,7 @@ import 'connect_disconnect_btns.dart';
 import 'data_card.dart';
 import 'ekg_chart.dart';
 import 'device_status_text.dart';
+import 'heart_rate_card.dart';
 
 class Body extends StatefulWidget {
   Body({Key key}) : super(key: key);
@@ -31,10 +33,25 @@ class _BodyState extends State<Body> {
   String displayData;
   BluetoothDevice bleDevice;
 
+  // From the samples10.csv file, they pass in an array of 5000 elements
+  // we could maybe try 2500 first
+  PanTomkpins panTomkpins;
+  int dataListSize = 500;
+  List<double> incomingDataList = [for (int i = 0; i < 500; i += 1) 0.0];
+  bool isFull = false;
+  int index = 0;
+  List<double> rRIntervalList;
+  int heartRateValue;
+
   @override
   void initState() {
     super.initState();
-    scanForDevice();
+    // scanForDevice();
+    startScan();
+    setState(() {
+      isFull = false;
+      index = 0;
+    });
   }
 
   void showLoadingIndicator() {
@@ -42,12 +59,16 @@ class _BodyState extends State<Body> {
     setState(() {
       isLoading = true;
     });
-    // Future.delayed(const Duration(milliseconds: 1000), () {
-    //   setState(() {
-    //     isLoading = false;
-    //   });
-    //   print(isLoading);
-    // });
+  }
+
+  void startScan() async {
+    showLoadingIndicator();
+
+    await scanForDevice();
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   Future<void> scanForDevice() async {
@@ -128,7 +149,8 @@ class _BodyState extends State<Body> {
       }
     } finally {
       setState(() {
-        statusMessage = bleDevice.name + " connected!";
+        // TODO: Replace "Kompression" with bleDevice.name
+        statusMessage = "Kompression" + " connected!";
         isConnected = true;
       });
       print("Connected!");
@@ -191,12 +213,17 @@ class _BodyState extends State<Body> {
         } catch (e) {
           print('Incorrect data format received');
         }
+        // print("IS FULL: $isFull");
+
+        // TODO: Uncomment line below when pan_tompkins.dart is fully integrated
+        // addDataToList(incomingData);
       });
       // print(displayData);
     });
 
     setState(() {
-      statusMessage = bleDevice.name + " connected!";
+      // TODO: Replace "Kompression" with bleDevice.name later on
+      statusMessage = "Kompression" + " connected!";
       isConnected = true;
       isLoading = false;
       print("Connected!");
@@ -220,6 +247,60 @@ class _BodyState extends State<Body> {
     }
   }
 
+  // Pan-Tompkins stuff starts here
+  // TODO: Need to work on integrating pan_tompkins into this file
+  void addDataToList(double data) {
+    if (!isFull) {
+      setState(() {
+        incomingDataList[index] = data;
+        index++;
+      });
+
+      if (index == dataListSize) {
+        setState(() {
+          isFull = true;
+        });
+        print("Reached desired list size of 500 elements");
+
+        print("Sending data to pan-tompkins class for calculations");
+
+        PanTomkpins panTompkinsObject =
+            PanTomkpins(incomingDataList, dataListSize);
+
+        performPanTompkins(panTompkinsObject);
+
+        setState(() {
+          print("Clearing isFull flag to collect incoming data");
+          isFull = false;
+          index = 0;
+        });
+      }
+    } else {
+      print("isFull == true, cannot store incoming data");
+    }
+  }
+
+  void performPanTompkins(PanTomkpins pan) async {
+    print("Waiting for results from pan-tompkins");
+
+    rRIntervalList = await pan.calculateRRInterval();
+
+    print("Results returned: ${rRIntervalList.toString()}");
+
+    calculateHeartRate();
+  }
+
+  void calculateHeartRate() {
+    print("Calculating heart rate using RRIntervalList");
+    int randomNumber = Random().nextInt(100) + 50;
+
+    setState(() {
+      heartRateValue = randomNumber;
+    });
+  }
+
+  // Pan-Tompkins stuff ends here
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -235,14 +316,33 @@ class _BodyState extends State<Body> {
               pressDisconnectBtn();
             },
           ),
+          // TODO: Remove hardcoded "Kompression" value, replace with bleDevice.name
           DeviceStatusText(
             message: statusMessage,
-            deviceName: (bleDevice == null) ? "" : bleDevice.name,
+            deviceName: (bleDevice == null) ? "" : "Kompression",
             isLoading: isLoading,
           ),
           EKGChart(dataValue: incomingData),
+          HeartRateCard(dataValue: heartRateValue),
         ],
       ),
     );
+  }
+}
+
+class PanTomkpins {
+  List<double> dataList;
+  int dataListSize;
+
+  PanTomkpins(List<double> dataList, int dataListSize) {
+    this.dataList = dataList;
+    this.dataListSize = dataListSize;
+  }
+
+  Future<List<double>> calculateRRInterval() async {
+    List<double> result = [1, 2, 1.4, 1.3, 2.1, 4.1];
+    // Perfom Pan-Tompkins algorithm and return R-R interval based on the peaks found
+    await Future.delayed(const Duration(seconds: 3), () {});
+    return result;
   }
 }
