@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:kardio_care_app/constants/app_constants.dart';
+import 'package:scidart/numdart.dart';
 
 import 'connect_disconnect_btns.dart';
 import 'data_card.dart';
@@ -37,11 +38,19 @@ class _BodyState extends State<Body> {
   // we could maybe try 2500 first
   PanTomkpins panTomkpins;
   int dataListSize = 500;
-  List<double> incomingDataList = [for (int i = 0; i < 500; i += 1) 0.0];
+  // Array used for filtered data
+  Array incomingDataList = Array([for (int i = 0; i < 500; i += 1) 0.0]);
+
   bool isFull = false;
   int index = 0;
   List<double> rRIntervalList;
   int heartRateValue;
+  double filteredData;
+  double averageValue = 0;
+  double diffData;
+
+  // Added Real Time filtering
+  Ewma ewmaFilter = Ewma(0.45);
 
   @override
   void initState() {
@@ -206,18 +215,25 @@ class _BodyState extends State<Body> {
     turnOnNotify();
     Future.delayed(const Duration(milliseconds: 2000), () {});
     notifyCharacteristic.value.listen((data) {
-      setState(() {
-        displayData = String.fromCharCodes(data);
-        try {
-          incomingData = int.parse(String.fromCharCodes(data)).toDouble();
-        } catch (e) {
-          print('Incorrect data format received');
-        }
-        // print("IS FULL: $isFull");
+      displayData = String.fromCharCodes(data);
+      try {
+        incomingData = int.parse(String.fromCharCodes(data)).toDouble();
 
-        // TODO: Uncomment line below when pan_tompkins.dart is fully integrated
-        // addDataToList(incomingData);
-      });
+        filteredData = ewmaFilter.filter(incomingData);
+
+        addDataToList(filteredData);
+
+        diffData = incomingData - filteredData;
+        print('Filtered DATA: $filteredData');
+
+        // incomingData = filteredData;
+      } catch (e) {
+        print('Incorrect data format received');
+      }
+      // print("IS FULL: $isFull");
+
+      // TODO: Uncomment line below when pan_tompkins.dart is fully integrated
+      // addDataToList(incomingData);
       // print(displayData);
     });
 
@@ -229,6 +245,8 @@ class _BodyState extends State<Body> {
       print("Connected!");
     });
   }
+
+  void averageForPlot() {}
 
   void turnOnNotify() async {
     if (notifyCharacteristic != null) {
@@ -255,7 +273,11 @@ class _BodyState extends State<Body> {
         incomingDataList[index] = data;
         index++;
       });
-
+      if (index != 0 && index % 4 == 0) {
+        setState(() {
+          averageValue = mean(incomingDataList.getRangeArray(index - 4, index));
+        });
+      }
       if (index == dataListSize) {
         setState(() {
           isFull = true;
@@ -264,10 +286,10 @@ class _BodyState extends State<Body> {
 
         print("Sending data to pan-tompkins class for calculations");
 
-        PanTomkpins panTompkinsObject =
-            PanTomkpins(incomingDataList, dataListSize);
+        // PanTomkpins panTompkinsObject =
+        //     PanTomkpins(incomingDataList, );
 
-        performPanTompkins(panTompkinsObject);
+        // performPanTompkins(panTompkinsObject);
 
         setState(() {
           print("Clearing isFull flag to collect incoming data");
@@ -322,7 +344,9 @@ class _BodyState extends State<Body> {
             deviceName: (bleDevice == null) ? "" : "Kompression",
             isLoading: isLoading,
           ),
-          EKGChart(dataValue: incomingData),
+          EKGChart(dataValue: averageValue),
+          EKGChart(dataValue: filteredData),
+          EKGChart(dataValue: diffData),
           HeartRateCard(dataValue: heartRateValue),
         ],
       ),
@@ -344,5 +368,25 @@ class PanTomkpins {
     // Perfom Pan-Tompkins algorithm and return R-R interval based on the peaks found
     await Future.delayed(const Duration(seconds: 3), () {});
     return result;
+  }
+}
+
+class Ewma {
+  double alpha;
+  double output;
+  bool hasInitial = false;
+
+  Ewma(double alpha) {
+    this.alpha = alpha;
+  }
+
+  double filter(double input) {
+    if (hasInitial) {
+      output = alpha * (input - output) + output;
+    } else {
+      output = input;
+      hasInitial = true;
+    }
+    return output;
   }
 }

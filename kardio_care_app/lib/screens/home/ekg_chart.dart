@@ -107,8 +107,8 @@ class _ChartState extends State<EKGChart> {
       ),
       minX: 0,
       maxX: plottingValues.length.toDouble(),
-      maxY: 1250,
-      minY: 900,
+      maxY: 0,
+      minY: -1024,
       lineBarsData: linesBarDataMain(dataValue),
     );
   }
