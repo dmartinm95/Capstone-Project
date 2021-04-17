@@ -7,15 +7,20 @@ class EKGChart extends StatefulWidget {
   const EKGChart({
     Key key,
     this.dataValue,
+    this.minValue,
+    this.maxValue,
   }) : super(key: key);
 
   final double dataValue;
+
+  final double minValue;
+  final double maxValue;
 
   @override
   _ChartState createState() => _ChartState();
 }
 
-const int num_samples_plotted = 50;
+const int num_samples_plotted = 100;
 
 class _ChartState extends State<EKGChart> {
   final Duration animDuration = const Duration(milliseconds: 0);
@@ -107,8 +112,8 @@ class _ChartState extends State<EKGChart> {
       ),
       minX: 0,
       maxX: plottingValues.length.toDouble(),
-      maxY: 0,
-      minY: -1024,
+      maxY: widget.maxValue,
+      minY: widget.minValue,
       lineBarsData: linesBarDataMain(dataValue),
     );
   }

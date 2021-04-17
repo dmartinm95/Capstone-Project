@@ -101,7 +101,7 @@ class PanTomkpins {
     return (result);
   }
 
-  Future<Array> performPanTompkins(Array data) async {
+  Array performPanTompkins(Array data) {
     Array result;
 
     Array lpfData = lpf(data);

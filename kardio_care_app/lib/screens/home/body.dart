@@ -5,7 +5,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:kardio_care_app/constants/app_constants.dart';
+import 'package:kardio_care_app/util/pan_tompkins.dart';
 import 'package:scidart/numdart.dart';
+import 'package:scidart/scidart.dart';
 
 import 'connect_disconnect_btns.dart';
 import 'data_card.dart';
@@ -31,6 +33,29 @@ class _BodyState extends State<Body> {
   String statusMessage = "";
   BluetoothCharacteristic notifyCharacteristic;
   double incomingData;
+
+////////////////////////////////////
+  double plottingData;
+  double cleanData;
+  double ewmaData;
+  Array plottingDataList = Array([for (int i = 0; i < 1000; i += 1) 0.0]);
+
+  Array buffer0 = Array([for (int i = 0; i < 2200; i += 1) 0.0]);
+  Array buffer1 = Array([for (int i = 0; i < 2200; i += 1) 0.0]);
+  Array filteredBuffer = Array([for (int i = 0; i < 2200; i += 1) 0.0]);
+  Array filteredBuffer2 = Array([for (int i = 0; i < 2200; i += 1) 0.0]);
+  Array ewmaBuffer = Array([for (int i = 0; i < 2200; i += 1) 0.0]);
+
+  int buffer0Index = 0;
+  int buffer1Index = 0;
+
+  int plotIndex = 0;
+
+  bool isBuffer0Full = false;
+  bool isBuffer1Full = true;
+
+////////////////////////////////////
+
   String displayData;
   BluetoothDevice bleDevice;
 
@@ -43,6 +68,7 @@ class _BodyState extends State<Body> {
 
   bool isFull = false;
   int index = 0;
+  final int averageLength = 4;
   List<double> rRIntervalList;
   int heartRateValue;
   double filteredData;
@@ -50,7 +76,7 @@ class _BodyState extends State<Body> {
   double diffData;
 
   // Added Real Time filtering
-  Ewma ewmaFilter = Ewma(0.45);
+  Ewma ewmaFilter = Ewma(0.2);
 
   @override
   void initState() {
@@ -218,18 +244,75 @@ class _BodyState extends State<Body> {
       displayData = String.fromCharCodes(data);
       try {
         incomingData = int.parse(String.fromCharCodes(data)).toDouble();
+        buffer0[buffer0Index] = incomingData;
 
-        filteredData = ewmaFilter.filter(incomingData);
-
-        addDataToList(filteredData);
-
-        diffData = incomingData - filteredData;
-        print('Filtered DATA: $filteredData');
-
-        // incomingData = filteredData;
+        buffer0Index++;
       } catch (e) {
         print('Incorrect data format received');
       }
+
+      if (buffer0Index >= buffer0.length) {
+        print("Buffer 0 full, sending data to Buffer 1....");
+        isBuffer0Full = true;
+        buffer0Index = 0;
+
+        buffer1 = buffer0;
+        double maxValue = arrayMax(buffer1);
+        print("Max VALUE inside Buffer 1 = $maxValue");
+
+        buffer1 = arrayDivisionToScalar(buffer1, maxValue);
+
+        // This should filter out baseline wander at 0.67 Hz
+        print("Performing lfilter on Buffer 1 data....");
+        filteredBuffer = lfilter(
+            Array([0.968979151360103, -1.93768355538075, 0.968979151360103]),
+            Array([1, -1.93768355538075, 0.937958302720205]),
+            buffer1);
+
+        // This should filter out 60 Hz powerline noise
+        print("Performing lfilter on filteredBuffer data....");
+        filteredBuffer2 = lfilter(
+            Array([0.110036498530389, -0.0138184978198193, 0.110036498530389]),
+            Array([1, -0.0138184978198193, -0.779927002939223]),
+            filteredBuffer);
+
+        // panTomkpins = new PanTomkpins(filteredBuffer2, 250);
+
+        // var pk = panTomkpins.performPanTompkins(filteredBuffer2);
+
+        // print("PRINTING PEAKS FOUND: ");
+        // print(pk);
+
+      }
+
+      plottingData = filteredBuffer[buffer0Index];
+      cleanData = filteredBuffer2[buffer0Index];
+      ewmaData = ewmaFilter.filter(cleanData);
+
+      setState(() {});
+
+      // plottingDataList[plottingDataIndex] = incomingData;
+      // plottingDataIndex++;
+
+      // if (plottingDataIndex >= 1000) {
+      //   isPlottingDataFull = true;
+      //   plottingDataIndex = 0;
+      // }
+
+      // if (isPlottingDataFull) {
+      //   plottingData = plottingDataList[]
+      // }
+
+      // filteredData = ewmaFilter.filter(incomingData);
+
+      // addDataToList(filteredData);
+
+      // diffData = incomingData - filteredData;
+
+      // setState(() {});
+      // print('Filtered DATA: $filteredData');
+
+      // incomingData = filteredData;
       // print("IS FULL: $isFull");
 
       // TODO: Uncomment line below when pan_tompkins.dart is fully integrated
@@ -269,13 +352,13 @@ class _BodyState extends State<Body> {
   // TODO: Need to work on integrating pan_tompkins into this file
   void addDataToList(double data) {
     if (!isFull) {
-      setState(() {
-        incomingDataList[index] = data;
-        index++;
-      });
-      if (index != 0 && index % 4 == 0) {
+      incomingDataList[index] = data;
+      index++;
+
+      if (index != 0 && index % averageLength == 0) {
         setState(() {
-          averageValue = mean(incomingDataList.getRangeArray(index - 4, index));
+          averageValue = mean(
+              incomingDataList.getRangeArray(index - averageLength, index));
         });
       }
       if (index == dataListSize) {
@@ -305,7 +388,7 @@ class _BodyState extends State<Body> {
   void performPanTompkins(PanTomkpins pan) async {
     print("Waiting for results from pan-tompkins");
 
-    rRIntervalList = await pan.calculateRRInterval();
+    // rRIntervalList = await pan.calculateRRInterval();
 
     print("Results returned: ${rRIntervalList.toString()}");
 
@@ -344,9 +427,27 @@ class _BodyState extends State<Body> {
             deviceName: (bleDevice == null) ? "" : "Kompression",
             isLoading: isLoading,
           ),
-          EKGChart(dataValue: averageValue),
-          EKGChart(dataValue: filteredData),
-          EKGChart(dataValue: diffData),
+          // EKGChart(dataValue: averageValue),
+          EKGChart(
+            dataValue: incomingData,
+            minValue: 0.0,
+            maxValue: 1024.0,
+          ),
+          EKGChart(
+            dataValue: plottingData,
+            minValue: 0.0,
+            maxValue: 1.0,
+          ),
+          EKGChart(
+            dataValue: cleanData,
+            minValue: 0.0,
+            maxValue: 1.0,
+          ),
+          EKGChart(
+            dataValue: ewmaData,
+            minValue: 0.0,
+            maxValue: 1.0,
+          ),
           HeartRateCard(dataValue: heartRateValue),
         ],
       ),
@@ -354,22 +455,22 @@ class _BodyState extends State<Body> {
   }
 }
 
-class PanTomkpins {
-  List<double> dataList;
-  int dataListSize;
+// class PanTomkpins {
+//   List<double> dataList;
+//   int dataListSize;
 
-  PanTomkpins(List<double> dataList, int dataListSize) {
-    this.dataList = dataList;
-    this.dataListSize = dataListSize;
-  }
+//   PanTomkpins(List<double> dataList, int dataListSize) {
+//     this.dataList = dataList;
+//     this.dataListSize = dataListSize;
+//   }
 
-  Future<List<double>> calculateRRInterval() async {
-    List<double> result = [1, 2, 1.4, 1.3, 2.1, 4.1];
-    // Perfom Pan-Tompkins algorithm and return R-R interval based on the peaks found
-    await Future.delayed(const Duration(seconds: 3), () {});
-    return result;
-  }
-}
+//   Future<List<double>> calculateRRInterval() async {
+//     List<double> result = [1, 2, 1.4, 1.3, 2.1, 4.1];
+//     // Perfom Pan-Tompkins algorithm and return R-R interval based on the peaks found
+//     await Future.delayed(const Duration(seconds: 3), () {});
+//     return result;
+//   }
+// }
 
 class Ewma {
   double alpha;
