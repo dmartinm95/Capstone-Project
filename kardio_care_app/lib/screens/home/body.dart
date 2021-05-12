@@ -1,96 +1,78 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:kardio_care_app/constants/app_constants.dart';
-import 'package:kardio_care_app/util/pan_tompkins.dart';
 import 'package:scidart/numdart.dart';
 import 'package:scidart/scidart.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'connect_disconnect_btns.dart';
-import 'data_card.dart';
-import 'ekg_chart.dart';
 import 'device_status_text.dart';
-import 'heart_rate_card.dart';
+
+final data = ValueNotifier<double>(0.0);
 
 class Body extends StatefulWidget {
   Body({Key key}) : super(key: key);
 
   final FlutterBlue flutterBlue = FlutterBlue.instance;
 
-  final String deviceName = "DSD TECH";
+  final String deviceName =
+      "Kompression"; // Might need to change depending on the name of the bluetooth module being used
 
   @override
   _BodyState createState() => _BodyState();
 }
 
 class _BodyState extends State<Body> {
+  // Variables for BLE device
   bool isConnected = false;
-  bool isFound = false;
   bool isLoading = false;
   String statusMessage = "";
   BluetoothCharacteristic notifyCharacteristic;
-  double incomingData;
-
-////////////////////////////////////
-  double plottingData;
-  double cleanData;
-  double ewmaData;
-  Array plottingDataList = Array([for (int i = 0; i < 1000; i += 1) 0.0]);
-
-  Array buffer0 = Array([for (int i = 0; i < 2200; i += 1) 0.0]);
-  Array buffer1 = Array([for (int i = 0; i < 2200; i += 1) 0.0]);
-  Array filteredBuffer = Array([for (int i = 0; i < 2200; i += 1) 0.0]);
-  Array filteredBuffer2 = Array([for (int i = 0; i < 2200; i += 1) 0.0]);
-  Array ewmaBuffer = Array([for (int i = 0; i < 2200; i += 1) 0.0]);
-
-  int buffer0Index = 0;
-  int buffer1Index = 0;
-
-  int plotIndex = 0;
-
-  bool isBuffer0Full = false;
-  bool isBuffer1Full = true;
-
-////////////////////////////////////
-
-  String displayData;
   BluetoothDevice bleDevice;
 
-  // From the samples10.csv file, they pass in an array of 5000 elements
-  // we could maybe try 2500 first
-  PanTomkpins panTomkpins;
-  int dataListSize = 500;
-  // Array used for filtered data
-  Array incomingDataList = Array([for (int i = 0; i < 500; i += 1) 0.0]);
+  // Variables for buffering incoming data
+  Stream<List<int>> myStream;
+  double incomingData;
+  double downsampleData;
+  bool isReady = false;
+  Array incomingDatabuffer = Array([for (int i = 0; i < 3500; i += 1) 0.0]);
+  int dataBufferIndex = 0;
 
-  bool isFull = false;
-  int index = 0;
-  final int averageLength = 4;
-  List<double> rRIntervalList;
-  int heartRateValue;
-  double filteredData;
-  double averageValue = 0;
-  double diffData;
+  Array buffer0 = Array([for (int i = 0; i < 2500; i += 1) 0.0]);
+  Array buffer1 = Array([for (int i = 0; i < 2500; i += 1) 0.0]);
+  Array filteredBuffer = Array([for (int i = 0; i < 2500; i += 1) 0.0]);
+  Array filteredBuffer2 = Array([for (int i = 0; i < 2500; i += 1) 0.0]);
+  int buffer0Index = 0;
+  int buffer1Index = 0;
+  double cleanData = 0;
 
-  // Added Real Time filtering
-  Ewma ewmaFilter = Ewma(0.2);
+  // Variables for plotting
+  int plotIndex = 0;
+  double upCounter = 0;
+  Timer timer;
+  List<_ChartData> chartData = <_ChartData>[];
+  int dataCount = 0;
+  ChartSeriesController chartSeriesController;
 
   @override
   void initState() {
     super.initState();
-    // scanForDevice();
     startScan();
-    setState(() {
-      isFull = false;
-      index = 0;
-    });
+    timer = Timer.periodic(const Duration(milliseconds: 5), updateDataSource);
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
   }
 
   void showLoadingIndicator() {
-    print('is loading...');
+    print('Is loading...');
     setState(() {
       isLoading = true;
     });
@@ -112,6 +94,7 @@ class _BodyState extends State<Body> {
         .asStream()
         .listen((List<BluetoothDevice> devices) {
       for (BluetoothDevice device in devices) {
+        print(device.name);
         if (device.name == widget.deviceName) {
           setState(() {
             bleDevice = device;
@@ -122,6 +105,7 @@ class _BodyState extends State<Body> {
 
     widget.flutterBlue.scanResults.listen((List<ScanResult> results) {
       for (ScanResult result in results) {
+        print(result.device.name);
         if (result.device.name == widget.deviceName) {
           setState(() {
             bleDevice = result.device;
@@ -149,10 +133,6 @@ class _BodyState extends State<Body> {
       print('device found, now attempting to connect');
       connectToDevice();
     }
-
-    // setState(() {
-    //   isLoading = false;
-    // });
   }
 
   void pressDisconnectBtn() {
@@ -187,6 +167,7 @@ class _BodyState extends State<Body> {
         // TODO: Replace "Kompression" with bleDevice.name
         statusMessage = "Kompression" + " connected!";
         isConnected = true;
+        isLoading = false;
       });
       print("Connected!");
     }
@@ -201,7 +182,11 @@ class _BodyState extends State<Body> {
       } else {
         print('not found char');
       }
+      turnOnNotify();
     }
+
+    dataBufferIndex = 0;
+    dataCount = 0;
 
     getIncomingData();
   }
@@ -218,6 +203,7 @@ class _BodyState extends State<Body> {
       isConnected = false;
       bleDevice = null;
       isLoading = false;
+      isReady = false;
     });
 
     print("Disconnected!");
@@ -231,110 +217,108 @@ class _BodyState extends State<Body> {
           print("Found characteristic");
           setState(() {
             notifyCharacteristic = characteristic;
+            myStream = notifyCharacteristic.value;
           });
         }
       }
     });
   }
 
-  void getIncomingData() {
-    turnOnNotify();
-    Future.delayed(const Duration(milliseconds: 2000), () {});
-    notifyCharacteristic.value.listen((data) {
-      displayData = String.fromCharCodes(data);
-      try {
-        incomingData = int.parse(String.fromCharCodes(data)).toDouble();
-        buffer0[buffer0Index] = incomingData;
-
-        buffer0Index++;
-      } catch (e) {
-        print('Incorrect data format received');
-      }
-
-      if (buffer0Index >= buffer0.length) {
-        print("Buffer 0 full, sending data to Buffer 1....");
-        isBuffer0Full = true;
-        buffer0Index = 0;
-
-        buffer1 = buffer0;
-        double maxValue = arrayMax(buffer1);
-        print("Max VALUE inside Buffer 1 = $maxValue");
-
-        buffer1 = arrayDivisionToScalar(buffer1, maxValue);
-
-        // This should filter out baseline wander at 0.67 Hz
-        print("Performing lfilter on Buffer 1 data....");
-        filteredBuffer = lfilter(
-            Array([0.968979151360103, -1.93768355538075, 0.968979151360103]),
-            Array([1, -1.93768355538075, 0.937958302720205]),
-            buffer1);
-
-        // This should filter out 60 Hz powerline noise
-        print("Performing lfilter on filteredBuffer data....");
-        filteredBuffer2 = lfilter(
-            Array([0.110036498530389, -0.0138184978198193, 0.110036498530389]),
-            Array([1, -0.0138184978198193, -0.779927002939223]),
-            filteredBuffer);
-
-        // panTomkpins = new PanTomkpins(filteredBuffer2, 250);
-
-        // var pk = panTomkpins.performPanTompkins(filteredBuffer2);
-
-        // print("PRINTING PEAKS FOUND: ");
-        // print(pk);
-
-      }
-
-      plottingData = filteredBuffer[buffer0Index];
-      cleanData = filteredBuffer2[buffer0Index];
-      ewmaData = ewmaFilter.filter(cleanData);
-
-      setState(() {});
-
-      // plottingDataList[plottingDataIndex] = incomingData;
-      // plottingDataIndex++;
-
-      // if (plottingDataIndex >= 1000) {
-      //   isPlottingDataFull = true;
-      //   plottingDataIndex = 0;
-      // }
-
-      // if (isPlottingDataFull) {
-      //   plottingData = plottingDataList[]
-      // }
-
-      // filteredData = ewmaFilter.filter(incomingData);
-
-      // addDataToList(filteredData);
-
-      // diffData = incomingData - filteredData;
-
-      // setState(() {});
-      // print('Filtered DATA: $filteredData');
-
-      // incomingData = filteredData;
-      // print("IS FULL: $isFull");
-
-      // TODO: Uncomment line below when pan_tompkins.dart is fully integrated
-      // addDataToList(incomingData);
-      // print(displayData);
-    });
-
-    setState(() {
-      // TODO: Replace "Kompression" with bleDevice.name later on
-      statusMessage = "Kompression" + " connected!";
-      isConnected = true;
-      isLoading = false;
-      print("Connected!");
-    });
+  double parseIncomingData(List<int> toDecode) {
+    double result = 0.0;
+    try {
+      result = int.parse(String.fromCharCodes(toDecode)).toDouble();
+      // print(result);
+    } catch (e) {
+      print("Error observed while parsing data: ${e.toString()}");
+    }
+    return result;
   }
 
-  void averageForPlot() {}
+  void getIncomingData() {
+    // Future.delayed(const Duration(milliseconds: 2000), () {});
+
+    List<int> decode = [];
+    setState(() {
+      statusMessage = "Filling buffer";
+    });
+    showLoadingIndicator();
+
+    myStream.listen((data) {
+      // print(data.first);
+      for (int element in data) {
+        if (element != 204) {
+          decode.add(element);
+        } else {
+          incomingData = parseIncomingData(decode);
+
+          if (dataBufferIndex < incomingDatabuffer.length) {
+            incomingDatabuffer[dataBufferIndex] = incomingData;
+            dataBufferIndex++;
+          } else {
+            dataBufferIndex = 0;
+          }
+
+          if (dataBufferIndex > incomingDatabuffer.length - 100) {
+            if (!isReady) {
+              isReady = true;
+              setState(() {
+                isLoading = false;
+                statusMessage = "Kompression" + " connected!";
+              });
+            }
+          }
+
+          // buffer0[buffer0Index] = incomingData;
+          // buffer0Index++;
+
+          // if (buffer0Index >= buffer0.length) {
+          //   print("Buffer0 is now full, filtering data");
+          //   if (!isReady) {
+          //     isReady = true;
+          //     setState(() {
+          //       isLoading = false;
+          //       statusMessage = "Kompression" + " connected!";
+          //     });
+          //   }
+          //   buffer0Index = 0;
+          //   buffer1 = buffer0;
+
+          //   double maxValue = arrayMax(buffer1);
+          //   buffer1 = arrayDivisionToScalar(buffer1, maxValue);
+
+          //   filteredBuffer = lfilter(
+          //       Array(
+          //           [0.968979151360103, -1.93768355538075, 0.968979151360103]),
+          //       Array([1, -1.93768355538075, 0.937958302720205]),
+          //       buffer1);
+
+          //   filteredBuffer2 = lfilter(
+          //       Array([
+          //         0.110036498530389,
+          //         -0.0138184978198193,
+          //         0.110036498530389
+          //       ]),
+          //       Array([1, -0.0138184978198193, -0.779927002939223]),
+          //       buffer1);
+          //   isReady = true;
+          // }
+
+          // setState(() {});
+          decode.clear();
+        }
+      }
+    }, onDone: () {
+      print("Task Done");
+    }, onError: (error) {
+      print("Some error");
+    });
+  }
 
   void turnOnNotify() async {
     if (notifyCharacteristic != null) {
       await notifyCharacteristic.setNotifyValue(true);
-      notifyCharacteristic.write(utf8.encode(1.toString()));
+      // notifyCharacteristic.write(utf8.encode(1.toString()));
     } else {
       print("NotifyCharacteristic is NULL");
     }
@@ -347,64 +331,6 @@ class _BodyState extends State<Body> {
       print("NotifyCharacteristic is NULL");
     }
   }
-
-  // Pan-Tompkins stuff starts here
-  // TODO: Need to work on integrating pan_tompkins into this file
-  void addDataToList(double data) {
-    if (!isFull) {
-      incomingDataList[index] = data;
-      index++;
-
-      if (index != 0 && index % averageLength == 0) {
-        setState(() {
-          averageValue = mean(
-              incomingDataList.getRangeArray(index - averageLength, index));
-        });
-      }
-      if (index == dataListSize) {
-        setState(() {
-          isFull = true;
-        });
-        print("Reached desired list size of 500 elements");
-
-        print("Sending data to pan-tompkins class for calculations");
-
-        // PanTomkpins panTompkinsObject =
-        //     PanTomkpins(incomingDataList, );
-
-        // performPanTompkins(panTompkinsObject);
-
-        setState(() {
-          print("Clearing isFull flag to collect incoming data");
-          isFull = false;
-          index = 0;
-        });
-      }
-    } else {
-      print("isFull == true, cannot store incoming data");
-    }
-  }
-
-  void performPanTompkins(PanTomkpins pan) async {
-    print("Waiting for results from pan-tompkins");
-
-    // rRIntervalList = await pan.calculateRRInterval();
-
-    print("Results returned: ${rRIntervalList.toString()}");
-
-    calculateHeartRate();
-  }
-
-  void calculateHeartRate() {
-    print("Calculating heart rate using RRIntervalList");
-    int randomNumber = Random().nextInt(100) + 50;
-
-    setState(() {
-      heartRateValue = randomNumber;
-    });
-  }
-
-  // Pan-Tompkins stuff ends here
 
   @override
   Widget build(BuildContext context) {
@@ -427,59 +353,129 @@ class _BodyState extends State<Body> {
             deviceName: (bleDevice == null) ? "" : "Kompression",
             isLoading: isLoading,
           ),
-          // EKGChart(dataValue: averageValue),
-          EKGChart(
-            dataValue: incomingData,
-            minValue: 0.0,
-            maxValue: 1024.0,
-          ),
-          EKGChart(
-            dataValue: plottingData,
-            minValue: 0.0,
-            maxValue: 1.0,
-          ),
-          EKGChart(
-            dataValue: cleanData,
-            minValue: 0.0,
-            maxValue: 1.0,
-          ),
-          EKGChart(
-            dataValue: ewmaData,
-            minValue: 0.0,
-            maxValue: 1.0,
-          ),
-          HeartRateCard(dataValue: heartRateValue),
+          buildLiveLineChart(0, 1024.0),
+          // EKGChart(
+          //   dataValue: data.value,
+          //   minValue: 0.0,
+          //   maxValue: 1000.0,
+          // ),
         ],
       ),
     );
   }
+
+  Widget buildLiveLineChart(double min, double max) {
+    return AspectRatio(
+      aspectRatio: 1.25,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        color: kBackgroundColor,
+        child: Stack(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(kDefaultPadding * 0.25),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  Center(
+                    child: Text(
+                      'Lead I Data',
+                      style: TextStyle(
+                          color:
+                              Colors.green.shade600, //const Color(0xff0f4a3c),
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 0, vertical: kDefaultPadding),
+                      child: SfCartesianChart(
+                          enableAxisAnimation: false,
+                          plotAreaBorderWidth: 0,
+                          primaryXAxis: NumericAxis(isVisible: false),
+                          primaryYAxis: NumericAxis(
+                              isVisible: true,
+                              isInversed: false,
+                              axisLine: AxisLine(width: 0),
+                              majorTickLines: MajorTickLines(size: 0),
+                              minimum: min,
+                              maximum: max),
+                          series: <LineSeries<_ChartData, int>>[
+                            LineSeries<_ChartData, int>(
+                              onRendererCreated:
+                                  (ChartSeriesController controller) {
+                                chartSeriesController = controller;
+                              },
+                              dataSource: chartData,
+                              width: 1.5,
+                              color:
+                                  kEKGLineColor, // color: const Color.fromRGBO(192, 108, 132, 1),
+                              xValueMapper: (_ChartData sales, _) =>
+                                  sales.index,
+                              yValueMapper: (_ChartData sales, _) =>
+                                  sales.value,
+                              animationDuration: 0,
+                            )
+                          ]),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void updateDataSource(Timer timer) {
+    if (isReady) {
+      chartData.add(_ChartData(dataCount, updateCounter()));
+      if (chartData.length == 500) {
+        chartData.removeAt(0);
+        chartSeriesController?.updateDataSource(
+          addedDataIndexes: <int>[chartData.length - 1],
+          removedDataIndexes: <int>[0],
+        );
+      } else {
+        chartSeriesController?.updateDataSource(
+          addedDataIndexes: <int>[chartData.length - 1],
+        );
+      }
+      dataCount++;
+    }
+  }
+
+  double updateCounter() {
+    if (plotIndex < incomingDatabuffer.length) {
+      upCounter = incomingDatabuffer[plotIndex];
+      // print(
+      //     "Plot Index: $plotIndex \t Data buffer: ${incomingDatabuffer[plotIndex]} \t Filtered buffer: ${filteredBuffer[plotIndex]}");
+      plotIndex++;
+    } else {
+      plotIndex = 0;
+    }
+    return upCounter;
+  }
 }
 
-// class PanTomkpins {
-//   List<double> dataList;
-//   int dataListSize;
-
-//   PanTomkpins(List<double> dataList, int dataListSize) {
-//     this.dataList = dataList;
-//     this.dataListSize = dataListSize;
-//   }
-
-//   Future<List<double>> calculateRRInterval() async {
-//     List<double> result = [1, 2, 1.4, 1.3, 2.1, 4.1];
-//     // Perfom Pan-Tompkins algorithm and return R-R interval based on the peaks found
-//     await Future.delayed(const Duration(seconds: 3), () {});
-//     return result;
-//   }
-// }
+/// Private class for storing the chart series data points.
+class _ChartData {
+  _ChartData(this.index, this.value);
+  final int index;
+  final double value;
+}
 
 class Ewma {
+  Ewma(this.alpha, this.output);
+
   double alpha;
   double output;
   bool hasInitial = false;
-
-  Ewma(double alpha) {
-    this.alpha = alpha;
-  }
 
   double filter(double input) {
     if (hasInitial) {

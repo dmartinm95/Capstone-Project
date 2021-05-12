@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/screens/home/body.dart';
+import 'package:kardio_care_app/screens/home/real_time_line_chart.dart';
 import 'package:kardio_care_app/util/my_bottom_nav_bar.dart';
 
 class HomeScreen extends StatelessWidget {

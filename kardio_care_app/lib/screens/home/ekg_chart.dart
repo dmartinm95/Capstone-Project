@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/constants/app_constants.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:kardio_care_app/constants/app_constants.dart';
 
 class EKGChart extends StatefulWidget {
   const EKGChart({
@@ -20,7 +19,7 @@ class EKGChart extends StatefulWidget {
   _ChartState createState() => _ChartState();
 }
 
-const int num_samples_plotted = 100;
+const int num_samples_plotted = 40;
 
 class _ChartState extends State<EKGChart> {
   final Duration animDuration = const Duration(milliseconds: 0);
@@ -29,6 +28,11 @@ class _ChartState extends State<EKGChart> {
   List<FlSpot> plottingValues = [
     for (double i = 0; i < num_samples_plotted; i += 1) FlSpot(i, 0.0)
   ];
+
+  List<FlSpot> myList = [
+    for (double i = 0; i < num_samples_plotted; i += 1) FlSpot(i, 0.0)
+  ];
+  int myListIndex = 0;
 
   // some of the layout needs work to be more adaptive to screen size
   @override
@@ -63,10 +67,7 @@ class _ChartState extends State<EKGChart> {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 0),
-                      child: LineChart(
-                        plotData(widget.dataValue),
-                        swapAnimationDuration: animDuration,
-                      ),
+                      child: plotData(widget.dataValue),
                     ),
                   ),
                   const SizedBox(
@@ -81,50 +82,53 @@ class _ChartState extends State<EKGChart> {
     );
   }
 
-  LineChartData plotData(double dataValue) {
-    return LineChartData(
-      lineTouchData: LineTouchData(
-        handleBuiltInTouches: false,
-      ),
-      borderData: FlBorderData(
-        show: false,
-      ),
-      gridData: FlGridData(
-        drawVerticalLine: true,
-        show: false,
-      ),
-      titlesData: FlTitlesData(
-        bottomTitles: SideTitles(
-          showTitles: false,
-          interval: 1,
-          reservedSize: 100,
-          // : const TextStyle(
-          //   color: Color(0xff72719b),
-          //   fontWeight: FontWeight.bold,
-          //   fontSize: 16,
-          // ),
-          margin: 10,
-          // getTitles: (value) {
-          //   return getTitles(value);
-          // },
+  LineChart plotData(double dataValue) {
+    return LineChart(
+      LineChartData(
+        lineTouchData: LineTouchData(
+          handleBuiltInTouches: false,
         ),
-        leftTitles: SideTitles(showTitles: true, interval: 100),
+        borderData: FlBorderData(
+          show: false,
+        ),
+        gridData: FlGridData(
+          drawVerticalLine: true,
+          show: false,
+        ),
+        titlesData: FlTitlesData(
+          bottomTitles: SideTitles(
+            showTitles: false,
+            interval: 1,
+            reservedSize: 100,
+            // : const TextStyle(
+            //   color: Color(0xff72719b),
+            //   fontWeight: FontWeight.bold,
+            //   fontSize: 16,
+            // ),
+            margin: 10,
+            // getTitles: (value) {
+            //   return getTitles(value);
+            // },
+          ),
+          leftTitles: SideTitles(showTitles: true, interval: 100),
+        ),
+        minX: 0,
+        maxX: plottingValues.length.toDouble(),
+        maxY: widget.maxValue,
+        minY: widget.minValue,
+        lineBarsData: linesBarDataMain(dataValue),
       ),
-      minX: 0,
-      maxX: plottingValues.length.toDouble(),
-      maxY: widget.maxValue,
-      minY: widget.minValue,
-      lineBarsData: linesBarDataMain(dataValue),
+      swapAnimationDuration: animDuration,
     );
   }
 
   List<LineChartBarData> linesBarDataMain(double dataValue) {
     LineChartBarData updatedLineData = LineChartBarData(
       spots: updatePlottingValues(dataValue),
-      isCurved: true,
+      isCurved: false,
       colors: [kEKGLineColor, kEKGLineColor],
-      curveSmoothness: 0.4,
-      barWidth: 2,
+      curveSmoothness: 0,
+      barWidth: 1,
       isStrokeCapRound: true,
       dotData: FlDotData(
         show: false,
