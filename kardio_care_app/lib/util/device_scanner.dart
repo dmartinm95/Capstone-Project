@@ -4,13 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
 import 'package:kardio_care_app/constants/app_constants.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
-
-class _ChartData {
-  _ChartData(this.index, this.value);
-  final int index;
-  final int value;
-}
 
 class DeviceScanner with ChangeNotifier {
   BluetoothDevice bleDevice;
@@ -21,12 +14,6 @@ class DeviceScanner with ChangeNotifier {
   BluetoothCharacteristic bleLeadOneCharacteristic;
 
   int leadOneData;
-  // int get leadOneData => _leadOneData;
-
-  List<_ChartData> _chartData = <_ChartData>[];
-  List<_ChartData> get chartData => _chartData;
-  ChartSeriesController chartSeriesController;
-  int dataCount = 0;
 
   DeviceScanner() {
     _subscribeToScanEvents();
@@ -47,9 +34,6 @@ class DeviceScanner with ChangeNotifier {
         if (scanResult.device.name.toString() == "Kompression") {
           bleDevice = scanResult.device;
           FlutterBlue.instance.stopScan();
-          // _timer.cancel();
-
-          // connectToModule();
         }
         print(scanResult.device.name);
       }
@@ -109,7 +93,7 @@ class DeviceScanner with ChangeNotifier {
   void decodeData(List<int> data) {
     try {
       leadOneData = int.parse(String.fromCharCodes(data));
-      updateChartDataSource(leadOneData);
+      print(leadOneData);
       notifyListeners();
     } catch (error) {
       print("Error: ${error.toString()}");
@@ -120,21 +104,5 @@ class DeviceScanner with ChangeNotifier {
     bleDevice.disconnect();
     isConnected = false;
     print("Disconnected");
-  }
-
-  void updateChartDataSource(int data) {
-    chartData.add(_ChartData(dataCount, data));
-    if (chartData.length == 500) {
-      chartData.removeAt(0);
-      chartSeriesController?.updateDataSource(
-        addedDataIndexes: <int>[chartData.length - 1],
-        removedDataIndexes: <int>[0],
-      );
-    } else {
-      chartSeriesController?.updateDataSource(
-        addedDataIndexes: <int>[chartData.length - 1],
-      );
-    }
-    dataCount++;
   }
 }

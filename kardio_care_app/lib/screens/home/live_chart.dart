@@ -29,20 +29,6 @@ class _LiveEKGChartState extends State<LiveEKGChart> {
         minimum: 0,
         maximum: 2000,
       ),
-      // series: <FastLineSeries<LeadData, int>>[
-      //   FastLineSeries<LeadData, int>(
-      //     onRendererCreated: (ChartSeriesController controller) {
-      //       _chartSeriesController = controller;
-      //     },
-      //     dataSource: updateDataList(widget.dataValue),
-      //     width: 1.5,
-      //     color: Color(0xFFEA517F),
-      //     xValueMapper: (LeadData leadData, _) => leadData.index,
-      //     yValueMapper: (LeadData leadData, _) => leadData.value,
-      //     animationDuration: 0,
-      //   )
-      // ],
-
       series: <ChartSeries>[
         FastLineSeries<LeadData, int>(
           onRendererCreated: (ChartSeriesController controller) {
@@ -61,7 +47,6 @@ class _LiveEKGChartState extends State<LiveEKGChart> {
 
   List<LeadData> updateDataList(int data) {
     print("Adding data: $data");
-    print("Index of data: $xIndex");
 
     if (data == null) {
       return <LeadData>[LeadData(xIndex, 0)];
