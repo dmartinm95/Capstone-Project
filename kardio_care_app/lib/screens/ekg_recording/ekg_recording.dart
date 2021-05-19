@@ -55,6 +55,7 @@ class _EKGRecordingState extends State<EKGRecording> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           "EKG Recording",
           style: KardioCareAppTheme.screenTitleText,

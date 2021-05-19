@@ -13,6 +13,7 @@ class _EKGResultsState extends State<EKGResults> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           "Results",
           style: KardioCareAppTheme.screenTitleText,

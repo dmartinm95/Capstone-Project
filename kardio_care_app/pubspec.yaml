@@ -37,6 +37,7 @@ dependencies:
   scidart: ^0.0.1-dev.12
   scidart_io: ^0.0.1-dev.6
   syncfusion_flutter_charts: ^19.1.57+1
+  provider: ^5.0.0
 
 dev_dependencies:
   flutter_test:
