@@ -7,14 +7,14 @@ import 'package:kardio_care_app/widgets/blood_oxygen_tile.dart';
 import 'package:kardio_care_app/widgets/heart_rate_tile.dart';
 import 'package:provider/provider.dart';
 
-class NewHome extends StatefulWidget {
-  NewHome({Key key}) : super(key: key);
+class DeviceFoundWidget extends StatefulWidget {
+  DeviceFoundWidget({Key key}) : super(key: key);
 
   @override
-  _NewHomeState createState() => _NewHomeState();
+  _DeviceFoundWidgetState createState() => _DeviceFoundWidgetState();
 }
 
-class _NewHomeState extends State<NewHome> {
+class _DeviceFoundWidgetState extends State<DeviceFoundWidget> {
   @override
   void dispose() {
     super.dispose();
@@ -22,15 +22,16 @@ class _NewHomeState extends State<NewHome> {
 
   @override
   Widget build(BuildContext context) {
+    final deviceScannerProvider =
+        Provider.of<DeviceScanner>(context, listen: false);
     return Column(
       children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 0,
-              vertical: 20,
-            ),
-          ),
+        Consumer<DeviceScanner>(
+          builder: (context, value, child) {
+            return LiveEKGChart(
+              dataValue: value.leadOneData,
+            );
+          },
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),

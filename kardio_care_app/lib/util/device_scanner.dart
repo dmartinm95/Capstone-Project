@@ -10,7 +10,8 @@ class DeviceScanner with ChangeNotifier {
   static const String DEVICE_NAME = "Kompression";
 
   // Stream controller for checking when a device is connected
-  StreamController<BluetoothDevice> _streamController = new StreamController();
+  StreamController<BluetoothDevice> _streamController =
+      new StreamController<BluetoothDevice>.broadcast();
   Stream<BluetoothDevice> get bluetoothDevice => _streamController.stream;
 
   // BLE module details
