@@ -1,109 +1,128 @@
 import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
-import 'package:kardio_care_app/constants/app_constants.dart';
-
 class DeviceScanner with ChangeNotifier {
-  // ignore: close_sinks
+  // Arduino Nano 33 BLE details
+  static const String SERVICE_UUID = "202d3e06-252d-40bd-8dc6-0b7bfe15b99f";
+  static const String LEAD_ONE_CHAR_UUID =
+      "4ccf588c-c839-4ec7-9954-94611cc77895";
+  static const String DEVICE_NAME = "Kompression";
+
+  // Stream controller for checking when a device is connected
   StreamController<BluetoothDevice> _streamController = new StreamController();
   Stream<BluetoothDevice> get bluetoothDevice => _streamController.stream;
 
+  // BLE module details
   BluetoothDevice bleDevice;
-  bool isConnected = false;
-  bool foundDevice = false;
   List<BluetoothService> bleServices;
   List<BluetoothCharacteristic> bleCharacteristics;
   BluetoothService bleCustomService;
   BluetoothCharacteristic bleLeadOneCharacteristic;
 
-  int testData = 0;
-
+  // Store real-time incoming data
   int leadOneData = 0;
-  Timer _timer;
 
-  DeviceScanner() {
-    // subscribeToScanEvents();
-    // _timer = new Timer.periodic(const Duration(seconds: 10), startScan);
-  }
-
-  void startScan(Timer timer) {
-    FlutterBlue.instance.startScan(timeout: Duration(seconds: 2));
-  }
+  DeviceScanner();
 
   void dispose() {
     super.dispose();
-    _timer.cancel();
     _streamController.close();
   }
 
-  Future<void> subscribeToScanEvents() async {
-    await FlutterBlue.instance.startScan(timeout: Duration(seconds: 4));
+  // Start searching for bluetooth devices nearby
+  Future<void> startScan() async {
+    await FlutterBlue.instance.startScan(timeout: Duration(seconds: 5));
+  }
+
+  // Go through scan results and find our device
+  Future<BluetoothDevice> subscribeToScanEvents() async {
+    // Check unpaired devices
     FlutterBlue.instance.scanResults.listen(
       (scanResults) {
         for (ScanResult scanResult in scanResults) {
-          if (scanResult.device.name.toString() == "Kompression") {
-            bleDevice = scanResult.device;
-
+          if (scanResult.device.name.toString() == DEVICE_NAME) {
+            print("Device found from scan");
             FlutterBlue.instance.stopScan();
+            bleDevice = scanResult.device;
+            return bleDevice;
           }
         }
       },
     );
-    return;
+
+    // Check paired devices
+    FlutterBlue.instance.connectedDevices
+        .asStream()
+        .listen((List<BluetoothDevice> devices) {
+      for (BluetoothDevice device in devices) {
+        if (device.name.toString() == DEVICE_NAME) {
+          print("Device found from connected devices");
+          FlutterBlue.instance.stopScan();
+          bleDevice = device;
+          return bleDevice;
+        }
+      }
+    });
+
+    return null;
   }
 
-  Future<void> connectToModule() async {
+  // Steps to connect to our BLE module and get incoming data
+  Future<bool> connectToModule() async {
     try {
+      await startScan();
+      await subscribeToScanEvents();
+      print("Connecting");
       await bleDevice.connect();
+      print("Getting services");
       await _getCustomService();
+      print("Getting characteristics");
       await _getCustomCharacteristic();
+      print("Setting notify to true");
       await bleLeadOneCharacteristic.setNotifyValue(true);
       print("Connected");
-      _streamController.add(bleDevice);
-      isConnected = true;
 
       listenToStream();
+      print("Listening to stream");
+      return true;
     } catch (error) {
       print("Error observed while attempting to connect: ${error.toString()}");
+      return false;
     }
-    return;
   }
 
+  // Find our custom service
   Future<void> _getCustomService() async {
     bleServices = await bleDevice.discoverServices();
 
     bleCustomService = bleServices
-        .firstWhere((service) => service.uuid.toString() == kServiceUUID);
+        .firstWhere((service) => service.uuid.toString() == SERVICE_UUID);
 
     print("Found Service! - uuid: ${bleCustomService.uuid.toString()}");
   }
 
+  // Find our custom characteristic
   Future<void> _getCustomCharacteristic() async {
     bleCharacteristics = bleCustomService.characteristics;
 
-    bleLeadOneCharacteristic = bleCharacteristics.firstWhere(
-        (characteristic) => characteristic.uuid.toString() == kLeadOneCharUUID);
+    bleLeadOneCharacteristic = bleCharacteristics.firstWhere((characteristic) =>
+        characteristic.uuid.toString() == LEAD_ONE_CHAR_UUID);
 
     print(
         "Found Characteristic! - uuid: ${bleLeadOneCharacteristic.uuid.toString()}");
   }
 
+  // Start listing to stream data from module
   void listenToStream() {
     if (bleLeadOneCharacteristic == null) {
       print("Could not find lead one characteristic or is null");
       return;
     }
+    _streamController.sink.add(bleDevice);
 
     bleLeadOneCharacteristic.value.listen((data) {
-      notifyListeners();
-      try {
-        leadOneData = int.parse(String.fromCharCodes(data));
-        print(leadOneData);
-      } catch (error) {
-        print("Error: ${error.toString()}");
-      }
+      _decodeData(data);
     }, onError: (error) {
       print(error);
     }, onDone: () {
@@ -111,24 +130,23 @@ class DeviceScanner with ChangeNotifier {
     });
   }
 
-  void decodeData(List<int> data) {
+  // Helper method to parse the incoming data
+  void _decodeData(List<int> data) {
     try {
       leadOneData = int.parse(String.fromCharCodes(data));
-      print(leadOneData);
       notifyListeners();
     } catch (error) {
       print("Error: ${error.toString()}");
     }
   }
 
+  // Disconnect from module
   void disconnectFromModule() {
-    bleDevice.disconnect();
-    isConnected = false;
-    print("Disconnected");
-  }
+    if (bleDevice == null) return;
 
-  void updateTestData() {
-    testData++;
-    notifyListeners();
+    bleDevice.disconnect();
+
+    _streamController.sink.add(null);
+    print("Disconnected");
   }
 }
