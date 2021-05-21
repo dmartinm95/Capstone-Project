@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-class LiveEKGChart extends StatefulWidget {
-  const LiveEKGChart({Key key, this.dataValue}) : super(key: key);
+class BuildEKGPlot extends StatefulWidget {
+  const BuildEKGPlot({Key key, this.dataValue}) : super(key: key);
 
   final int dataValue;
 
   @override
-  _LiveEKGChartState createState() => _LiveEKGChartState();
+  _BuildEKGPlotState createState() => _BuildEKGPlotState();
 }
 
-class _LiveEKGChartState extends State<LiveEKGChart> {
+class _BuildEKGPlotState extends State<BuildEKGPlot> {
   List<LeadData> dataList = <LeadData>[LeadData(0, 0)];
   ChartSeriesController _chartSeriesController;
   int xIndex = 0;
@@ -20,14 +20,13 @@ class _LiveEKGChartState extends State<LiveEKGChart> {
     return SfCartesianChart(
       enableAxisAnimation: false,
       plotAreaBorderWidth: 0,
-      primaryXAxis: NumericAxis(isVisible: false),
+      primaryXAxis: NumericAxis(
+        isVisible: false,
+      ),
       primaryYAxis: NumericAxis(
-        isVisible: true,
-        isInversed: false,
-        axisLine: AxisLine(width: 0),
-        majorTickLines: MajorTickLines(size: 0),
+        isVisible: false,
         minimum: 0,
-        maximum: 2000,
+        maximum: 4096,
       ),
       series: <ChartSeries>[
         FastLineSeries<LeadData, int>(

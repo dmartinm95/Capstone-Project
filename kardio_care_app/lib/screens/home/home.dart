@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:kardio_care_app/app_theme.dart';
-import 'package:kardio_care_app/constants/app_constants.dart';
-import 'package:kardio_care_app/screens/home/device_not_found_widget.dart';
-import 'package:kardio_care_app/screens/home/device_found_widget.dart';
-import 'package:kardio_care_app/widgets/block_radio_button.dart';
-import 'package:kardio_care_app/widgets/blood_oxygen_tile.dart';
-import 'package:kardio_care_app/widgets/heart_rate_tile.dart';
+import 'package:kardio_care_app/screens/home/disconnect_btn.dart';
+import 'package:kardio_care_app/screens/home/hear_rate_and_oxygen_saturation.dart';
+import 'package:kardio_care_app/screens/home/search_connect_btn.dart';
+import 'package:kardio_care_app/screens/home/show_ekg_lead_data.dart';
+import 'package:kardio_care_app/screens/home/welcome_msg.dart';
 import 'package:provider/provider.dart';
 import 'package:kardio_care_app/util/device_scanner.dart';
-import 'package:kardio_care_app/screens/home/live_chart.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -19,6 +17,8 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
+
     final deviceScannerProvider =
         Provider.of<DeviceScanner>(context, listen: false);
 
@@ -31,89 +31,38 @@ class _HomeState extends State<Home> {
         backgroundColor: Colors.white,
         centerTitle: true,
         actions: [
-          deviceScannerProvider.bleDevice != null
-              ? AppBarActionButton(deviceScannerProvider: deviceScannerProvider)
-              : Container(),
+          StreamBuilder(
+            stream: deviceScannerProvider.bluetoothDevice,
+            builder: (context, snapshot) {
+              if (snapshot.data == null) {
+                return Container();
+              }
+              return AppBarDisconnectBtn(
+                deviceScannerProvider: deviceScannerProvider,
+              );
+            },
+          ),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: StreamBuilder(
-                stream: deviceScannerProvider.bluetoothDevice,
-                builder: (context, snapshot) {
-                  print("Snapshot data: ${snapshot.data}");
-                  if (snapshot.data == null) {
-                    print("No device found yet");
-                    return DeviceNotFoundWidget(
-                        deviceScannerProvider: deviceScannerProvider);
-                  } else {
-                    print("Device found");
-                    // return DeviceFoundWidget();
-                    return Consumer<DeviceScanner>(
-                      builder: (context, value, child) {
-                        return LiveEKGChart(
-                          dataValue: value.leadOneData,
-                        );
-                      },
-                    );
-                  }
-                }),
-          ),
-          const Divider(
-            color: KardioCareAppTheme.detailGray,
-            height: 35,
-            thickness: 1,
-            indent: 19,
-            endIndent: 19,
-          ),
-          Expanded(
-            child: Container(
-              child: Row(
-                children: [
-                  Expanded(child: HeartRateTile()),
-                  const VerticalDivider(
-                    width: 25,
-                    thickness: 1,
-                    indent: 20,
-                    endIndent: 45,
-                    color: KardioCareAppTheme.detailGray,
-                  ),
-                  Expanded(child: BloodOxygenTile())
-                ],
-              ),
+      body: SizedBox(
+        height: size.height,
+        child: Column(
+          children: <Widget>[
+            WelcomeMessage(size: size),
+            StreamBuilder(
+              stream: deviceScannerProvider.bluetoothDevice,
+              builder: (context, snapshot) {
+                if (snapshot.data == null) {
+                  return SearchAndConnectBtn(
+                    size: size,
+                    deviceScannerProvider: deviceScannerProvider,
+                  );
+                }
+                return ShowEKGLeadData(size: size);
+              },
             ),
-          ),
-          Container(
-            height: 70,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class AppBarActionButton extends StatelessWidget {
-  const AppBarActionButton({
-    Key key,
-    @required this.deviceScannerProvider,
-  }) : super(key: key);
-
-  final DeviceScanner deviceScannerProvider;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(right: 20.0),
-      child: GestureDetector(
-        onTap: () {
-          print("Tapping action button");
-          deviceScannerProvider.disconnectFromModule();
-        },
-        child: Icon(
-          Icons.bluetooth_connected,
-          size: 26.0,
-          color: Colors.black,
+            HeartRateAndOxygenSaturation(),
+          ],
         ),
       ),
     );
