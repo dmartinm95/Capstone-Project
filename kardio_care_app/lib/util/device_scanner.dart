@@ -6,18 +6,26 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:kardio_care_app/constants/app_constants.dart';
 
 class DeviceScanner with ChangeNotifier {
+  // ignore: close_sinks
+  StreamController<BluetoothDevice> _streamController = new StreamController();
+  Stream<BluetoothDevice> get bluetoothDevice => _streamController.stream;
+
   BluetoothDevice bleDevice;
   bool isConnected = false;
+  bool foundDevice = false;
   List<BluetoothService> bleServices;
   List<BluetoothCharacteristic> bleCharacteristics;
   BluetoothService bleCustomService;
   BluetoothCharacteristic bleLeadOneCharacteristic;
 
-  int leadOneData;
+  int testData = 0;
+
+  int leadOneData = 0;
+  Timer _timer;
 
   DeviceScanner() {
-    _subscribeToScanEvents();
-    FlutterBlue.instance.startScan(timeout: Duration(seconds: 10));
+    // subscribeToScanEvents();
+    // _timer = new Timer.periodic(const Duration(seconds: 10), startScan);
   }
 
   void startScan(Timer timer) {
@@ -26,18 +34,24 @@ class DeviceScanner with ChangeNotifier {
 
   void dispose() {
     super.dispose();
+    _timer.cancel();
+    _streamController.close();
   }
 
-  void _subscribeToScanEvents() {
-    FlutterBlue.instance.scanResults.listen((scanResults) {
-      for (ScanResult scanResult in scanResults) {
-        if (scanResult.device.name.toString() == "Kompression") {
-          bleDevice = scanResult.device;
-          FlutterBlue.instance.stopScan();
+  Future<void> subscribeToScanEvents() async {
+    await FlutterBlue.instance.startScan(timeout: Duration(seconds: 4));
+    FlutterBlue.instance.scanResults.listen(
+      (scanResults) {
+        for (ScanResult scanResult in scanResults) {
+          if (scanResult.device.name.toString() == "Kompression") {
+            bleDevice = scanResult.device;
+
+            FlutterBlue.instance.stopScan();
+          }
         }
-        print(scanResult.device.name);
-      }
-    });
+      },
+    );
+    return;
   }
 
   Future<void> connectToModule() async {
@@ -47,12 +61,14 @@ class DeviceScanner with ChangeNotifier {
       await _getCustomCharacteristic();
       await bleLeadOneCharacteristic.setNotifyValue(true);
       print("Connected");
+      _streamController.add(bleDevice);
       isConnected = true;
 
       listenToStream();
     } catch (error) {
       print("Error observed while attempting to connect: ${error.toString()}");
-    } finally {}
+    }
+    return;
   }
 
   Future<void> _getCustomService() async {
@@ -76,18 +92,23 @@ class DeviceScanner with ChangeNotifier {
 
   void listenToStream() {
     if (bleLeadOneCharacteristic == null) {
+      print("Could not find lead one characteristic or is null");
       return;
     }
 
     bleLeadOneCharacteristic.value.listen((data) {
-      decodeData(data);
-    })
-      ..onDone(() {
-        print("Disconnected BLE Module.");
-      })
-      ..onError((error) {
+      notifyListeners();
+      try {
+        leadOneData = int.parse(String.fromCharCodes(data));
+        print(leadOneData);
+      } catch (error) {
         print("Error: ${error.toString()}");
-      });
+      }
+    }, onError: (error) {
+      print(error);
+    }, onDone: () {
+      print("Stream closed!");
+    });
   }
 
   void decodeData(List<int> data) {
@@ -104,5 +125,10 @@ class DeviceScanner with ChangeNotifier {
     bleDevice.disconnect();
     isConnected = false;
     print("Disconnected");
+  }
+
+  void updateTestData() {
+    testData++;
+    notifyListeners();
   }
 }
