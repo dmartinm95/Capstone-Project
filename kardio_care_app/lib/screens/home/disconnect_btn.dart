@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kardio_care_app/util/blurry_dialog_alert.dart';
 import 'package:kardio_care_app/util/device_scanner.dart';
 
 class AppBarDisconnectBtn extends StatelessWidget {
@@ -15,8 +16,7 @@ class AppBarDisconnectBtn extends StatelessWidget {
       padding: EdgeInsets.only(right: 20.0),
       child: GestureDetector(
         onTap: () {
-          print("Tapping action button");
-          deviceScannerProvider.disconnectFromModule();
+          showAlertDialog(context, deviceScannerProvider);
         },
         child: Icon(
           Icons.bluetooth_connected,
@@ -26,4 +26,24 @@ class AppBarDisconnectBtn extends StatelessWidget {
       ),
     );
   }
+}
+
+showAlertDialog(BuildContext context, DeviceScanner deviceScanner) {
+  VoidCallback continueCallBack = () => {
+        Navigator.of(context).pop(),
+        // Code on continue comes here
+        deviceScanner.disconnectFromModule(),
+      };
+  BlurryDialog alert = BlurryDialog(
+    "Disconnect Device",
+    "Are you sure you want to disconnect Kompression?",
+    continueCallBack,
+  );
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }
