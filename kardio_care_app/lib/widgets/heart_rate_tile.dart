@@ -3,7 +3,10 @@ import 'package:kardio_care_app/app_theme.dart';
 import 'dart:math' as math;
 
 class HeartRateTile extends StatefulWidget {
-  HeartRateTile({Key key}) : super(key: key);
+  HeartRateTile({Key key, this.currHR, this.lastHR}) : super(key: key);
+
+  final int currHR;
+  final int lastHR;
 
   @override
   _HeartRateTileState createState() => _HeartRateTileState();
@@ -30,7 +33,7 @@ class _HeartRateTileState extends State<HeartRateTile> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  '100',
+                  (widget.currHR ?? "--").toString(),
                   style: TextStyle(fontWeight: FontWeight.w400, fontSize: 40),
                 ),
               ),
@@ -43,14 +46,17 @@ class _HeartRateTileState extends State<HeartRateTile> {
               )
             ],
           ),
-          Transform.rotate(
-            angle: 45 * math.pi / 180,
-            child: Icon(
-              Icons.arrow_upward_sharp,
-              color: KardioCareAppTheme.detailRed,
-              size: 40,
+          if ((widget.currHR ?? -1) > 0 && (widget.lastHR ?? -1) > 0)
+            Transform.rotate(
+              angle: (widget.lastHR - widget.currHR > 0)
+                  ? 135 * math.pi / 180
+                  : 45 * math.pi / 180,
+              child: Icon(
+                Icons.arrow_upward_sharp,
+                color: KardioCareAppTheme.detailRed,
+                size: 40,
+              ),
             ),
-          )
         ],
       ),
     );

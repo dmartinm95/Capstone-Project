@@ -48,7 +48,11 @@ class RecordingCard extends StatelessWidget {
                         // SizedBox(
                         //   width: 50,
                         // ),
-
+                        Text(
+                          '10 minute recording',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w300, color: Colors.black),
+                        ),
                         Icon(
                           Icons.chevron_right,
                           color: Colors.black,
@@ -63,6 +67,7 @@ class RecordingCard extends StatelessWidget {
                         child: Text(
                           "HRV 63",
                           style: TextStyle(
+                            fontSize: 16,
                             color: Colors.black,
                             fontWeight: FontWeight.normal,
                           ),

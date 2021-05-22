@@ -6,7 +6,7 @@
         <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />  
         <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/> 
    <application
-        android:label="kardio_care_app"
+        android:label="Kardiocare"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

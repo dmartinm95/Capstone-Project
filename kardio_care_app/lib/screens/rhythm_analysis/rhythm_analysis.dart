@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:kardio_care_app/screens/rhythm_analysis/heart_event_cart.dart';
+import 'package:kardio_care_app/screens/rhythm_analysis/heart_rhythm_percents.dart';
 
 class RhythmAnalysis extends StatefulWidget {
   @override
@@ -38,15 +39,12 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 10, 19, 0),
-              child: Container(
-                height: 250,
-                color: Colors.red,
-              ),
+              child: HeartRhythmPercents(),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
               child: Text(
-                "Abnomal Events",
+                "Abnormal Events",
               ),
             ),
             const Divider(
@@ -86,7 +84,9 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
                   ),
                 ),
                 // ),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(context, '/all_recordings');
+                },
               ),
             ),
             Container(

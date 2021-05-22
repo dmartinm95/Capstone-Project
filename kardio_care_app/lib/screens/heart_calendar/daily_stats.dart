@@ -1,10 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 
-
-
 class DailyStats extends StatelessWidget {
-  const DailyStats({Key key}) : super(key: key);
+  const DailyStats({
+    Key key,
+    this.avgHR,
+    this.avgO2,
+    this.minHR,
+    this.minHRTime,
+    this.maxHR,
+    this.maxHRTime,
+    this.minO2,
+    this.minO2Time,
+  }) : super(key: key);
+
+  final double avgHR;
+  final double avgO2;
+  final double minHR;
+  final TimeOfDay minHRTime;
+  final double maxHR;
+  final TimeOfDay maxHRTime;
+  final double minO2;
+  final TimeOfDay minO2Time;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +46,7 @@ class DailyStats extends StatelessWidget {
                     Text('Avg HR'),
                     Expanded(child: SizedBox()),
                     Text(
-                      '78 Bpm',
+                      (avgHR ?? "--").toString() + ' Bpm',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -45,7 +62,7 @@ class DailyStats extends StatelessWidget {
                     Text('Avg O2 %'),
                     Expanded(child: SizedBox()),
                     Text(
-                      '96 %',
+                      (avgO2 ?? "--").toString() + ' %',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -69,7 +86,7 @@ class DailyStats extends StatelessWidget {
                     Text('Min HR'),
                     Expanded(child: SizedBox()),
                     Text(
-                      '51 Bpm',
+                      (minHR ?? "--").toString() + ' Bpm',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -87,7 +104,7 @@ class DailyStats extends StatelessWidget {
                       width: 10,
                     ),
                     Text(
-                      '7 am',
+                      (minHRTime ?? "--").toString(),
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -111,7 +128,7 @@ class DailyStats extends StatelessWidget {
                     Text('Max HR'),
                     Expanded(child: SizedBox()),
                     Text(
-                      '170 Bpm',
+                      (maxHR ?? "--").toString() + ' Bpm',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -129,7 +146,7 @@ class DailyStats extends StatelessWidget {
                       width: 10,
                     ),
                     Text(
-                      '7:45 am',
+                      (maxHRTime ?? "--").toString(),
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -153,7 +170,7 @@ class DailyStats extends StatelessWidget {
                     Text('Min O2 %'),
                     Expanded(child: SizedBox()),
                     Text(
-                      '95 %',
+                      (minO2 ?? "--").toString() + ' %',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -171,7 +188,7 @@ class DailyStats extends StatelessWidget {
                       width: 10,
                     ),
                     Text(
-                      '8 am',
+                      (minO2Time ?? "--").toString(),
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],

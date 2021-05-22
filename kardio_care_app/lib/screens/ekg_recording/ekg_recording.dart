@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
+import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:kardio_care_app/widgets/blood_oxygen_tile.dart';
+import 'package:kardio_care_app/widgets/heart_rate_tile.dart';
 
 class EKGRecording extends StatefulWidget {
   EKGRecording({Key key}) : super(key: key);
@@ -11,8 +14,10 @@ class EKGRecording extends StatefulWidget {
 }
 
 class _EKGRecordingState extends State<EKGRecording> {
-  int _currSeconds = 10;
+  int _currSeconds = 0;
   int _currMinutes = 0;
+
+  int _totalMinutes;
 
   bool recording = false;
 
@@ -23,8 +28,8 @@ class _EKGRecordingState extends State<EKGRecording> {
   void _stopTimer() {
     if (_timer != null) {
       _timer.cancel();
-      _currSeconds = 20;
-      _currMinutes = 1;
+      _currSeconds = 0;
+      _currMinutes = 0;
     }
   }
 
@@ -32,6 +37,8 @@ class _EKGRecordingState extends State<EKGRecording> {
     if (_timer != null) {
       _stopTimer();
     }
+
+    _currMinutes = _totalMinutes;
 
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
@@ -53,6 +60,10 @@ class _EKGRecordingState extends State<EKGRecording> {
 
   @override
   Widget build(BuildContext context) {
+    _totalMinutes = ModalRoute.of(context).settings.arguments;
+    print(_totalMinutes);
+    // _currMinutes = _totalMinutes;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -88,48 +99,57 @@ class _EKGRecordingState extends State<EKGRecording> {
             child: Center(
               child: recording
                   ? Text(
-                      'recording',
+                      'Recording EKG stay calm and stationary.',
                       style: TextStyle(color: Colors.black, fontSize: 19),
                       textAlign: TextAlign.center,
                     )
                   : Text(
-                      'When you are ready press start',
+                      'When you are ready press start:',
                       style: TextStyle(color: Colors.black, fontSize: 19),
                       textAlign: TextAlign.center,
                     ),
             ),
           ),
           Container(
-            child: recording
-                ? CircleAvatar(
-                    radius: 100,
-                    child: Text(
+            child: CircularPercentIndicator(
+              radius: 200.0,
+              lineWidth: 17.0,
+              animation: true,
+              restartAnimation: false,
+              animateFromLastPercent: true,
+              animationDuration: 900,
+              percent:
+                  (_currMinutes.toDouble() * 60 + _currSeconds.toDouble()) /
+                      (_totalMinutes.toDouble() * 60),
+              center: recording
+                  ? Text(
                       "${f.format(_currMinutes)} : ${f.format(_currSeconds)}",
                       style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 48,
+                          fontWeight: FontWeight.bold, fontSize: 30.0),
+                    )
+                  : ConstrainedBox(
+                      constraints:
+                          BoxConstraints.tightFor(width: 160, height: 160),
+                      child: ElevatedButton(
+                        child: Text(
+                          'START',
+                          style: TextStyle(fontSize: 24, color: Colors.black),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            recording = true;
+                          });
+                          _startTimer();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: CircleBorder(),
+                          primary: KardioCareAppTheme.background,
+                        ),
                       ),
                     ),
-                  )
-                : ConstrainedBox(
-                    constraints:
-                        BoxConstraints.tightFor(width: 200, height: 200),
-                    child: ElevatedButton(
-                      child: Text(
-                        'Start',
-                        style: TextStyle(fontSize: 24),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          recording = true;
-                        });
-                        _startTimer();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: CircleBorder(),
-                      ),
-                    ),
-                  ),
+              circularStrokeCap: CircularStrokeCap.round,
+              progressColor: KardioCareAppTheme.detailGreen,
+            ),
           ),
           Expanded(
             child: Padding(
@@ -144,27 +164,22 @@ class _EKGRecordingState extends State<EKGRecording> {
               child: Row(
                 children: [
                   Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(9.5, 0, 9.5, 50),
-                      child: Container(
-                        color: Colors.green,
-                      ),
-                    ),
+                    child: HeartRateTile(
+                        // lastHR: 96,
+                        // currHR: 80,
+                        ),
                   ),
                   const VerticalDivider(
                     width: 25,
                     thickness: 1,
                     indent: 20,
-                    endIndent: 70,
+                    endIndent: 45,
                     color: KardioCareAppTheme.detailGray,
                   ),
                   Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(9.5, 0, 9.5, 50),
-                      child: Container(
-                        color: Colors.blue,
-                      ),
-                    ),
+                    child: BloodOxygenTile(
+                        // bloodOx: 45,
+                        ),
                   )
                 ],
               ),

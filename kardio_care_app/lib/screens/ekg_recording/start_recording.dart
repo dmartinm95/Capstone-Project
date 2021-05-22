@@ -57,14 +57,20 @@ class StartRecording extends StatelessWidget {
           FullRectangleTextButton(
             backgroundColor: Colors.blue,
             label: 'Long',
+            subLabel: '10 Min',
+            lengthMinues: 10,
           ),
           FullRectangleTextButton(
             backgroundColor: Colors.green,
             label: 'Medium',
+            subLabel: '5 Min',
+            lengthMinues: 5,
           ),
           FullRectangleTextButton(
             backgroundColor: Colors.deepPurple,
             label: 'Short',
+            subLabel: '2 Min',
+            lengthMinues: 2,
           ),
         ],
       ),
@@ -73,11 +79,18 @@ class StartRecording extends StatelessWidget {
 }
 
 class FullRectangleTextButton extends StatelessWidget {
-  const FullRectangleTextButton({Key key, this.label, this.backgroundColor})
+  const FullRectangleTextButton(
+      {Key key,
+      this.label,
+      this.subLabel,
+      this.backgroundColor,
+      this.lengthMinues})
       : super(key: key);
 
   final Color backgroundColor;
   final String label;
+  final String subLabel;
+  final int lengthMinues;
 
   @override
   Widget build(BuildContext context) {
@@ -91,16 +104,36 @@ class FullRectangleTextButton extends StatelessWidget {
           ),
           // child: Padding(
           // padding: const EdgeInsets.all(8.0),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 24,
-              color: Colors.white,
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 24,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                subLabel,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.white,
+                ),
+              ),
+            ],
           ),
           // ),
           onPressed: () {
-            Navigator.pushReplacementNamed(context, '/ekg_recording');
+            Navigator.pushReplacementNamed(
+              context,
+              '/ekg_recording',
+              arguments: lengthMinues,
+            );
           },
         ),
       ),
