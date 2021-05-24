@@ -45,14 +45,12 @@ class _BloodOxygenTileState extends State<BloodOxygenTile> {
               )
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
-            child: LinearPercentIndicator(
-              width: 120.0,
-              lineHeight: 17.0,
-              percent: (widget.bloodOx ?? 0.0).toDouble() / 100.0,
-              progressColor: KardioCareAppTheme.detailPurple,
-            ),
+          LinearPercentIndicator(
+            alignment: MainAxisAlignment.center,
+            width: 120.0,
+            lineHeight: 17.0,
+            percent: (widget.bloodOx ?? 0.0).toDouble() / 100.0,
+            progressColor: KardioCareAppTheme.detailPurple,
           )
         ],
       ),

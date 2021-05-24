@@ -135,9 +135,13 @@ class _HeartCalendarState extends State<HeartCalendar> {
                 shrinkWrap: true,
                 primary: false,
                 physics: NeverScrollableScrollPhysics(),
-                itemCount: 5,
+                itemCount: 4,
                 itemBuilder: (BuildContext context, int index) {
-                  return RecordingCard(context: context, index: index);
+                  return RecordingCard(
+                    context: context,
+                    index: index,
+                    numRecordings: 4,
+                  );
                 },
               ),
             ),

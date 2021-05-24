@@ -55,7 +55,7 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
               endIndent: 19,
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(9.5, 0, 9.5, 0),
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: ListView.builder(
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,

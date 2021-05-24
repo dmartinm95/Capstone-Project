@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 
 class RecordingCard extends StatelessWidget {
-  const RecordingCard({Key key, this.context, this.index}) : super(key: key);
+  const RecordingCard({Key key, this.context, this.index, this.numRecordings})
+      : super(key: key);
 
   final BuildContext context;
   final int index;
+  final int numRecordings;
 
   @override
   Widget build(BuildContext context) {
@@ -90,13 +92,13 @@ class RecordingCard extends StatelessWidget {
           ),
           Positioned(
             top: index > 0 ? 0.0 : 40.0,
-            bottom: index == 4 ? 35.7 : 0.0,
+            bottom: index == (numRecordings - 1) ? 10.0 : 0.0,
             left: 33.0,
             child: Container(
                 height: double.infinity, width: 3.0, color: Colors.black),
           ),
           Positioned(
-            top: 15.0,
+            top: 5.0,
             left: 15.0,
             child: Container(
               height: 40.0,
