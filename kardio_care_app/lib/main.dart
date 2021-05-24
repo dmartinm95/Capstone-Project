@@ -9,6 +9,7 @@ import 'package:kardio_care_app/screens/ekg_recording/ekg_recording.dart';
 import 'package:kardio_care_app/screens/ekg_recording/start_recording.dart';
 import 'package:provider/provider.dart';
 import 'package:kardio_care_app/util/device_scanner.dart';
+import 'package:kardio_care_app/screens/rhythm_analysis/all_recordings.dart';
 
 void main() {
   runApp(MyApp());
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
           '/start_recording': (context) => StartRecording(),
           '/ekg_recording': (context) => EKGRecording(),
           '/ekg_results': (context) => EKGResults(),
+          '/all_recordings': (context) => AllRecordings(),
         },
         theme: ThemeData(
           scaffoldBackgroundColor: KardioCareAppTheme.background,

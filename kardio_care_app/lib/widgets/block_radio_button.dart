@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 
 class BlockRadioButton extends StatefulWidget {
-  const BlockRadioButton({Key key, this.buttonLabels, this.circleBorder, this.backgroundColor})
+  const BlockRadioButton(
+      {Key key,
+      this.buttonLabels,
+      this.circleBorder,
+      this.backgroundColor,
+      this.callback})
       : super(key: key);
+
+  final Function(int) callback;
 
   final List<String> buttonLabels; //= ['HRV', 'HR'];
   final bool circleBorder;
@@ -37,6 +44,7 @@ class _BlockRadioButtonState extends State<BlockRadioButton> {
     setState(() {
       selectedIndex = index;
     });
+    widget.callback(index);
   }
 
   Widget customRadio(String buttonText, int index) {

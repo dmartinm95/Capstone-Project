@@ -23,8 +23,8 @@ class _ProfileState extends State<Profile> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: MediaQuery.of(context).size.width * 0.8,
-            height: MediaQuery.of(context).size.width * 0.8,
+            width: MediaQuery.of(context).size.width * 0.4,
+            height: MediaQuery.of(context).size.width * 0.4,
             decoration: BoxDecoration(
                 color: KardioCareAppTheme.detailGray,
                 borderRadius: BorderRadius.all(Radius.circular(200))),

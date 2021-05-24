@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class BloodOxygenTile extends StatefulWidget {
-  BloodOxygenTile({Key key}) : super(key: key);
+  BloodOxygenTile({Key key, this.bloodOx}) : super(key: key);
+
+  final int bloodOx;
 
   @override
   _BloodOxygenTileState createState() => _BloodOxygenTileState();
@@ -29,7 +32,7 @@ class _BloodOxygenTileState extends State<BloodOxygenTile> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  '87',
+                  (widget.bloodOx ?? "--").toString(),
                   style: TextStyle(fontWeight: FontWeight.w400, fontSize: 40),
                 ),
               ),
@@ -42,12 +45,12 @@ class _BloodOxygenTileState extends State<BloodOxygenTile> {
               )
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: LinearProgressIndicator(
-              minHeight: 10,
-              value: 10,
-            ),
+          LinearPercentIndicator(
+            alignment: MainAxisAlignment.center,
+            width: 120.0,
+            lineHeight: 17.0,
+            percent: (widget.bloodOx ?? 0.0).toDouble() / 100.0,
+            progressColor: KardioCareAppTheme.detailPurple,
           )
         ],
       ),

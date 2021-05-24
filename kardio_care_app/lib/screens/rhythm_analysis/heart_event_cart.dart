@@ -22,12 +22,12 @@ class HeartEventCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 10,
-                height: 50,
+                width: 8,
+                height: 55,
                 // height: double.infinity,
                 // color: Colors.black,
                 decoration: BoxDecoration(
-                    color: Colors.black,
+                    color: KardioCareAppTheme.detailGreen,
                     borderRadius: BorderRadius.all(Radius.circular(10))),
               ),
               Column(
@@ -56,26 +56,51 @@ class HeartEventCard extends StatelessWidget {
                         //   width: 50,
                         // ),
 
-                        Icon(
-                          Icons.chevron_right,
-                          color: Colors.black,
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(8, 8, 0, 8),
+                          child: Icon(
+                            Icons.chevron_right,
+                            color: Colors.black,
+                          ),
                         )
                       ],
                     ),
                   ),
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "7pm - 2021/02/10",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.normal,
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width - 50,
+                    child: Row(
+                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            'HR 190 bpm',
+                            style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                color: Colors.black),
                           ),
                         ),
-                      ),
-                    ],
+                        // Spacer(),
+                        Expanded(
+                          child: SizedBox(
+                              // width: 100,
+                              ),
+                        ),
+                        // SizedBox(
+                        //   width: 50,
+                        // ),
+
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(8, 8, 5, 8),
+                          child: Text(
+                            '7pm - 2021/02/10',
+                            style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                color: Colors.black),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

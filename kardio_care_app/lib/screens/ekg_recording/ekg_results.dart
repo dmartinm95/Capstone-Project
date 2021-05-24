@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
+import 'package:kardio_care_app/screens/ekg_recording/recording_charts.dart';
+import 'package:kardio_care_app/screens/ekg_recording/recording_stats.dart';
 
 class EKGResults extends StatefulWidget {
   EKGResults({Key key}) : super(key: key);
@@ -44,35 +46,22 @@ class _EKGResultsState extends State<EKGResults> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 10, 19, 0),
-              child: Container(
-                height: 250,
-                color: Colors.red,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(19, 15, 19, 0),
-              child: Text(
-                "Stats",
-              ),
-            ),
-            const Divider(
-              color: KardioCareAppTheme.detailGray,
-              height: 20,
-              thickness: 1,
-              indent: 19,
-              endIndent: 19,
+              child: RecordingCharts(),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 10, 19, 10),
-              child: Container(
-                height: 100,
-                color: Colors.blue,
+              child: RecordingStats(
+                avgHRV: 78,
+                avgHR: 78,
+                avgO2: 96,
+                minHR: 51,
+                maxHR: 80,
               ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 15, 19, 0),
               child: Text(
-                "Tags",
+                "Tap Relevant Tags",
               ),
             ),
             const Divider(
@@ -83,10 +72,22 @@ class _EKGResultsState extends State<EKGResults> {
               endIndent: 19,
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(19, 10, 19, 130),
-              child: Container(
-                height: 200,
-                color: Colors.green,
+              padding: const EdgeInsets.fromLTRB(19, 10, 19, 100),
+              child: Center(
+                child: Container(
+                  height: 100,
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 5.0,
+                    runSpacing: 5.0,
+                    children: <Widget>[
+                      FilterChipWidget(chipName: 'Morning'),
+                      FilterChipWidget(chipName: 'Afternoon'),
+                      FilterChipWidget(chipName: 'Evening'),
+                      FilterChipWidget(chipName: 'Running'),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],
@@ -109,40 +110,58 @@ class _EKGResultsState extends State<EKGResults> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  TextButton(
-                    style: TextButton.styleFrom(
-                      backgroundColor: KardioCareAppTheme.actionBlue,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(23)),
-                    ),
-                    // child: Padding(
-                    // padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "Run Analysis",
-                      style: TextStyle(
-                        fontSize: 24,
-                        color: Colors.white,
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor: KardioCareAppTheme.actionBlue,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18)),
+                        ),
+                        // child: Padding(
+                        // padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "Save",
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.normal,
+                            color: Colors.white,
+                          ),
+                        ),
+                        // ),
+                        onPressed: () {},
                       ),
                     ),
-                    // ),
-                    onPressed: () {},
                   ),
-                  TextButton(
-                    style: TextButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      // shape: BeveledRectangleBorder(),
-                    ),
-                    // child: Padding(
-                    // padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "Restart",
-                      style: TextStyle(
-                        fontSize: 24,
-                        color: Colors.white,
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor: KardioCareAppTheme.background,
+
+                          shape: RoundedRectangleBorder(
+                              side: BorderSide(
+                                  width: 3.0,
+                                  color: KardioCareAppTheme.actionBlue),
+                              borderRadius: BorderRadius.circular(18)),
+                          // shape: BeveledRectangleBorder(),
+                        ),
+                        // child: Padding(
+                        // padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "Restart",
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.normal,
+                            color: KardioCareAppTheme.actionBlue,
+                          ),
+                        ),
+                        // ),
+                        onPressed: () {},
                       ),
                     ),
-                    // ),
-                    onPressed: () {},
                   ),
                 ],
               ),
@@ -150,6 +169,41 @@ class _EKGResultsState extends State<EKGResults> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class FilterChipWidget extends StatefulWidget {
+  final String chipName;
+
+  FilterChipWidget({Key key, this.chipName}) : super(key: key);
+
+  @override
+  _FilterChipWidgetState createState() => _FilterChipWidgetState();
+}
+
+class _FilterChipWidgetState extends State<FilterChipWidget> {
+  var _isSelected = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return FilterChip(
+      label: Text(widget.chipName),
+      labelStyle: TextStyle(
+          color: KardioCareAppTheme.white,
+          fontSize: 16.0,
+          fontWeight: FontWeight.bold),
+      selected: _isSelected,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30.0),
+      ),
+      backgroundColor: KardioCareAppTheme.actionBlue,
+      onSelected: (isSelected) {
+        setState(() {
+          _isSelected = isSelected;
+        });
+      },
+      selectedColor: KardioCareAppTheme.detailRed,
     );
   }
 }

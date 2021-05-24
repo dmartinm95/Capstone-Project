@@ -63,10 +63,26 @@ class _HeartCalendarState extends State<HeartCalendar> {
                     // ),
                     onPressed: () {
                       showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(1900),
-                          lastDate: DateTime(2100));
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(1970),
+                        builder: (BuildContext context, Widget child) {
+                          return Theme(
+                            data: ThemeData.dark().copyWith(
+                              colorScheme: ColorScheme.dark(
+                                primary: KardioCareAppTheme.actionBlue,
+                                onPrimary: Colors.white,
+                                surface: KardioCareAppTheme.white,
+                                onSurface: KardioCareAppTheme.detailGray,
+                              ),
+                              dialogBackgroundColor:
+                                  KardioCareAppTheme.background,
+                            ),
+                            child: child,
+                          );
+                        },
+                        lastDate: DateTime(2050),
+                      );
                     },
                   ),
                 )
@@ -113,14 +129,21 @@ class _HeartCalendarState extends State<HeartCalendar> {
               indent: 19,
               endIndent: 19,
             ),
-            ListView.builder(
-              shrinkWrap: true,
-              primary: false,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: 5,
-              itemBuilder: (BuildContext context, int index) {
-                return RecordingCard(context: context, index: index);
-              },
+            Padding(
+              padding: const EdgeInsets.fromLTRB(9.5, 0, 9.5, 0),
+              child: ListView.builder(
+                shrinkWrap: true,
+                primary: false,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: 4,
+                itemBuilder: (BuildContext context, int index) {
+                  return RecordingCard(
+                    context: context,
+                    index: index,
+                    numRecordings: 4,
+                  );
+                },
+              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 10, 19, 10),
