@@ -4,7 +4,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 class BuildEKGPlot extends StatefulWidget {
   const BuildEKGPlot({Key key, this.dataValue}) : super(key: key);
 
-  final int dataValue;
+  final List<int> dataValue;
 
   @override
   _BuildEKGPlotState createState() => _BuildEKGPlotState();
@@ -26,7 +26,7 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
       primaryYAxis: NumericAxis(
         isVisible: false,
         minimum: 0,
-        maximum: 4096,
+        maximum: 1023,
       ),
       series: <ChartSeries>[
         FastLineSeries<LeadData, int>(
@@ -44,15 +44,19 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
     );
   }
 
-  List<LeadData> updateDataList(int data) {
+  List<LeadData> updateDataList(List<int> data) {
     print("Adding data: $data");
 
     if (data == null) {
       return <LeadData>[LeadData(xIndex, 0)];
     }
 
+    int sum = data.fold(0, (sum, b) => sum + b);
+    int average = (sum / data.length).round();
+
+    // for (int i = 0; i < data.length; i++) {
     try {
-      dataList.add(LeadData(xIndex, data));
+      dataList.add(LeadData(xIndex, average));
     } catch (e) {
       print("Error observed while updating DataList: ${e.toString()}");
     }
@@ -69,6 +73,7 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
       );
     }
     xIndex = xIndex + 1;
+    // }
 
     return dataList;
   }

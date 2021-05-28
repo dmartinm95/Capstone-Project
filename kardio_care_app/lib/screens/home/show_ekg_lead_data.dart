@@ -38,7 +38,7 @@ class ShowEKGLeadData extends StatelessWidget {
               child: Consumer<DeviceScanner>(
                 builder: (context, value, child) {
                   return BuildEKGPlot(
-                    dataValue: value.leadOneData,
+                    dataValue: value.leadDataList,
                   );
                 },
               ),
