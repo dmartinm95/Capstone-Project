@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:kardio_care_app/app_theme.dart';
+import 'package:kardio_care_app/screens/home/build_ekg_plot.dart';
 import 'package:kardio_care_app/screens/home/disconnect_btn.dart';
 import 'package:kardio_care_app/screens/home/heart_rate_and_oxygen_saturation.dart';
 import 'package:kardio_care_app/screens/home/search_connect_btn.dart';
