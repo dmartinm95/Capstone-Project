@@ -24,8 +24,6 @@ class HeartEventCard extends StatelessWidget {
               Container(
                 width: 8,
                 height: 55,
-                // height: double.infinity,
-                // color: Colors.black,
                 decoration: BoxDecoration(
                     color: KardioCareAppTheme.detailGreen,
                     borderRadius: BorderRadius.all(Radius.circular(10))),
@@ -42,8 +40,9 @@ class HeartEventCard extends StatelessWidget {
                           child: Text(
                             'Atrial Flutter',
                             style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
+                              fontWeight: FontWeight.bold,
+                              color: KardioCareAppTheme.detailGray,
+                            ),
                           ),
                         ),
                         // Spacer(),
@@ -60,7 +59,7 @@ class HeartEventCard extends StatelessWidget {
                           padding: const EdgeInsets.fromLTRB(8, 8, 0, 8),
                           child: Icon(
                             Icons.chevron_right,
-                            color: Colors.black,
+                            color: KardioCareAppTheme.detailGray,
                           ),
                         )
                       ],
@@ -76,8 +75,9 @@ class HeartEventCard extends StatelessWidget {
                           child: Text(
                             'HR 190 bpm',
                             style: TextStyle(
-                                fontWeight: FontWeight.normal,
-                                color: Colors.black),
+                              fontWeight: FontWeight.normal,
+                              color: KardioCareAppTheme.detailGray,
+                            ),
                           ),
                         ),
                         // Spacer(),
@@ -95,8 +95,9 @@ class HeartEventCard extends StatelessWidget {
                           child: Text(
                             '7pm - 2021/02/10',
                             style: TextStyle(
-                                fontWeight: FontWeight.normal,
-                                color: Colors.black),
+                              fontWeight: FontWeight.normal,
+                              color: KardioCareAppTheme.detailGray,
+                            ),
                           ),
                         ),
                       ],
@@ -107,7 +108,7 @@ class HeartEventCard extends StatelessWidget {
             ],
           ),
           const Divider(
-            color: KardioCareAppTheme.detailGray,
+            color: KardioCareAppTheme.dividerPurple,
             height: 1,
             thickness: 1,
             indent: 0,
@@ -116,7 +117,9 @@ class HeartEventCard extends StatelessWidget {
         ],
       ),
       // ),
-      onPressed: () {},
+      onPressed: () {
+        Navigator.pushNamed(context, '/view_rhythm_event');
+      },
     );
   }
 }
@@ -127,7 +130,7 @@ class TrianglePainter extends CustomPainter {
   final double strokeWidth;
 
   TrianglePainter(
-      {this.strokeColor = Colors.black,
+      {this.strokeColor =  KardioCareAppTheme.detailGray,
       this.strokeWidth = 3,
       this.paintingStyle = PaintingStyle.stroke});
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
+import 'package:kardio_care_app/constants/app_constants.dart';
 
 class StartRecording extends StatelessWidget {
   const StartRecording({Key key}) : super(key: key);
@@ -48,7 +49,8 @@ class StartRecording extends StatelessWidget {
                   child: Center(
                     child: Text(
                       "Select a length of time to record",
-                      style: TextStyle(color: Colors.black, fontSize: 19),
+                      style: TextStyle(
+                          color: KardioCareAppTheme.detailGray, fontSize: 19),
                       textAlign: TextAlign.center,
                     ),
                   )),
@@ -57,20 +59,20 @@ class StartRecording extends StatelessWidget {
           FullRectangleTextButton(
             backgroundColor: Colors.blue,
             label: 'Long',
-            subLabel: '10 Min',
-            lengthMinues: 10,
+            subLabel: '$ekgLongLengthMin Min',
+            lengthMinutes: ekgLongLengthMin,
           ),
           FullRectangleTextButton(
             backgroundColor: Colors.green,
             label: 'Medium',
-            subLabel: '5 Min',
-            lengthMinues: 5,
+            subLabel: '$ekgMediumLengthMin Min',
+            lengthMinutes: ekgMediumLengthMin,
           ),
           FullRectangleTextButton(
             backgroundColor: Colors.deepPurple,
             label: 'Short',
-            subLabel: '2 Min',
-            lengthMinues: 2,
+            subLabel: '$ekgShortLengthMin Min',
+            lengthMinutes: ekgShortLengthMin,
           ),
         ],
       ),
@@ -84,13 +86,13 @@ class FullRectangleTextButton extends StatelessWidget {
       this.label,
       this.subLabel,
       this.backgroundColor,
-      this.lengthMinues})
+      this.lengthMinutes})
       : super(key: key);
 
   final Color backgroundColor;
   final String label;
   final String subLabel;
-  final int lengthMinues;
+  final int lengthMinutes;
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +134,7 @@ class FullRectangleTextButton extends StatelessWidget {
             Navigator.pushReplacementNamed(
               context,
               '/ekg_recording',
-              arguments: lengthMinues,
+              arguments: lengthMinutes,
             );
           },
         ),

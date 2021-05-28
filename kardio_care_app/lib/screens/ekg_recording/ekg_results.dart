@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:kardio_care_app/screens/ekg_recording/recording_charts.dart';
-import 'package:kardio_care_app/screens/ekg_recording/recording_stats.dart';
+import 'package:kardio_care_app/widgets/recording_stats.dart';
 
 class EKGResults extends StatefulWidget {
   EKGResults({Key key}) : super(key: key);
@@ -62,10 +62,11 @@ class _EKGResultsState extends State<EKGResults> {
               padding: const EdgeInsets.fromLTRB(19, 15, 19, 0),
               child: Text(
                 "Tap Relevant Tags",
+                style: KardioCareAppTheme.subTitle,
               ),
             ),
             const Divider(
-              color: KardioCareAppTheme.detailGray,
+              color: KardioCareAppTheme.dividerPurple,
               height: 20,
               thickness: 1,
               indent: 19,
@@ -99,7 +100,7 @@ class _EKGResultsState extends State<EKGResults> {
         child: Column(
           children: [
             const Divider(
-              color: KardioCareAppTheme.detailGray,
+              color: KardioCareAppTheme.dividerPurple,
               height: 1,
               thickness: 1,
               indent: 0,
@@ -192,7 +193,7 @@ class _FilterChipWidgetState extends State<FilterChipWidget> {
       labelStyle: TextStyle(
           color: KardioCareAppTheme.white,
           fontSize: 16.0,
-          fontWeight: FontWeight.bold),
+          fontWeight: FontWeight.w500),
       selected: _isSelected,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(30.0),

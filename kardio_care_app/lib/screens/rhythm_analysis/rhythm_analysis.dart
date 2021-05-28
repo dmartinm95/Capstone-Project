@@ -27,28 +27,12 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
               child: Text(
-                "Heartbeat Breakdown",
-              ),
-            ),
-            const Divider(
-              color: KardioCareAppTheme.detailGray,
-              height: 20,
-              thickness: 1,
-              indent: 19,
-              endIndent: 19,
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(19, 10, 19, 0),
-              child: HeartRhythmPercents(),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
-              child: Text(
                 "Abnormal Events",
+                style: KardioCareAppTheme.subTitle,
               ),
             ),
             const Divider(
-              color: KardioCareAppTheme.detailGray,
+              color: KardioCareAppTheme.dividerPurple,
               height: 20,
               thickness: 1,
               indent: 19,
@@ -68,26 +52,51 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
               ),
             ),
             Center(
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  backgroundColor: KardioCareAppTheme.actionBlue,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(23)),
-                ),
-                // child: Padding(
-                // padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "View All",
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(19, 5, 19, 10),
+                child: Container(
+                  width: double.infinity,
+                  height: 50,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: KardioCareAppTheme.actionBlue,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                    ),
+                    // child: Padding(
+                    // padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "View All",
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.white,
+                      ),
+                    ),
+                    // ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/all_recordings');
+                    },
                   ),
                 ),
-                // ),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/all_recordings');
-                },
               ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
+              child: Text(
+                "Heartbeat Breakdown",
+                style: KardioCareAppTheme.subTitle,
+              ),
+            ),
+            const Divider(
+              color: KardioCareAppTheme.dividerPurple,
+              height: 20,
+              thickness: 1,
+              indent: 19,
+              endIndent: 19,
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(19, 10, 19, 0),
+              child: HeartRhythmPercents(),
             ),
             Container(
               height: 100,

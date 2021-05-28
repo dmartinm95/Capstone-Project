@@ -20,12 +20,11 @@ class ShowEKGLeadData extends StatelessWidget {
       child: Container(
         constraints: BoxConstraints.expand(
           width: size.width,
-          height: 200,
+          height: size.height / 2 - 50,
         ),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: const Color(0xffeeee00),
-          border: Border.all(color: Colors.yellow, width: 5),
+          color: KardioCareAppTheme.background,
           borderRadius: BorderRadius.all(
             Radius.circular(20),
           ),
@@ -46,14 +45,18 @@ class ShowEKGLeadData extends StatelessWidget {
             Flexible(
               flex: 0,
               fit: FlexFit.tight,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: BlockRadioButton(
-                  buttonLabels: ['I', 'II', 'III', 'V1'],
-                  circleBorder: true,
-                  backgroundColor: KardioCareAppTheme.background,
-                ),
+              child: BlockRadioButton(
+                buttonLabels: ['I', 'II', 'III', 'V1'],
+                circleBorder: true,
+                backgroundColor: KardioCareAppTheme.background,
               ),
+            ),
+            const Divider(
+              color: KardioCareAppTheme.dividerPurple,
+              height: 20,
+              thickness: 1,
+              indent: 19,
+              endIndent: 19,
             ),
           ],
         ),

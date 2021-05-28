@@ -39,7 +39,7 @@ class _DailyTrendChartsState extends State<DailyTrendCharts> {
                           child: Text(
                             'Heart Rate Variability Today',
                             style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20),
+                                fontWeight: FontWeight.bold, fontSize: 18),
                           ),
                         ),
                         Padding(
@@ -61,7 +61,7 @@ class _DailyTrendChartsState extends State<DailyTrendCharts> {
                           child: Text(
                             'Heart Rate Today',
                             style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20),
+                                fontWeight: FontWeight.bold, fontSize: 18),
                           ),
                         ),
                         Padding(

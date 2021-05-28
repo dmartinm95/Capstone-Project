@@ -34,11 +34,12 @@ class _ProfileState extends State<Profile> {
             'First Last',
             style: TextStyle(
               fontWeight: FontWeight.bold,
+              color: KardioCareAppTheme.detailGray,
               fontSize: 30,
             ),
           ),
           const Divider(
-            color: KardioCareAppTheme.detailGray,
+            color: KardioCareAppTheme.dividerPurple,
             height: 20,
             thickness: 1,
             indent: 19,
@@ -66,7 +67,7 @@ class _ProfileState extends State<Profile> {
             ),
           ),
           const Divider(
-            color: KardioCareAppTheme.detailGray,
+            color: KardioCareAppTheme.dividerPurple,
             height: 20,
             thickness: 1,
             indent: 19,
@@ -94,7 +95,7 @@ class _ProfileState extends State<Profile> {
             ),
           ),
           const Divider(
-            color: KardioCareAppTheme.detailGray,
+            color: KardioCareAppTheme.dividerPurple,
             height: 20,
             thickness: 1,
             indent: 19,
@@ -122,7 +123,7 @@ class _ProfileState extends State<Profile> {
             ),
           ),
           const Divider(
-            color: KardioCareAppTheme.detailGray,
+            color: KardioCareAppTheme.dividerPurple,
             height: 20,
             thickness: 1,
             indent: 19,

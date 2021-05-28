@@ -100,12 +100,14 @@ class _EKGRecordingState extends State<EKGRecording> {
               child: recording
                   ? Text(
                       'Recording EKG stay calm and stationary.',
-                      style: TextStyle(color: Colors.black, fontSize: 19),
+                      style: TextStyle(
+                          color: KardioCareAppTheme.detailGray, fontSize: 19),
                       textAlign: TextAlign.center,
                     )
                   : Text(
                       'When you are ready press start:',
-                      style: TextStyle(color: Colors.black, fontSize: 19),
+                      style: TextStyle(
+                          color: KardioCareAppTheme.detailGray, fontSize: 19),
                       textAlign: TextAlign.center,
                     ),
             ),
@@ -133,7 +135,10 @@ class _EKGRecordingState extends State<EKGRecording> {
                       child: ElevatedButton(
                         child: Text(
                           'START',
-                          style: TextStyle(fontSize: 24, color: Colors.black),
+                          style: TextStyle(
+                            fontSize: 24,
+                            color: KardioCareAppTheme.detailGray,
+                          ),
                         ),
                         onPressed: () {
                           setState(() {
@@ -174,7 +179,7 @@ class _EKGRecordingState extends State<EKGRecording> {
                     thickness: 1,
                     indent: 20,
                     endIndent: 45,
-                    color: KardioCareAppTheme.detailGray,
+                    color: KardioCareAppTheme.dividerPurple,
                   ),
                   Expanded(
                     child: BloodOxygenTile(

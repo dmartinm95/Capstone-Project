@@ -37,8 +37,9 @@ class RecordingCard extends StatelessWidget {
                           child: Text(
                             '6:30 am',
                             style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
+                              fontWeight: FontWeight.bold,
+                              color: KardioCareAppTheme.detailGray,
+                            ),
                           ),
                         ),
                         // Spacer(),
@@ -53,11 +54,13 @@ class RecordingCard extends StatelessWidget {
                         Text(
                           '10 minute recording',
                           style: TextStyle(
-                              fontWeight: FontWeight.w300, color: Colors.black),
+                            fontWeight: FontWeight.w300,
+                            color: KardioCareAppTheme.detailGray,
+                          ),
                         ),
                         Icon(
                           Icons.chevron_right,
-                          color: Colors.black,
+                          color: KardioCareAppTheme.detailGray,
                         )
                       ],
                     ),
@@ -70,7 +73,7 @@ class RecordingCard extends StatelessWidget {
                           "HRV 63",
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.black,
+                            color: KardioCareAppTheme.detailGray,
                             fontWeight: FontWeight.normal,
                           ),
                         ),
@@ -78,7 +81,7 @@ class RecordingCard extends StatelessWidget {
                     ],
                   ),
                   const Divider(
-                    color: KardioCareAppTheme.detailGray,
+                    color: KardioCareAppTheme.dividerPurple,
                     height: 1,
                     thickness: 1,
                     indent: 0,
@@ -95,7 +98,10 @@ class RecordingCard extends StatelessWidget {
             bottom: index == (numRecordings - 1) ? 10.0 : 0.0,
             left: 33.0,
             child: Container(
-                height: double.infinity, width: 3.0, color: Colors.black),
+              height: double.infinity,
+              width: 3.0,
+              color: KardioCareAppTheme.detailGray,
+            ),
           ),
           Positioned(
             top: 5.0,
@@ -108,7 +114,7 @@ class RecordingCard extends StatelessWidget {
                       padding: const EdgeInsets.fromLTRB(20, 10, 5, 10),
                       child: CustomPaint(
                         painter: TrianglePainter(
-                          strokeColor: Colors.black,
+                          strokeColor: KardioCareAppTheme.detailGray,
                           paintingStyle: PaintingStyle.fill,
                         ),
                         // child: Container(
@@ -121,7 +127,9 @@ class RecordingCard extends StatelessWidget {
                       height: 40.0,
                       width: 40.0,
                       decoration: BoxDecoration(
-                          shape: BoxShape.circle, color: Colors.black),
+                        shape: BoxShape.circle,
+                        color: KardioCareAppTheme.detailGray,
+                      ),
                     ),
             ),
           )
@@ -137,7 +145,7 @@ class TrianglePainter extends CustomPainter {
   final double strokeWidth;
 
   TrianglePainter(
-      {this.strokeColor = Colors.black,
+      {this.strokeColor = KardioCareAppTheme.detailGray,
       this.strokeWidth = 3,
       this.paintingStyle = PaintingStyle.stroke});
 

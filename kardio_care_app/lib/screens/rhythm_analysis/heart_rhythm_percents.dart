@@ -27,7 +27,7 @@ class _HeartRhythmPercentsState extends State<HeartRhythmPercents> {
               Padding(
                 padding: const EdgeInsets.all(4.0),
                 child: Text(
-                  'Breakdown of Heartbeat Rthyms',
+                  'Breakdown of Heartbeat Rhythms',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 19,
@@ -93,7 +93,8 @@ class RhythmRow extends StatelessWidget {
                 child: Text(
                   name,
                   style: TextStyle(
-                      fontWeight: FontWeight.normal, color: Colors.black),
+                      fontWeight: FontWeight.normal,
+                      color: KardioCareAppTheme.detailGray),
                 ),
               ),
               // Spacer(),
@@ -108,7 +109,8 @@ class RhythmRow extends StatelessWidget {
                 child: Text(
                   '$frequency%',
                   style: TextStyle(
-                      fontWeight: FontWeight.normal, color: Colors.black),
+                      fontWeight: FontWeight.normal,
+                      color: KardioCareAppTheme.detailGray),
                 ),
               ),
             ],

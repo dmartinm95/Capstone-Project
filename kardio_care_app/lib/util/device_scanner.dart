@@ -4,10 +4,10 @@ import 'package:flutter_blue/flutter_blue.dart';
 
 class DeviceScanner with ChangeNotifier {
   // Arduino Nano 33 BLE details
-  static const String SERVICE_UUID = "202d3e06-252d-40bd-8dc6-0b7bfe15b99f";
-  static const String LEAD_ONE_CHAR_UUID =
-      "4ccf588c-c839-4ec7-9954-94611cc77895";
-  static const String DEVICE_NAME = "Kompression";
+  // static const String SERVICE_UUID = "202d3e06-252d-40bd-8dc6-0b7bfe15b99f";
+  // static const String LEAD_ONE_CHAR_UUID =
+  // "4ccf588c-c839-4ec7-9954-94611cc77895";
+  static const String DEVICE_NAME = "DSD TECH"; //"Kompression";
 
   // Stream controller for checking when a device is connected
   StreamController<BluetoothDevice> _streamController =
@@ -42,6 +42,7 @@ class DeviceScanner with ChangeNotifier {
     FlutterBlue.instance.scanResults.listen(
       (scanResults) {
         for (ScanResult scanResult in scanResults) {
+          print(scanResult.device.name.toString());
           if (scanResult.device.name.toString() == DEVICE_NAME) {
             print("Device found from scan");
             FlutterBlue.instance.stopScan();
@@ -77,9 +78,9 @@ class DeviceScanner with ChangeNotifier {
       print("Connecting");
       await bleDevice.connect();
       print("Getting services");
-      await _getCustomService();
+      // await _getCustomService();
       print("Getting characteristics");
-      await _getCustomCharacteristic();
+      // await _getCustomCharacteristic();  
       print("Setting notify to true");
       await bleLeadOneCharacteristic.setNotifyValue(true);
       print("Connected");
@@ -97,21 +98,22 @@ class DeviceScanner with ChangeNotifier {
   Future<void> _getCustomService() async {
     bleServices = await bleDevice.discoverServices();
 
-    bleCustomService = bleServices
-        .firstWhere((service) => service.uuid.toString() == SERVICE_UUID);
+    // bleCustomService = bleServices[0];
+    //.firstWhere((service) => service.uuid.toString() == SERVICE_UUID);
 
-    print("Found Service! - uuid: ${bleCustomService.uuid.toString()}");
+    // print("Found Service! - uuid: ${bleCustomService.uuid.toString()}");
   }
 
   // Find our custom characteristic
   Future<void> _getCustomCharacteristic() async {
     bleCharacteristics = bleCustomService.characteristics;
 
-    bleLeadOneCharacteristic = bleCharacteristics.firstWhere((characteristic) =>
-        characteristic.uuid.toString() == LEAD_ONE_CHAR_UUID);
+    bleLeadOneCharacteristic = bleCharacteristics[
+        0]; // bleCharacteristics.firstWhere((characteristic) =>
+    //characteristic.uuid.toString() == LEAD_ONE_CHAR_UUID);
 
-    print(
-        "Found Characteristic! - uuid: ${bleLeadOneCharacteristic.uuid.toString()}");
+    // print(
+    // "Found Characteristic! - uuid: ${bleLeadOneCharacteristic.uuid.toString()}");
   }
 
   // Start listing to stream data from module

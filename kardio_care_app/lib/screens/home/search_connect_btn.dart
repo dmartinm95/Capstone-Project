@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kardio_care_app/app_theme.dart';
 import 'package:kardio_care_app/util/device_scanner.dart';
 
 class SearchAndConnectBtn extends StatefulWidget {
@@ -26,36 +27,69 @@ class _SearchAndConnectBtnState extends State<SearchAndConnectBtn> {
       child: Container(
         constraints: BoxConstraints.expand(
           width: widget.size.width,
-          height: 200,
+          height: widget.size.height / 2 - 50,
         ),
         alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: const Color(0xffeeee00),
-          border: Border.all(color: Colors.yellow, width: 5),
-          borderRadius: BorderRadius.all(
-            Radius.circular(20),
-          ),
-        ),
+        // decoration: BoxDecoration(
+        //   color: const Color(0xffeeee00),
+        //   border: Border.all(color: Colors.yellow, width: 5),
+        //   borderRadius: BorderRadius.all(
+        //     Radius.circular(20),
+        //   ),
+        // ),
+        color: KardioCareAppTheme.actionBlue,
         child: !isLoading
-            ? SizedBox.expand(
-                child: TextButton(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text("Kompression"),
-                      Text("Click here to search and connect"),
-                      Icon(
-                        Icons.bluetooth_audio,
-                        size: 100,
-                        color: Colors.black87,
+            ? TextButton(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(
+                      "Kompression is not connected",
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: Colors.white,
                       ),
-                    ],
-                  ),
-                  onPressed: pressBtn,
+                    ),
+                    Icon(
+                      Icons.bluetooth_audio,
+                      size: 100,
+                      color: Colors.white,
+                    ),
+                    Text(
+                      "Click here to search and connect",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
+                onPressed: pressBtn,
               )
-            : CircularProgressIndicator(),
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text(
+                    "Kompression is not connected",
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: Colors.white,
+                    ),
+                  ),
+                  CircularProgressIndicator(),
+                  Text(
+                    "Searching ...",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }

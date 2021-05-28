@@ -29,9 +29,12 @@ class DailyStats extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Daily Stats'),
+          Text(
+            'Daily Stats',
+            style: KardioCareAppTheme.subTitle,
+          ),
           const Divider(
-            color: KardioCareAppTheme.detailGray,
+            color: KardioCareAppTheme.dividerPurple,
             height: 20,
             thickness: 1,
             indent: 0,
@@ -71,7 +74,7 @@ class DailyStats extends StatelessWidget {
             ],
           ),
           const Divider(
-            color: KardioCareAppTheme.detailGray,
+            color: KardioCareAppTheme.dividerPurple,
             height: 20,
             thickness: 1,
             indent: 0,
@@ -113,7 +116,7 @@ class DailyStats extends StatelessWidget {
             ],
           ),
           const Divider(
-            color: KardioCareAppTheme.detailGray,
+            color: KardioCareAppTheme.dividerPurple,
             height: 20,
             thickness: 1,
             indent: 0,
@@ -155,7 +158,7 @@ class DailyStats extends StatelessWidget {
             ],
           ),
           const Divider(
-            color: KardioCareAppTheme.detailGray,
+            color: KardioCareAppTheme.dividerPurple,
             height: 20,
             thickness: 1,
             indent: 0,

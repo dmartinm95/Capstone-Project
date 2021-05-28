@@ -10,7 +10,7 @@ class AllRecordings extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          "Recordings",
+          "All Recordings",
           style: KardioCareAppTheme.screenTitleText,
         ),
         centerTitle: true,

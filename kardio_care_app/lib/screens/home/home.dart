@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:kardio_care_app/screens/home/disconnect_btn.dart';
-import 'package:kardio_care_app/screens/home/hear_rate_and_oxygen_saturation.dart';
+import 'package:kardio_care_app/screens/home/heart_rate_and_oxygen_saturation.dart';
 import 'package:kardio_care_app/screens/home/search_connect_btn.dart';
 import 'package:kardio_care_app/screens/home/show_ekg_lead_data.dart';
 import 'package:kardio_care_app/screens/home/welcome_msg.dart';
@@ -48,7 +48,7 @@ class _HomeState extends State<Home> {
         height: size.height,
         child: Column(
           children: <Widget>[
-            WelcomeMessage(size: size),
+            // WelcomeMessage(size: size),
             StreamBuilder(
               stream: deviceScannerProvider.bluetoothDevice,
               builder: (context, snapshot) {
@@ -62,6 +62,9 @@ class _HomeState extends State<Home> {
               },
             ),
             HeartRateAndOxygenSaturation(),
+            SizedBox(
+              height: 60,
+            )
           ],
         ),
       ),

@@ -13,7 +13,7 @@ class HeartRateAndOxygenSaturation extends StatelessWidget {
     return Expanded(
       flex: 1,
       child: Container(
-        color: const Color(0xffee0000), // Red
+        color: KardioCareAppTheme.background, // Red
         child: Container(
           child: Row(
             children: [
@@ -23,7 +23,7 @@ class HeartRateAndOxygenSaturation extends StatelessWidget {
                 thickness: 1,
                 indent: 20,
                 endIndent: 45,
-                color: KardioCareAppTheme.detailGray,
+                color: KardioCareAppTheme.dividerPurple,
               ),
               Expanded(child: BloodOxygenTile())
             ],

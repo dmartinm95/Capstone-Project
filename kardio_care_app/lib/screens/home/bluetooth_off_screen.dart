@@ -17,7 +17,7 @@ class BluetoothOffScreen extends StatelessWidget {
             Icon(
               Icons.bluetooth_disabled,
               size: 250.0,
-              color: Colors.black54,
+              color: KardioCareAppTheme.detailGray,
             ),
             Text(
               "Bluetooth Adapter is ${state.toString().substring(15)}.",

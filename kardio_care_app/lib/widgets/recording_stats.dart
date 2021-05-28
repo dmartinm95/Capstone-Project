@@ -23,7 +23,10 @@ class RecordingStats extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Recording Stats'),
+          Text(
+            'Recording Stats',
+            style: KardioCareAppTheme.subTitle,
+          ),
           const Divider(
             color: KardioCareAppTheme.detailGray,
             height: 20,

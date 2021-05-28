@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/util/blurry_dialog_alert.dart';
 import 'package:kardio_care_app/util/device_scanner.dart';
+import 'package:kardio_care_app/app_theme.dart';
 
 class AppBarDisconnectBtn extends StatelessWidget {
   const AppBarDisconnectBtn({
@@ -21,7 +22,7 @@ class AppBarDisconnectBtn extends StatelessWidget {
         child: Icon(
           Icons.bluetooth_connected,
           size: 26.0,
-          color: Colors.black,
+          color: KardioCareAppTheme.detailGray,
         ),
       ),
     );
