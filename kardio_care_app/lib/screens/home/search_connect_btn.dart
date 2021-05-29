@@ -103,11 +103,13 @@ class _SearchAndConnectBtnState extends State<SearchAndConnectBtn> {
     widget.deviceScannerProvider.connectToModule().then((value) {
       if (value) {
         print("Device connected successfully");
-        setState(() {
-          buttonEnabled = value;
-          isLoading = false;
-        });
+      } else {
+        print("Couldn't find device");
       }
+      setState(() {
+        buttonEnabled = true;
+        isLoading = false;
+      });
     });
   }
 }
