@@ -20,6 +20,9 @@ class _HeartRateTileState extends State<HeartRateTile> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          SizedBox(
+            height: 10,
+          ),
           Text(
             'Heart Rate',
             style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20),
@@ -31,7 +34,7 @@ class _HeartRateTileState extends State<HeartRateTile> {
             textBaseline: TextBaseline.alphabetic,
             children: [
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.fromLTRB(8, 8, 8, 2),
                 child: Text(
                   (widget.currHR ?? "--").toString(),
                   style: TextStyle(fontWeight: FontWeight.w400, fontSize: 40),
@@ -46,17 +49,22 @@ class _HeartRateTileState extends State<HeartRateTile> {
               )
             ],
           ),
-          if ((widget.currHR ?? -1) > 0 && (widget.lastHR ?? -1) > 0)
-            Transform.rotate(
-              angle: (widget.lastHR - widget.currHR > 0)
-                  ? 135 * math.pi / 180
-                  : 45 * math.pi / 180,
-              child: Icon(
-                Icons.arrow_upward_sharp,
-                color: KardioCareAppTheme.detailRed,
-                size: 40,
-              ),
-            ),
+          ((widget.currHR ?? -1) > 0 &&
+                  (widget.lastHR ?? -1) > 0 &&
+                  (widget.currHR - widget.lastHR) != 0)
+              ? Transform.rotate(
+                  angle: (widget.lastHR - widget.currHR > 0)
+                      ? 135 * math.pi / 180
+                      : 45 * math.pi / 180,
+                  child: Icon(
+                    Icons.arrow_upward_sharp,
+                    color: KardioCareAppTheme.detailRed,
+                    size: 35,
+                  ),
+                )
+              : SizedBox(
+                  height: 35,
+                )
         ],
       ),
     );

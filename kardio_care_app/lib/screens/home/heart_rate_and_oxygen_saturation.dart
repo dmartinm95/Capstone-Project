@@ -17,7 +17,11 @@ class HeartRateAndOxygenSaturation extends StatelessWidget {
         child: Container(
           child: Row(
             children: [
-              Expanded(child: HeartRateTile()),
+              Expanded(
+                  child: HeartRateTile(
+                currHR: 86,
+                lastHR: 83,
+              )),
               const VerticalDivider(
                 width: 25,
                 thickness: 1,
