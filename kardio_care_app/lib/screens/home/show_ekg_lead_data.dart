@@ -9,9 +9,11 @@ class ShowEKGLeadData extends StatelessWidget {
   const ShowEKGLeadData({
     Key key,
     @required this.size,
+    this.deviceScannerProvider,
   }) : super(key: key);
 
   final Size size;
+  final DeviceScanner deviceScannerProvider;
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +51,8 @@ class ShowEKGLeadData extends StatelessWidget {
                 buttonLabels: ['I', 'II', 'III', 'V1'],
                 circleBorder: true,
                 backgroundColor: KardioCareAppTheme.background,
+                callback: callback,
+                currentSelection: deviceScannerProvider.activeLeadIndex,
               ),
             ),
             const Divider(
@@ -62,5 +66,12 @@ class ShowEKGLeadData extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  callback(int newIndex) {
+    print("Clicking on index: $newIndex");
+    deviceScannerProvider.stopCurrentStream(newIndex);
+
+    deviceScannerProvider.listenToStream(newIndex);
   }
 }

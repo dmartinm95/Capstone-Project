@@ -7,7 +7,8 @@ class BlockRadioButton extends StatefulWidget {
       this.buttonLabels,
       this.circleBorder,
       this.backgroundColor,
-      this.callback})
+      this.callback,
+      this.currentSelection})
       : super(key: key);
 
   final Function(int) callback;
@@ -15,6 +16,7 @@ class BlockRadioButton extends StatefulWidget {
   final List<String> buttonLabels; //= ['HRV', 'HR'];
   final bool circleBorder;
   final Color backgroundColor;
+  final int currentSelection;
 
   @override
   _BlockRadioButtonState createState() => _BlockRadioButtonState();
@@ -22,6 +24,16 @@ class BlockRadioButton extends StatefulWidget {
 
 class _BlockRadioButtonState extends State<BlockRadioButton> {
   int selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.currentSelection != null) {
+      setState(() {
+        selectedIndex = widget.currentSelection;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

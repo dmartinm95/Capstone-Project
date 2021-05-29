@@ -59,7 +59,10 @@ class _HomeState extends State<Home> {
                     deviceScannerProvider: deviceScannerProvider,
                   );
                 }
-                return ShowEKGLeadData(size: size);
+                return ShowEKGLeadData(
+                  size: size,
+                  deviceScannerProvider: deviceScannerProvider,
+                );
               },
             ),
             HeartRateAndOxygenSaturation(),
