@@ -8,6 +8,7 @@ import 'package:kardio_care_app/screens/ekg_recording/ekg_results.dart';
 import 'package:kardio_care_app/screens/ekg_recording/ekg_recording.dart';
 import 'package:kardio_care_app/screens/ekg_recording/start_recording.dart';
 import 'package:kardio_care_app/screens/rhythm_analysis/view_rhythm_event.dart';
+import 'package:kardio_care_app/util/pan_tompkins.dart';
 import 'package:provider/provider.dart';
 import 'package:kardio_care_app/util/device_scanner.dart';
 import 'package:kardio_care_app/screens/rhythm_analysis/all_recordings.dart';
@@ -20,8 +21,12 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<DeviceScanner>(
-      create: (context) => DeviceScanner(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<DeviceScanner>(
+            create: (context) => DeviceScanner()),
+        ChangeNotifierProvider<PanTomkpins>(create: (context) => PanTomkpins()),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         // initialRoute: '/main_dashboard',

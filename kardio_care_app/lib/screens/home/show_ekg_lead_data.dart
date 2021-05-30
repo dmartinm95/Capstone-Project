@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:kardio_care_app/screens/home/build_ekg_plot.dart';
 import 'package:kardio_care_app/util/device_scanner.dart';
+import 'package:kardio_care_app/util/pan_tompkins.dart';
 import 'package:kardio_care_app/widgets/block_radio_button.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +18,9 @@ class ShowEKGLeadData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final panTompkinsProvider =
+        Provider.of<PanTomkpins>(context, listen: false);
+
     return Expanded(
       flex: 0,
       child: Container(
@@ -38,6 +42,7 @@ class ShowEKGLeadData extends StatelessWidget {
               fit: FlexFit.loose,
               child: Consumer<DeviceScanner>(
                 builder: (context, value, child) {
+                  // panTompkinsProvider.addDataToBuffer(value.leadDataList);
                   return BuildEKGPlot(
                     dataValue: value.leadDataList,
                   );

@@ -7,6 +7,7 @@ import 'package:kardio_care_app/screens/home/heart_rate_and_oxygen_saturation.da
 import 'package:kardio_care_app/screens/home/search_connect_btn.dart';
 import 'package:kardio_care_app/screens/home/show_ekg_lead_data.dart';
 import 'package:kardio_care_app/screens/home/welcome_msg.dart';
+import 'package:kardio_care_app/util/pan_tompkins.dart';
 import 'package:provider/provider.dart';
 import 'package:kardio_care_app/util/device_scanner.dart';
 
@@ -32,15 +33,26 @@ class _HomeState extends State<Home> {
         backgroundColor: Colors.white,
         centerTitle: true,
         actions: [
-          StreamBuilder(
-            stream: deviceScannerProvider.bluetoothDevice,
-            builder: (context, snapshot) {
-              if (snapshot.data == null) {
+          // StreamBuilder(
+          //   stream: deviceScannerProvider.bluetoothDevice,
+          //   builder: (context, snapshot) {
+          //     if (snapshot.data == null) {
+          //       return Container();
+          //     }
+          //     return AppBarDisconnectBtn(
+          //       deviceScannerProvider: deviceScannerProvider,
+          //     );
+          //   },
+          // ),
+          ValueListenableBuilder(
+            valueListenable: deviceScannerProvider.bleConnectionNotifier,
+            builder: (context, value, child) {
+              print("Devicescannervaluelistenable: $value");
+              if (value == null) {
                 return Container();
               }
               return AppBarDisconnectBtn(
-                deviceScannerProvider: deviceScannerProvider,
-              );
+                  deviceScannerProvider: deviceScannerProvider);
             },
           ),
         ],
@@ -50,10 +62,10 @@ class _HomeState extends State<Home> {
         child: Column(
           children: <Widget>[
             // WelcomeMessage(size: size),
-            StreamBuilder(
-              stream: deviceScannerProvider.bluetoothDevice,
-              builder: (context, snapshot) {
-                if (snapshot.data == null) {
+            ValueListenableBuilder(
+              valueListenable: deviceScannerProvider.bleConnectionNotifier,
+              builder: (context, value, child) {
+                if (value == null) {
                   return SearchAndConnectBtn(
                     size: size,
                     deviceScannerProvider: deviceScannerProvider,

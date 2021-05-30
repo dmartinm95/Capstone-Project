@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:kardio_care_app/util/pan_tompkins.dart';
 import 'package:rxdart/rxdart.dart';
 
 class DeviceScanner with ChangeNotifier {
@@ -22,6 +23,9 @@ class DeviceScanner with ChangeNotifier {
   // Stream controller for checking when a device is connected
   Stream<BluetoothDevice> get bluetoothDevice => _streamController.stream;
 
+  ValueNotifier<BluetoothDevice> bleConnectionNotifier =
+      ValueNotifier<BluetoothDevice>(null);
+
   // BLE module details
   BluetoothDevice bleDevice;
   List<BluetoothService> bleServices;
@@ -40,6 +44,7 @@ class DeviceScanner with ChangeNotifier {
 
   DeviceScanner() {
     _prevLeadIndex = 0;
+    bleConnectionNotifier.value = null;
   }
 
   void dispose() {
@@ -100,6 +105,7 @@ class DeviceScanner with ChangeNotifier {
       await bleLeadOneCharacteristic.setNotifyValue(true);
       print("Connected");
       _streamController.add(bleDevice);
+      bleConnectionNotifier.value = bleDevice;
 
       listenToStream(0);
       print("Listening to stream");
@@ -189,8 +195,8 @@ class DeviceScanner with ChangeNotifier {
     try {
       int j = 0;
       for (int i = 0; i < BYTES_TO_RECEIVE; i += 2) {
-        leadDataList[j] = data[i] + 256 * data[i + 1];
-        // print("Lead data: ${leadDataList[j]}");
+        int dataToAdd = data[i] + 256 * data[i + 1];
+        leadDataList[j] = dataToAdd;
         j++;
       }
       notifyListeners();
@@ -207,6 +213,7 @@ class DeviceScanner with ChangeNotifier {
     bleDevice.disconnect();
 
     _streamController.sink.add(null);
+    bleConnectionNotifier.value = null;
     print("Disconnected");
   }
 }

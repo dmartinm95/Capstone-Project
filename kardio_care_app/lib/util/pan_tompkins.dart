@@ -1,15 +1,48 @@
 import 'dart:ffi';
 
+import 'package:flutter/cupertino.dart';
 import 'package:scidart/numdart.dart';
 import 'package:scidart/scidart.dart';
 
-class PanTomkpins {
-  Array dataList;
-  int sampleFrequency;
+class PanTomkpins with ChangeNotifier {
+  static const MAX_SIZE = 500;
 
-  PanTomkpins(Array dataList, int sampleFrequency) {
-    this.dataList = dataList;
-    this.sampleFrequency = sampleFrequency;
+  Array bufferArray = Array.fixed(MAX_SIZE);
+  int bufferArrayIndex = 0;
+  int sampleFrequency = 400;
+
+  int currentHeartRate = 0;
+  int previousHeartRate = 0;
+
+  ValueNotifier<int> currentHeartRateNotifier = ValueNotifier<int>(null);
+
+  PanTomkpins() {
+    print("Pan Tompkins constructor");
+  }
+
+  void setSampleFrequency(int frequency) {
+    sampleFrequency = frequency;
+  }
+
+  void addDataToBuffer(List<int> data) {
+    for (int i = 0; i < data.length; i++) {
+      if (data[i] == 0) continue;
+
+      bufferArray[bufferArrayIndex] = data[i].toDouble();
+      bufferArrayIndex++;
+
+      if (bufferArrayIndex == MAX_SIZE) {
+        print("Array is now full");
+        bufferArrayIndex = 0;
+        Array result = performPanTompkins(bufferArray);
+        print(result);
+        currentHeartRateNotifier.value = mean(result).toInt();
+        currentHeartRate = mean(result).toInt();
+
+        // notifyListeners();
+        // Issue when trying to notifyListeners because widget tree is in the process of building it already due to DeviceScanner provider
+      }
+    }
   }
 
   double arrayAbsMax(Array data) {
