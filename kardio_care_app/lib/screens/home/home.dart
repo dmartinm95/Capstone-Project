@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:kardio_care_app/app_theme.dart';
-import 'package:kardio_care_app/screens/home/build_ekg_plot.dart';
 import 'package:kardio_care_app/screens/home/disconnect_btn.dart';
 import 'package:kardio_care_app/screens/home/heart_rate_and_oxygen_saturation.dart';
 import 'package:kardio_care_app/screens/home/search_connect_btn.dart';
 import 'package:kardio_care_app/screens/home/show_ekg_lead_data.dart';
 import 'package:kardio_care_app/screens/home/welcome_msg.dart';
-import 'package:kardio_care_app/util/pan_tompkins.dart';
 import 'package:provider/provider.dart';
 import 'package:kardio_care_app/util/device_scanner.dart';
 
@@ -33,17 +31,6 @@ class _HomeState extends State<Home> {
         backgroundColor: Colors.white,
         centerTitle: true,
         actions: [
-          // StreamBuilder(
-          //   stream: deviceScannerProvider.bluetoothDevice,
-          //   builder: (context, snapshot) {
-          //     if (snapshot.data == null) {
-          //       return Container();
-          //     }
-          //     return AppBarDisconnectBtn(
-          //       deviceScannerProvider: deviceScannerProvider,
-          //     );
-          //   },
-          // ),
           ValueListenableBuilder(
             valueListenable: deviceScannerProvider.bleConnectionNotifier,
             builder: (context, value, child) {

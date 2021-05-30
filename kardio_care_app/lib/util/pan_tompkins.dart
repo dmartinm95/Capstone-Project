@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/cupertino.dart';
 import 'package:scidart/numdart.dart';
 import 'package:scidart/scidart.dart';
@@ -13,8 +11,6 @@ class PanTomkpins with ChangeNotifier {
 
   int currentHeartRate = 0;
   int previousHeartRate = 0;
-
-  ValueNotifier<int> currentHeartRateNotifier = ValueNotifier<int>(null);
 
   PanTomkpins() {
     print("Pan Tompkins constructor");
@@ -36,7 +32,6 @@ class PanTomkpins with ChangeNotifier {
         bufferArrayIndex = 0;
         Array result = performPanTompkins(bufferArray);
         print(result);
-        currentHeartRateNotifier.value = mean(result).toInt();
         currentHeartRate = mean(result).toInt();
 
         // notifyListeners();

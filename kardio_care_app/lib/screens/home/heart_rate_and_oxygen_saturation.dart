@@ -1,16 +1,40 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
-import 'package:kardio_care_app/util/device_scanner.dart';
 import 'package:kardio_care_app/util/pan_tompkins.dart';
 import 'package:kardio_care_app/widgets/blood_oxygen_tile.dart';
 import 'package:kardio_care_app/widgets/heart_rate_tile.dart';
 import 'package:provider/provider.dart';
-import 'package:scidart/numdart.dart';
 
-class HeartRateAndOxygenSaturation extends StatelessWidget {
+class HeartRateAndOxygenSaturation extends StatefulWidget {
   const HeartRateAndOxygenSaturation({
     Key key,
   }) : super(key: key);
+
+  @override
+  _HeartRateAndOxygenSaturationState createState() =>
+      _HeartRateAndOxygenSaturationState();
+}
+
+class _HeartRateAndOxygenSaturationState
+    extends State<HeartRateAndOxygenSaturation> {
+  Timer _everySecond;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _everySecond = Timer.periodic(Duration(seconds: 1), (Timer t) {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _everySecond.cancel();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,20 +49,9 @@ class HeartRateAndOxygenSaturation extends StatelessWidget {
           child: Row(
             children: [
               Expanded(
-                // child: ValueListenableBuilder(
-                //   valueListenable: panTompkinsProvider.currentHeartRateNotifier,
-                //   builder: (context, value, child) {
-                //     print("panTompkinsProvider current heart rate: $value");
-                //     return Container();
-                //     // return HeartRateTile(currHR: value);
-                //   },
-                // ),
-                child: HeartRateTile(),
-                // child: Consumer<PanTomkpins>(
-                //   builder: (context, value, child) => HeartRateTile(
-                //     currHR: value.currentHeartRate,
-                //   ),
-                // ),
+                child: HeartRateTile(
+                  currHR: panTompkinsProvider.currentHeartRate,
+                ),
               ),
               const VerticalDivider(
                 width: 25,

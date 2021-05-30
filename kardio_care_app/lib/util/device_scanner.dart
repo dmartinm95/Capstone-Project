@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:kardio_care_app/util/pan_tompkins.dart';
 import 'package:rxdart/rxdart.dart';
 
 class DeviceScanner with ChangeNotifier {
@@ -166,16 +165,6 @@ class DeviceScanner with ChangeNotifier {
         _decodeData(data);
       });
     }
-
-    // _currentStreamSubscription =
-    //     bleLeadCharacteristics[leadIndex].value.listen((data) {
-    //   print("Raw data: $data");
-    //   _decodeData(data);
-    // }, onError: (error) {
-    //   print(error);
-    // }, onDone: () {
-    //   print("Stream closed!");
-    // });
   }
 
   void stopCurrentStream(int leadIndex) async {

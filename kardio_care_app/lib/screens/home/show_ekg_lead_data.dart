@@ -42,7 +42,7 @@ class ShowEKGLeadData extends StatelessWidget {
               fit: FlexFit.loose,
               child: Consumer<DeviceScanner>(
                 builder: (context, value, child) {
-                  // panTompkinsProvider.addDataToBuffer(value.leadDataList);
+                  panTompkinsProvider.addDataToBuffer(value.leadDataList);
                   return BuildEKGPlot(
                     dataValue: value.leadDataList,
                   );
