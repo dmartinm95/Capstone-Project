@@ -44,11 +44,17 @@ class _SearchAndConnectBtnState extends State<SearchAndConnectBtn> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Text(
-                      "Kompression is not connected",
-                      style: TextStyle(
-                        fontSize: 24,
-                        color: Colors.white,
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: FittedBox(
+                        fit: BoxFit.fitHeight,
+                        child: Text(
+                          "Kompression is not connected",
+                          style: TextStyle(
+                            fontSize: 22,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
                     Icon(
@@ -56,12 +62,18 @@ class _SearchAndConnectBtnState extends State<SearchAndConnectBtn> {
                       size: 100,
                       color: Colors.white,
                     ),
-                    Text(
-                      "Click here to search and connect",
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: FittedBox(
+                        fit: BoxFit.fitHeight,
+                        child: Text(
+                          "Click here to search and connect",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -72,21 +84,19 @@ class _SearchAndConnectBtnState extends State<SearchAndConnectBtn> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text(
-                    "Kompression is not connected",
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: Colors.white,
+                  FittedBox(
+                    fit: BoxFit.fitHeight,
+                    child: Text(
+                      "Searching ...",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                  CircularProgressIndicator(),
-                  Text(
-                    "Searching ...",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
+                  CircularProgressIndicator(
+                    color: Colors.white,
                   ),
                 ],
               ),

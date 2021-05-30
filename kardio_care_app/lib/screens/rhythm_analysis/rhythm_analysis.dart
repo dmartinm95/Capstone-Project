@@ -27,6 +27,24 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
               child: Text(
+                "Heartbeat Breakdown",
+                style: KardioCareAppTheme.subTitle,
+              ),
+            ),
+            const Divider(
+              color: KardioCareAppTheme.dividerPurple,
+              height: 20,
+              thickness: 1,
+              indent: 19,
+              endIndent: 19,
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(19, 10, 19, 0),
+              child: HeartRhythmPercents(),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
+              child: Text(
                 "Abnormal Events",
                 style: KardioCareAppTheme.subTitle,
               ),
@@ -79,24 +97,6 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
-              child: Text(
-                "Heartbeat Breakdown",
-                style: KardioCareAppTheme.subTitle,
-              ),
-            ),
-            const Divider(
-              color: KardioCareAppTheme.dividerPurple,
-              height: 20,
-              thickness: 1,
-              indent: 19,
-              endIndent: 19,
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(19, 10, 19, 0),
-              child: HeartRhythmPercents(),
             ),
             Container(
               height: 100,

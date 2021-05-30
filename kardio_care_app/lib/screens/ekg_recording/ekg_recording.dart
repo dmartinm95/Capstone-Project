@@ -157,14 +157,6 @@ class _EKGRecordingState extends State<EKGRecording> {
             ),
           ),
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                color: Colors.red,
-              ),
-            ),
-          ),
-          Expanded(
             child: Container(
               child: Row(
                 children: [
