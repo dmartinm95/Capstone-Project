@@ -98,17 +98,23 @@ class _EKGRecordingState extends State<EKGRecording> {
             padding: const EdgeInsets.all(20.0),
             child: Center(
               child: recording
-                  ? Text(
-                      'Recording EKG stay calm and stationary.',
-                      style: TextStyle(
-                          color: KardioCareAppTheme.detailGray, fontSize: 19),
-                      textAlign: TextAlign.center,
+                  ? FittedBox(
+                      fit: BoxFit.fitHeight,
+                      child: Text(
+                        'Recording EKG stay calm and stationary.',
+                        style: TextStyle(
+                            color: KardioCareAppTheme.detailGray, fontSize: 19),
+                        textAlign: TextAlign.center,
+                      ),
                     )
-                  : Text(
-                      'When you are ready press start:',
-                      style: TextStyle(
-                          color: KardioCareAppTheme.detailGray, fontSize: 19),
-                      textAlign: TextAlign.center,
+                  : FittedBox(
+                      fit: BoxFit.fitHeight,
+                      child: Text(
+                        'When you are ready press start:',
+                        style: TextStyle(
+                            color: KardioCareAppTheme.detailGray, fontSize: 19),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
             ),
           ),
