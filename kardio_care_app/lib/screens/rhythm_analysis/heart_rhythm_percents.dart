@@ -26,12 +26,15 @@ class _HeartRhythmPercentsState extends State<HeartRhythmPercents> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(4.0),
-                child: Text(
-                  'Breakdown of Heartbeat Rhythms',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 19,
-                    color: KardioCareAppTheme.detailGray,
+                child: FittedBox(
+                  fit: BoxFit.fitHeight,
+                  child: Text(
+                    'Breakdown of Heartbeat Rhythms',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 19,
+                      color: KardioCareAppTheme.detailGray,
+                    ),
                   ),
                 ),
               ),
