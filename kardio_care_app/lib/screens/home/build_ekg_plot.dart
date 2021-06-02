@@ -51,29 +51,29 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
       return <LeadData>[LeadData(xIndex, 0)];
     }
 
-    int sum = data.fold(0, (sum, b) => sum + b);
-    int average = (sum / data.length).round();
+    // int sum = data.fold(0, (sum, b) => sum + b);
+    // int average = (sum / data.length).round();
 
-    // for (int i = 0; i < data.length; i++) {
-    try {
-      dataList.add(LeadData(xIndex, average));
-    } catch (e) {
-      print("Error observed while updating DataList: ${e.toString()}");
-    }
+    for (int i = 0; i < data.length; i++) {
+      try {
+        dataList.add(LeadData(xIndex, data[i]));
+      } catch (e) {
+        print("Error observed while updating DataList: ${e.toString()}");
+      }
 
-    if (dataList.length == 100) {
-      dataList.removeAt(0);
-      _chartSeriesController?.updateDataSource(
-        addedDataIndexes: <int>[dataList.length - 1],
-        removedDataIndexes: <int>[0],
-      );
-    } else {
-      _chartSeriesController?.updateDataSource(
-        addedDataIndexes: <int>[dataList.length - 1],
-      );
+      if (dataList.length == 500) {
+        dataList.removeAt(0);
+        _chartSeriesController?.updateDataSource(
+          addedDataIndexes: <int>[dataList.length - 1],
+          removedDataIndexes: <int>[0],
+        );
+      } else {
+        _chartSeriesController?.updateDataSource(
+          addedDataIndexes: <int>[dataList.length - 1],
+        );
+      }
+      xIndex = xIndex + 1;
     }
-    xIndex = xIndex + 1;
-    // }
 
     return dataList;
   }
