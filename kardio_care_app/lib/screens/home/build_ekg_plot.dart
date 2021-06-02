@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:kardio_care_app/util/data_filter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class BuildEKGPlot extends StatefulWidget {
-  const BuildEKGPlot({Key key, this.dataValue}) : super(key: key);
+  const BuildEKGPlot({Key key, this.dataValue, this.dataFilter})
+      : super(key: key);
 
   final List<int> dataValue;
+  final DataFilter dataFilter;
 
   @override
   _BuildEKGPlotState createState() => _BuildEKGPlotState();
@@ -26,7 +29,7 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
       primaryYAxis: NumericAxis(
         isVisible: false,
         minimum: 0,
-        maximum: 1023,
+        maximum: 4095,
       ),
       series: <ChartSeries>[
         FastLineSeries<LeadData, int>(
@@ -51,29 +54,34 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
       return <LeadData>[LeadData(xIndex, 0)];
     }
 
-    int sum = data.fold(0, (sum, b) => sum + b);
-    int average = (sum / data.length).round();
+    // int sum = data.fold(0, (sum, b) => sum + b);
+    // int average = (sum / data.length).round();
 
-    // for (int i = 0; i < data.length; i++) {
-    try {
-      dataList.add(LeadData(xIndex, average));
-    } catch (e) {
-      print("Error observed while updating DataList: ${e.toString()}");
-    }
+    for (int i = 0; i < data.length; i++) {
+      try {
+        widget.dataFilter.addDataToBuffer(data[i]);
+        if (widget.dataFilter.isBufferFull) {
+          dataList.add(LeadData(xIndex, widget.dataFilter.getFilteredData()));
+        } else {
+          dataList.add(LeadData(xIndex, data[i]));
+        }
+      } catch (e) {
+        print("Error observed while updating DataList: ${e.toString()}");
+      }
 
-    if (dataList.length == 100) {
-      dataList.removeAt(0);
-      _chartSeriesController?.updateDataSource(
-        addedDataIndexes: <int>[dataList.length - 1],
-        removedDataIndexes: <int>[0],
-      );
-    } else {
-      _chartSeriesController?.updateDataSource(
-        addedDataIndexes: <int>[dataList.length - 1],
-      );
+      if (dataList.length == 1000) {
+        dataList.removeAt(0);
+        _chartSeriesController?.updateDataSource(
+          addedDataIndexes: <int>[dataList.length - 1],
+          removedDataIndexes: <int>[0],
+        );
+      } else {
+        _chartSeriesController?.updateDataSource(
+          addedDataIndexes: <int>[dataList.length - 1],
+        );
+      }
+      xIndex = xIndex + 1;
     }
-    xIndex = xIndex + 1;
-    // }
 
     return dataList;
   }
