@@ -28,10 +28,10 @@ class PanTomkpins with ChangeNotifier {
       bufferArrayIndex++;
 
       if (bufferArrayIndex == MAX_SIZE) {
-        print("Array is now full");
+        // print("Array is now full");
         bufferArrayIndex = 0;
         Array result = performPanTompkins(bufferArray);
-        print(result);
+        // print(result);
         currentHeartRate = mean(result).toInt();
 
         // notifyListeners();

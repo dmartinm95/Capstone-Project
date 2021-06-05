@@ -17,6 +17,7 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
   List<LeadData> dataList = <LeadData>[LeadData(0, 0)];
   ChartSeriesController _chartSeriesController;
   int xIndex = 0;
+  int defaultNumberPoints = 1000;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +30,7 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
       primaryYAxis: NumericAxis(
         isVisible: false,
         minimum: 0,
-        maximum: 4095,
+        maximum: 4096,
       ),
       series: <ChartSeries>[
         FastLineSeries<LeadData, int>(
@@ -48,7 +49,7 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
   }
 
   List<LeadData> updateDataList(List<int> data) {
-    print("Adding data: $data");
+    // print("Adding data: $data");
 
     if (data == null) {
       return <LeadData>[LeadData(xIndex, 0)];
@@ -60,16 +61,20 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
     for (int i = 0; i < data.length; i++) {
       try {
         widget.dataFilter.addDataToBuffer(data[i]);
-        if (widget.dataFilter.isBufferFull) {
-          dataList.add(LeadData(xIndex, widget.dataFilter.getFilteredData()));
-        } else {
-          dataList.add(LeadData(xIndex, data[i]));
+        if (i % widget.dataFilter.downsampleFactor == 0) {
+          if (widget.dataFilter.isBufferFull) {
+            dataList.add(LeadData(xIndex, widget.dataFilter.getFilteredData()));
+          } else {
+            dataList.add(LeadData(xIndex, data[i]));
+          }
+          xIndex = xIndex + 1;
         }
       } catch (e) {
         print("Error observed while updating DataList: ${e.toString()}");
       }
 
-      if (dataList.length == 1000) {
+      if (dataList.length ==
+          defaultNumberPoints / widget.dataFilter.downsampleFactor) {
         dataList.removeAt(0);
         _chartSeriesController?.updateDataSource(
           addedDataIndexes: <int>[dataList.length - 1],
@@ -80,7 +85,6 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
           addedDataIndexes: <int>[dataList.length - 1],
         );
       }
-      xIndex = xIndex + 1;
     }
 
     return dataList;

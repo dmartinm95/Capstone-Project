@@ -10,17 +10,13 @@ class DeviceScanner with ChangeNotifier {
       "4ccf588c-c839-4ec7-9954-94611cc77895";
   static const String LEAD_TWO_CHAR_UUID =
       "7c90374c-9246-4fa2-b396-299d83992ac6";
+  static const String LEAD_THREE_CHAR_UUID =
+      "44ab8765-80b6-442f-8953-f18e3375549c";
+  static const String LEAD_V1_CHAR_UUID =
+      "f34748fb-c879-49f6-9719-aea577d5d182";
   static const String DEVICE_NAME = "Kompression";
   static const int SAMPLES_LENGTH = 10;
   static const int BYTES_TO_RECEIVE = 20;
-
-  // Use BehaviourSubject from rxdart library, which stores the last value emitted
-  // and sends it to any new subscriber, this helps remember the connection state
-  // when switching between the different screens
-  final _streamController = BehaviorSubject<BluetoothDevice>();
-
-  // Stream controller for checking when a device is connected
-  Stream<BluetoothDevice> get bluetoothDevice => _streamController.stream;
 
   ValueNotifier<BluetoothDevice> bleConnectionNotifier =
       ValueNotifier<BluetoothDevice>(null);
@@ -32,6 +28,8 @@ class DeviceScanner with ChangeNotifier {
   BluetoothService bleCustomService;
   BluetoothCharacteristic bleLeadOneCharacteristic;
   BluetoothCharacteristic bleLeadTwoCharacteristic;
+  BluetoothCharacteristic bleLeadThreeCharacteristic;
+  BluetoothCharacteristic bleLeadV1Characteristic;
 
   List<BluetoothCharacteristic> bleLeadCharacteristics = List.filled(4, null);
   int _prevLeadIndex = 0;
@@ -48,7 +46,6 @@ class DeviceScanner with ChangeNotifier {
 
   void dispose() {
     super.dispose();
-    _streamController.close();
   }
 
   // Start searching for bluetooth devices nearby
@@ -103,7 +100,6 @@ class DeviceScanner with ChangeNotifier {
       print("Setting notify to true");
       await bleLeadOneCharacteristic.setNotifyValue(true);
       print("Connected");
-      _streamController.add(bleDevice);
       bleConnectionNotifier.value = bleDevice;
 
       listenToStream(0);
@@ -135,6 +131,13 @@ class DeviceScanner with ChangeNotifier {
     bleLeadTwoCharacteristic = bleCharacteristics.firstWhere((characteristic) =>
         characteristic.uuid.toString() == LEAD_TWO_CHAR_UUID);
 
+    bleLeadThreeCharacteristic = bleCharacteristics.firstWhere(
+        (characteristic) =>
+            characteristic.uuid.toString() == LEAD_THREE_CHAR_UUID);
+
+    bleLeadV1Characteristic = bleCharacteristics.firstWhere((characteristic) =>
+        characteristic.uuid.toString() == LEAD_V1_CHAR_UUID);
+
     if (bleLeadOneCharacteristic != null) {
       bleLeadCharacteristics[0] = bleLeadOneCharacteristic;
       print(
@@ -144,6 +147,16 @@ class DeviceScanner with ChangeNotifier {
       bleLeadCharacteristics[1] = bleLeadTwoCharacteristic;
       print(
           "Found Characteristic! - uuid: ${bleLeadTwoCharacteristic.uuid.toString()}");
+    }
+    if (bleLeadThreeCharacteristic != null) {
+      bleLeadCharacteristics[2] = bleLeadThreeCharacteristic;
+      print(
+          "Found Characteristic! - uuid: ${bleLeadThreeCharacteristic.uuid.toString()}");
+    }
+    if (bleLeadV1Characteristic != null) {
+      bleLeadCharacteristics[3] = bleLeadV1Characteristic;
+      print(
+          "Found Characteristic! - uuid: ${bleLeadV1Characteristic.uuid.toString()}");
     }
   }
 
@@ -161,6 +174,14 @@ class DeviceScanner with ChangeNotifier {
         _decodeData(data);
       });
     } else if (leadIndex == 1) {
+      bleLeadCharacteristics[leadIndex].value.listen((data) {
+        _decodeData(data);
+      });
+    } else if (leadIndex == 2) {
+      bleLeadCharacteristics[leadIndex].value.listen((data) {
+        _decodeData(data);
+      });
+    } else if (leadIndex == 3) {
       bleLeadCharacteristics[leadIndex].value.listen((data) {
         _decodeData(data);
       });
@@ -201,7 +222,6 @@ class DeviceScanner with ChangeNotifier {
 
     bleDevice.disconnect();
 
-    _streamController.sink.add(null);
     bleConnectionNotifier.value = null;
     print("Disconnected");
   }
