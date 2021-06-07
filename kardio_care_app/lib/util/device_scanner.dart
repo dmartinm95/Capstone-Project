@@ -195,11 +195,15 @@ class DeviceScanner with ChangeNotifier {
       return;
     }
 
-    await bleLeadCharacteristics[_prevLeadIndex].setNotifyValue(false);
+    try {
+      await bleLeadCharacteristics[_prevLeadIndex].setNotifyValue(false);
 
-    await bleLeadCharacteristics[leadIndex].setNotifyValue(true);
+      await bleLeadCharacteristics[leadIndex].setNotifyValue(true);
 
-    activeLeadIndex = leadIndex;
+      activeLeadIndex = leadIndex;
+    } catch (e) {
+      print("Error while stopping current stream: ${e.toString()}");
+    }
   }
 
   // Helper method to parse the incoming data
