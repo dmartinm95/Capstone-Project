@@ -44,7 +44,7 @@ class _MainDashboardState extends State<MainDashboard> {
           size: 40,
         ),
         onPressed: () {
-          if (deviceScannerProvider.bleDevice == null) {
+          if (deviceScannerProvider.bleConnectionNotifier.value == null) {
             showAlertDialog(context);
           } else {
             Navigator.pushNamed(context, '/start_recording');
