@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
+import 'dart:math';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:kardio_care_app/widgets/blood_oxygen_tile.dart';
 import 'package:kardio_care_app/widgets/heart_rate_tile.dart';
+import 'package:kardio_care_app/constants/app_constants.dart';
 
 class EKGRecording extends StatefulWidget {
   EKGRecording({Key key}) : super(key: key);
@@ -14,6 +16,12 @@ class EKGRecording extends StatefulWidget {
 }
 
 class _EKGRecordingState extends State<EKGRecording> {
+  DateTime startTime;
+  Map<DateTime, double> bloodOxData;
+  Map<DateTime, double> heartRateData;
+  Map<DateTime, double> heartRateVarData;
+  List<List<List<double>>> ekgData = <List<List<double>>>[];
+
   int _currSeconds = 0;
   int _currMinutes = 0;
 
@@ -21,26 +29,76 @@ class _EKGRecordingState extends State<EKGRecording> {
 
   bool recording = false;
 
-  Timer _timer;
+  Timer _countdownTimer;
+  Timer fakeDataTimer;
 
   var f = NumberFormat("00");
 
+  int random(int min, int max) {
+    var rn = Random();
+    return (min + rn.nextInt(max - min));
+  }
+
+  List<List<List<double>>> generateFakeEKG(int numMinutes) {
+    List<List<List<double>>> input = <List<List<double>>>[];
+
+    int batches = (numMinutes * 60 * 500 / 4096).ceil();
+
+    for (var k = 0; k < batches; k++) {
+      List<List<double>> matrix = <List<double>>[];
+
+      for (var i = 0; i < 4096; i++) {
+        List<double> list = <double>[];
+
+        for (var j = 0; j < 12; j++) {
+          list.add(0);
+        }
+
+        matrix.add(list);
+      }
+
+      input.add(matrix);
+    }
+
+    return input;
+  }
+
+  void generateFakeData() {
+    setState(() {
+      bloodOxData[DateTime.now()] = random(10, 80).toDouble();
+      heartRateData[DateTime.now()] = random(40, 100).toDouble();
+      heartRateVarData[DateTime.now()] = random(40, 90).toDouble();
+    });
+  }
+
   void _stopTimer() {
-    if (_timer != null) {
-      _timer.cancel();
+    if (_countdownTimer != null) {
+      _countdownTimer.cancel();
+      fakeDataTimer.cancel();
       _currSeconds = 0;
       _currMinutes = 0;
     }
   }
 
   void _startTimer() {
-    if (_timer != null) {
+    bloodOxData = {};
+    heartRateData = {};
+    heartRateVarData = {};
+
+    if (_countdownTimer != null) {
       _stopTimer();
     }
 
+    startTime = DateTime.now();
+
+    generateFakeData();
+    fakeDataTimer = Timer.periodic(Duration(seconds: 5), (timer) {
+      generateFakeData();
+    });
+
     _currMinutes = _totalMinutes;
 
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         if (_currSeconds > 0) {
           _currSeconds--;
@@ -49,9 +107,17 @@ class _EKGRecordingState extends State<EKGRecording> {
             _currSeconds = 59;
             _currMinutes--;
           } else {
-            _timer.cancel();
+            _countdownTimer.cancel();
+            fakeDataTimer.cancel();
             print("Timer Complete");
-            Navigator.pushReplacementNamed(context, '/ekg_results');
+            Navigator.pushReplacementNamed(context, '/ekg_results', arguments: {
+              'bloodOxData': bloodOxData,
+              'heartRateData': heartRateData,
+              'heartRateVarData': heartRateVarData,
+              'ekgData': ekgData,
+              'startTime': startTime,
+              'selectedMinutes': ModalRoute.of(context).settings.arguments
+            });
           }
         }
       });
@@ -61,8 +127,7 @@ class _EKGRecordingState extends State<EKGRecording> {
   @override
   Widget build(BuildContext context) {
     _totalMinutes = ModalRoute.of(context).settings.arguments;
-    print(_totalMinutes);
-    // _currMinutes = _totalMinutes;
+    ekgData = generateFakeEKG(_totalMinutes);
 
     return Scaffold(
       appBar: AppBar(
@@ -81,7 +146,7 @@ class _EKGRecordingState extends State<EKGRecording> {
               icon: Icon(Icons.close),
               color: KardioCareAppTheme.background,
               onPressed: () {
-                Navigator.maybePop(context);
+                Navigator.pop(context);
               },
             ),
           ),
@@ -94,38 +159,15 @@ class _EKGRecordingState extends State<EKGRecording> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Center(
-              child: recording
-                  ? FittedBox(
-                      fit: BoxFit.fitHeight,
-                      child: Text(
-                        'Recording EKG stay calm and stationary.',
-                        style: TextStyle(
-                            color: KardioCareAppTheme.detailGray, fontSize: 19),
-                        textAlign: TextAlign.center,
-                      ),
-                    )
-                  : FittedBox(
-                      fit: BoxFit.fitHeight,
-                      child: Text(
-                        'When you are ready press start:',
-                        style: TextStyle(
-                            color: KardioCareAppTheme.detailGray, fontSize: 19),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-            ),
-          ),
           Container(
+            height: MediaQuery.of(context).size.height * 0.4,
             child: CircularPercentIndicator(
               radius: 200.0,
               lineWidth: 17.0,
               animation: true,
               restartAnimation: false,
               animateFromLastPercent: true,
-              animationDuration: 900,
+              animationDuration: 1000,
               percent:
                   (_currMinutes.toDouble() * 60 + _currSeconds.toDouble()) /
                       (_totalMinutes.toDouble() * 60),
@@ -133,7 +175,9 @@ class _EKGRecordingState extends State<EKGRecording> {
                   ? Text(
                       "${f.format(_currMinutes)} : ${f.format(_currSeconds)}",
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 30.0),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30.0,
+                      ),
                     )
                   : ConstrainedBox(
                       constraints:
@@ -162,15 +206,38 @@ class _EKGRecordingState extends State<EKGRecording> {
               progressColor: KardioCareAppTheme.detailGreen,
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Center(
+              child: recording
+                  ? FittedBox(
+                      fit: BoxFit.fitHeight,
+                      child: Text(
+                        'Recording EKG stay calm and stationary.',
+                        style: TextStyle(
+                            color: KardioCareAppTheme.detailGray, fontSize: 19),
+                        textAlign: TextAlign.center,
+                      ),
+                    )
+                  : FittedBox(
+                      fit: BoxFit.fitHeight,
+                      child: Text(
+                        'When you are ready press start.',
+                        style: TextStyle(
+                            color: KardioCareAppTheme.detailGray, fontSize: 19),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+            ),
+          ),
           Expanded(
             child: Container(
               child: Row(
                 children: [
                   Expanded(
                     child: HeartRateTile(
-                        // lastHR: 96,
-                        // currHR: 80,
-                        ),
+                      currHR: heartRateData?.values?.last?.toInt(),
+                    ),
                   ),
                   const VerticalDivider(
                     width: 25,
@@ -181,8 +248,8 @@ class _EKGRecordingState extends State<EKGRecording> {
                   ),
                   Expanded(
                     child: BloodOxygenTile(
-                        // bloodOx: 45,
-                        ),
+                      bloodOx: bloodOxData?.values?.last?.toInt(),
+                    ),
                   )
                 ],
               ),

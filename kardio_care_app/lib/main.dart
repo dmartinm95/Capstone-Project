@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:kardio_care_app/app_theme.dart';
+import 'package:kardio_care_app/screens/heart_calendar/view_recording.dart';
 import 'package:kardio_care_app/screens/home/bluetooth_off_screen.dart';
 import 'package:kardio_care_app/screens/home/home.dart';
 import 'package:kardio_care_app/main_dashboard.dart';
@@ -10,9 +11,18 @@ import 'package:kardio_care_app/screens/ekg_recording/start_recording.dart';
 import 'package:kardio_care_app/screens/rhythm_analysis/view_rhythm_event.dart';
 import 'package:provider/provider.dart';
 import 'package:kardio_care_app/util/device_scanner.dart';
-import 'package:kardio_care_app/screens/rhythm_analysis/all_recordings.dart';
+import 'package:kardio_care_app/screens/rhythm_analysis/all_rhythm_events.dart';
+import 'package:kardio_care_app/util/data_storage.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  Hive.registerAdapter(RecordingDataAdapter());
+
+  await Hive.openBox<RecordingData>('recordingDataBox');
+
   runApp(MyApp());
 }
 
@@ -30,8 +40,9 @@ class MyApp extends StatelessWidget {
           '/start_recording': (context) => StartRecording(),
           '/ekg_recording': (context) => EKGRecording(),
           '/ekg_results': (context) => EKGResults(),
-          '/all_recordings': (context) => AllRecordings(),
+          '/all_rhythm_events': (context) => AllRhythmEvents(),
           '/view_rhythm_event': (context) => ViewRhythmEvent(),
+          '/view_recording': (context) => ViewRecording(),
         },
         theme: ThemeData(
           scaffoldBackgroundColor: KardioCareAppTheme.background,

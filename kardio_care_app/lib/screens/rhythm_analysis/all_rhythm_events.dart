@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 
-class AllRecordings extends StatelessWidget {
-  const AllRecordings({Key key}) : super(key: key);
+class AllRhythmEvents extends StatelessWidget {
+  const AllRhythmEvents({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +10,7 @@ class AllRecordings extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          "All Recordings",
+          "All Rhythm Events",
           style: KardioCareAppTheme.screenTitleText,
         ),
         centerTitle: true,

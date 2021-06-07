@@ -34,7 +34,7 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
       primaryXAxis: NumericAxis(
           // intervalType: NumericAxis',
           visibleMinimum: chartData[0].x.toDouble(),
-          visibleMaximum: chartData[500].x.toDouble()),
+          visibleMaximum: 250),
       zoomPanBehavior: ZoomPanBehavior(
         enablePanning: true,
       ),

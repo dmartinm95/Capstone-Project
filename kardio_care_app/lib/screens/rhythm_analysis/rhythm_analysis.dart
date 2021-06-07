@@ -45,7 +45,7 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
               child: Text(
-                "Abnormal Events",
+                "Recent Rhythms",
                 style: KardioCareAppTheme.subTitle,
               ),
             ),
@@ -71,7 +71,7 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
             ),
             Center(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(19, 5, 19, 10),
+                padding: const EdgeInsets.fromLTRB(19, 10, 19, 10),
                 child: Container(
                   width: double.infinity,
                   height: 50,
@@ -82,9 +82,8 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
                           borderRadius: BorderRadius.circular(10)),
                     ),
                     // child: Padding(
-                    // padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      "View All",
+                      "View All Rhythm Events",
                       style: TextStyle(
                         fontSize: 13,
                         color: Colors.white,
@@ -92,7 +91,7 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
                     ),
                     // ),
                     onPressed: () {
-                      Navigator.pushNamed(context, '/all_recordings');
+                      Navigator.pushNamed(context, '/all_rhythm_events');
                     },
                   ),
                 ),

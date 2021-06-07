@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:kardio_care_app/screens/ekg_recording/recording_charts.dart';
+import 'package:kardio_care_app/util/blurry_loading.dart';
 import 'package:kardio_care_app/widgets/recording_stats.dart';
+import 'package:kardio_care_app/util/data_storage.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'dart:math';
+import 'package:kardio_care_app/widgets/filter_chip_widget.dart';
 
 class EKGResults extends StatefulWidget {
   EKGResults({Key key}) : super(key: key);
@@ -11,8 +17,20 @@ class EKGResults extends StatefulWidget {
 }
 
 class _EKGResultsState extends State<EKGResults> {
+  var unsavedRecordingData;
+  final box = Hive.box<RecordingData>('recordingDataBox');
+
   @override
   Widget build(BuildContext context) {
+    unsavedRecordingData = ModalRoute.of(context).settings.arguments;
+    RecordingData dataResults = RecordingData();
+    dataResults.bloodOxData = unsavedRecordingData['bloodOxData'];
+    dataResults.heartRateData = unsavedRecordingData['heartRateData'];
+    dataResults.heartRateVarData = unsavedRecordingData['heartRateVarData'];
+    dataResults.ekgData = unsavedRecordingData['ekgData'];
+    dataResults.startTime = unsavedRecordingData['startTime'];
+    dataResults.recordingLengthMin = unsavedRecordingData['selectedMinutes'];
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -46,16 +64,30 @@ class _EKGResultsState extends State<EKGResults> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 10, 19, 0),
-              child: RecordingCharts(),
+              child: RecordingCharts(
+                heartRateData: dataResults.heartRateData,
+                heartRateVarData: dataResults.heartRateVarData,
+              ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(19, 10, 19, 10),
+              padding: const EdgeInsets.fromLTRB(19, 20, 19, 10),
               child: RecordingStats(
-                avgHRV: 78,
-                avgHR: 78,
-                avgO2: 96,
-                minHR: 51,
-                maxHR: 80,
+                avgHRV: (dataResults.heartRateVarData.values
+                            .toList()
+                            .reduce((a, b) => a + b) ~/
+                        dataResults.heartRateVarData.values.length)
+                    .toInt(),
+                avgHR: (dataResults.heartRateData.values
+                        .toList()
+                        .reduce((a, b) => a + b) ~/
+                    dataResults.heartRateData.values.length),
+                avgO2: (dataResults.bloodOxData.values
+                            .toList()
+                            .reduce((a, b) => a + b) ~/
+                        dataResults.bloodOxData.values.length)
+                    .toInt(),
+                minHR: dataResults.heartRateData.values.reduce(min).toInt(),
+                maxHR: dataResults.heartRateData.values.reduce(max).toInt(),
               ),
             ),
             Padding(
@@ -131,7 +163,33 @@ class _EKGResultsState extends State<EKGResults> {
                           ),
                         ),
                         // ),
-                        onPressed: () {},
+                        onPressed: () async {
+                          print('save results');
+
+                          await box.put(
+                              unsavedRecordingData['startTime']
+                                  .toIso8601String(),
+                              dataResults);
+
+                          print('saved');
+
+                          // showDialog(
+                          //   barrierDismissible: false,
+                          //   context: context,
+                          //   builder: (BuildContext context) {
+                          //     return BlurryLoading();
+                          //   },
+                          // );
+
+                          // TODO: Peform Neural Network analysis here
+                          // await Future.delayed(Duration(seconds: 3));
+
+                          // pop the dialog
+                          // Navigator.of(context).pop();
+
+                          // pop the screen
+                          Navigator.of(context).maybePop();
+                        },
                       ),
                     ),
                   ),
@@ -160,7 +218,13 @@ class _EKGResultsState extends State<EKGResults> {
                           ),
                         ),
                         // ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pushReplacementNamed(
+                            context,
+                            '/ekg_recording',
+                            arguments: unsavedRecordingData['selectedMinutes'],
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -170,41 +234,6 @@ class _EKGResultsState extends State<EKGResults> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class FilterChipWidget extends StatefulWidget {
-  final String chipName;
-
-  FilterChipWidget({Key key, this.chipName}) : super(key: key);
-
-  @override
-  _FilterChipWidgetState createState() => _FilterChipWidgetState();
-}
-
-class _FilterChipWidgetState extends State<FilterChipWidget> {
-  var _isSelected = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return FilterChip(
-      label: Text(widget.chipName),
-      labelStyle: TextStyle(
-          color: KardioCareAppTheme.white,
-          fontSize: 16.0,
-          fontWeight: FontWeight.w500),
-      selected: _isSelected,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(30.0),
-      ),
-      backgroundColor: KardioCareAppTheme.actionBlue,
-      onSelected: (isSelected) {
-        setState(() {
-          _isSelected = isSelected;
-        });
-      },
-      selectedColor: KardioCareAppTheme.detailRed,
     );
   }
 }

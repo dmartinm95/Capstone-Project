@@ -11,11 +11,11 @@ class RecordingStats extends StatelessWidget {
     this.maxHR,
   }) : super(key: key);
 
-  final double avgHRV;
-  final double avgHR;
-  final double avgO2;
-  final double minHR;
-  final double maxHR;
+  final int avgHRV;
+  final int avgHR;
+  final int avgO2;
+  final int minHR;
+  final int maxHR;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class RecordingStats extends StatelessWidget {
             style: KardioCareAppTheme.subTitle,
           ),
           const Divider(
-            color: KardioCareAppTheme.detailGray,
+            color: KardioCareAppTheme.dividerPurple,
             height: 20,
             thickness: 1,
             indent: 0,
@@ -58,7 +58,7 @@ class RecordingStats extends StatelessWidget {
             ],
           ),
           const Divider(
-            color: KardioCareAppTheme.detailGray,
+            color: KardioCareAppTheme.dividerPurple,
             height: 20,
             thickness: 1,
             indent: 0,
@@ -98,7 +98,7 @@ class RecordingStats extends StatelessWidget {
             ],
           ),
           const Divider(
-            color: KardioCareAppTheme.detailGray,
+            color: KardioCareAppTheme.dividerPurple,
             height: 20,
             thickness: 1,
             indent: 0,

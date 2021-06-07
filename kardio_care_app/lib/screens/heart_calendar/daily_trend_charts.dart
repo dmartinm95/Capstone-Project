@@ -7,7 +7,14 @@ import 'package:kardio_care_app/screens/heart_calendar/heart_rate_chart.dart';
 import 'package:kardio_care_app/screens/heart_calendar/hrv_chart.dart';
 
 class DailyTrendCharts extends StatefulWidget {
-  DailyTrendCharts({Key key}) : super(key: key);
+  DailyTrendCharts({
+    Key key,
+    this.heartRateData,
+    this.heartRateVarData,
+  }) : super(key: key);
+
+  final Map<DateTime, double> heartRateData;
+  final Map<DateTime, double> heartRateVarData;
 
   @override
   _DailyTrendChartsState createState() => _DailyTrendChartsState();
@@ -51,7 +58,9 @@ class _DailyTrendChartsState extends State<DailyTrendCharts> {
                           Container(
                             height: MediaQuery.of(context).size.height * 0.35,
                             width: MediaQuery.of(context).size.width * 0.9,
-                            child: HRVChart(),
+                            child: HRVChart(
+                              heartRateVarData: widget.heartRateVarData,
+                            ),
                           ),
                         ],
                       ),
@@ -83,7 +92,9 @@ class _DailyTrendChartsState extends State<DailyTrendCharts> {
                           Container(
                             height: MediaQuery.of(context).size.height * 0.35,
                             width: MediaQuery.of(context).size.width * 0.9,
-                            child: HeartRateChart(),
+                            child: HeartRateChart(
+                              heartRateData: widget.heartRateData,
+                            ),
                           ),
                         ],
                       ),
