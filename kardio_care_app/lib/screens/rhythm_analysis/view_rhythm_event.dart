@@ -3,6 +3,8 @@ import 'package:kardio_care_app/app_theme.dart';
 import 'package:kardio_care_app/screens/rhythm_analysis/rhythm_event_chart.dart';
 import 'package:kardio_care_app/widgets/block_radio_button.dart';
 import 'package:kardio_care_app/widgets/recording_stats.dart';
+import 'package:kardio_care_app/widgets/chip_widget.dart'; 
+
 
 class ViewRhythmEvent extends StatelessWidget {
   const ViewRhythmEvent({Key key}) : super(key: key);
@@ -13,7 +15,7 @@ class ViewRhythmEvent extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          "Atrial Flutter Event",
+          "Atrial Flutter Events",
           style: KardioCareAppTheme.screenTitleText,
         ),
         centerTitle: true,
@@ -43,7 +45,7 @@ class ViewRhythmEvent extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
               child: Text(
-                "7pm on January 5, 2020",
+                "Events at 7pm on January 5, 2020",
                 style: KardioCareAppTheme.subTitle,
               ),
             ),
@@ -55,15 +57,45 @@ class ViewRhythmEvent extends StatelessWidget {
               endIndent: 19,
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
-              child: SizedBox(height: 400, child: RhythmEventChart()),
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: BlockRadioButton(
-                buttonLabels: ['I', 'II', 'III', 'V1'],
-                circleBorder: true,
-                backgroundColor: KardioCareAppTheme.background,
+              padding: const EdgeInsets.fromLTRB(19, 10, 19, 10),
+              child: Container(
+                color: Colors.transparent,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(Radius.circular(50)),
+                  ),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.35,
+                                width: MediaQuery.of(context).size.width * 0.9,
+                                child: RhythmEventChart(),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                        child: BlockRadioButton(
+                          buttonLabels: ['I', 'II', 'III', 'V1'],
+                          circleBorder: true,
+                          backgroundColor: KardioCareAppTheme.white,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
               ),
             ),
             Padding(
@@ -94,6 +126,7 @@ class ViewRhythmEvent extends StatelessWidget {
                     spacing: 5.0,
                     runSpacing: 5.0,
                     children: <Widget>[
+                      // TODO: fetch these from the database 
                       ChipWidget(chipName: 'Morning'),
                       ChipWidget(chipName: 'Afternoon'),
                       ChipWidget(chipName: 'Evening'),
@@ -163,28 +196,3 @@ class ViewRhythmEvent extends StatelessWidget {
   }
 }
 
-class ChipWidget extends StatefulWidget {
-  final String chipName;
-
-  ChipWidget({Key key, this.chipName}) : super(key: key);
-
-  @override
-  _ChipWidgetState createState() => _ChipWidgetState();
-}
-
-class _ChipWidgetState extends State<ChipWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return Chip(
-      label: Text(widget.chipName),
-      labelStyle: TextStyle(
-          color: KardioCareAppTheme.white,
-          fontSize: 16.0,
-          fontWeight: FontWeight.w500),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(30.0),
-      ),
-      backgroundColor: KardioCareAppTheme.detailPurple,
-    );
-  }
-}

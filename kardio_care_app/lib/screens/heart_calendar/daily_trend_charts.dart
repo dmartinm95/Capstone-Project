@@ -7,7 +7,14 @@ import 'package:kardio_care_app/screens/heart_calendar/heart_rate_chart.dart';
 import 'package:kardio_care_app/screens/heart_calendar/hrv_chart.dart';
 
 class DailyTrendCharts extends StatefulWidget {
-  DailyTrendCharts({Key key}) : super(key: key);
+  DailyTrendCharts({
+    Key key,
+    this.heartRateData,
+    this.heartRateVarData,
+  }) : super(key: key);
+
+  final Map<DateTime, double> heartRateData;
+  final Map<DateTime, double> heartRateVarData;
 
   @override
   _DailyTrendChartsState createState() => _DailyTrendChartsState();
@@ -30,46 +37,67 @@ class _DailyTrendChartsState extends State<DailyTrendCharts> {
             radioButtonIndex == 0
                 ? Padding(
                     padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-                          child: Text(
-                            'Heart Rate Variability Today',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+                            child: Text(
+                              'Heart Rate Variability Today',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(30, 12, 30, 5),
-                          child: Text('0 - 100 score'),
-                        ), // ? will this be 0 - 100 ?
-                        HRVChart(),
-                      ],
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(30, 12, 30, 5),
+                            child: Text('0 - 100 score'),
+                          ), // ? will this be 0 - 100 ?
+                          Container(
+                            height: MediaQuery.of(context).size.height * 0.35,
+                            width: MediaQuery.of(context).size.width * 0.9,
+                            child: HRVChart(
+                              heartRateVarData: widget.heartRateVarData,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   )
                 : Padding(
                     padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-                          child: Text(
-                            'Heart Rate Today',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+                            child: FittedBox(
+                              fit: BoxFit.contain,
+                              child: Text(
+                                'Heart Rate Today',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 18),
+                              ),
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(30, 12, 30, 5),
-                          child: Text('Beats per minute'),
-                        ),
-                        HeartRateChart(),
-                      ],
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(30, 12, 30, 5),
+                            child: Text('Beats per minute'),
+                          ),
+                          Container(
+                            height: MediaQuery.of(context).size.height * 0.35,
+                            width: MediaQuery.of(context).size.width * 0.9,
+                            child: HeartRateChart(
+                              heartRateData: widget.heartRateData,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
             Padding(

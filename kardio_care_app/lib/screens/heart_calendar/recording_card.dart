@@ -2,12 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 
 class RecordingCard extends StatelessWidget {
-  const RecordingCard({Key key, this.context, this.index, this.numRecordings})
+  const RecordingCard(
+      {Key key,
+      this.context,
+      this.index,
+      this.numRecordings,
+      this.time,
+      this.lengthOfRecording,
+      this.avgHRV,
+      this.bloodOxData,
+      this.heartRateData,
+      this.heartRateVarData})
       : super(key: key);
 
   final BuildContext context;
   final int index;
   final int numRecordings;
+  final DateTime time;
+  final int lengthOfRecording;
+  final int avgHRV;
+  final Map<DateTime, double> bloodOxData;
+  final Map<DateTime, double> heartRateData;
+  final Map<DateTime, double> heartRateVarData;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +51,8 @@ class RecordingCard extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
-                            '6:30 am',
+                            TimeOfDay(hour: time.hour, minute: time.minute)
+                                .format(context),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: KardioCareAppTheme.detailGray,
@@ -52,7 +69,7 @@ class RecordingCard extends StatelessWidget {
                         //   width: 50,
                         // ),
                         Text(
-                          '10 minute recording',
+                          '$lengthOfRecording minute recording',
                           style: TextStyle(
                             fontWeight: FontWeight.w300,
                             color: KardioCareAppTheme.detailGray,
@@ -70,7 +87,7 @@ class RecordingCard extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          "HRV 63",
+                          "HRV $avgHRV",
                           style: TextStyle(
                             fontSize: 16,
                             color: KardioCareAppTheme.detailGray,
@@ -90,12 +107,18 @@ class RecordingCard extends StatelessWidget {
                 ],
               ),
               // ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context, '/view_recording', arguments: {
+                  'bloodOxData': bloodOxData,
+                  'heartRateData': heartRateData,
+                  'heartRateVarData': heartRateVarData,
+                });
+              },
             ),
           ),
           Positioned(
             top: index > 0 ? 0.0 : 40.0,
-            bottom: index == (numRecordings - 1) ? 10.0 : 0.0,
+            bottom: index == (numRecordings - 1) ? 49.0 : 0.0,
             left: 33.0,
             child: Container(
               height: double.infinity,
