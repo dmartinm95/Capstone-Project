@@ -4,6 +4,9 @@ import 'package:kardio_care_app/screens/heart_calendar/heart_calendar.dart';
 import 'package:kardio_care_app/screens/profile/profile.dart';
 import 'package:kardio_care_app/screens/rhythm_analysis/rhythm_analysis.dart';
 import 'package:kardio_care_app/screens/home/home.dart';
+import 'package:kardio_care_app/util/blurry_message_alert.dart';
+import 'package:kardio_care_app/util/device_scanner.dart';
+import 'package:provider/provider.dart';
 
 class MainDashboard extends StatefulWidget {
   @override
@@ -26,6 +29,8 @@ class _MainDashboardState extends State<MainDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    final deviceScannerProvider =
+        Provider.of<DeviceScanner>(context, listen: false);
     return Scaffold(
       extendBody: true,
       body: PageStorage(
@@ -39,7 +44,11 @@ class _MainDashboardState extends State<MainDashboard> {
           size: 40,
         ),
         onPressed: () {
-          Navigator.pushNamed(context, '/start_recording');
+          if (deviceScannerProvider.bleDevice == null) {
+            showAlertDialog(context);
+          } else {
+            Navigator.pushNamed(context, '/start_recording');
+          }
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -117,4 +126,18 @@ class _MainDashboardState extends State<MainDashboard> {
       ),
     );
   }
+}
+
+showAlertDialog(BuildContext context) {
+  BlurryMessageDialog message = BlurryMessageDialog(
+    "Device not connected",
+    "Please connect device\nbefore starting a recording.",
+  );
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return message;
+    },
+  );
 }
