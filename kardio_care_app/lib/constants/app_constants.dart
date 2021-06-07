@@ -4,6 +4,6 @@
 const String kServiceUUID = "202d3e06-252d-40bd-8dc6-0b7bfe15b99f";
 const String kLeadOneCharUUID = "4ccf588c-c839-4ec7-9954-94611cc77895";
 
-const int ekgShortLengthMin = 1; 
+const int ekgShortLengthMin = 1;
 const int ekgMediumLengthMin = 5;
 const int ekgLongLengthMin = 10; 

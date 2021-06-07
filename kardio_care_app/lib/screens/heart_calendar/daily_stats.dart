@@ -5,23 +5,23 @@ class DailyStats extends StatelessWidget {
   const DailyStats({
     Key key,
     this.avgHR,
-    this.avgO2,
+    this.avgBloodOx,
     this.minHR,
     this.minHRTime,
     this.maxHR,
     this.maxHRTime,
-    this.minO2,
-    this.minO2Time,
+    this.minBloodOx,
+    this.minBloodOxTime,
   }) : super(key: key);
 
-  final double avgHR;
-  final double avgO2;
-  final double minHR;
-  final TimeOfDay minHRTime;
-  final double maxHR;
-  final TimeOfDay maxHRTime;
-  final double minO2;
-  final TimeOfDay minO2Time;
+  final int avgHR;
+  final int avgBloodOx;
+  final int minHR;
+  final String minHRTime;
+  final int maxHR;
+  final String maxHRTime;
+  final int minBloodOx;
+  final String minBloodOxTime;
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +65,7 @@ class DailyStats extends StatelessWidget {
                     Text('Avg O2 %'),
                     Expanded(child: SizedBox()),
                     Text(
-                      (avgO2 ?? "--").toString() + ' %',
+                      (avgBloodOx ?? "--").toString() + ' %',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -173,7 +173,7 @@ class DailyStats extends StatelessWidget {
                     Text('Min O2 %'),
                     Expanded(child: SizedBox()),
                     Text(
-                      (minO2 ?? "--").toString() + ' %',
+                      (minBloodOx ?? "--").toString() + ' %',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -191,7 +191,7 @@ class DailyStats extends StatelessWidget {
                       width: 10,
                     ),
                     Text(
-                      (minO2Time ?? "--").toString(),
+                      (minBloodOxTime ?? "--").toString(),
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],

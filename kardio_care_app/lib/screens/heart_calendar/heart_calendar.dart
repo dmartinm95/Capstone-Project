@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kardio_care_app/app_theme.dart';
+import 'package:kardio_care_app/screens/heart_calendar/daily_stats_from_data.dart';
 import 'package:kardio_care_app/screens/heart_calendar/daily_stats.dart';
 import 'package:kardio_care_app/screens/heart_calendar/recording_card.dart';
 import 'package:kardio_care_app/screens/heart_calendar/daily_trend_charts.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:kardio_care_app/screens/heart_calendar/recording_timeline.dart';
+import 'package:kardio_care_app/util/data_storage.dart';
+import 'dart:math';
 
 class HeartCalendar extends StatefulWidget {
   @override
@@ -11,21 +17,34 @@ class HeartCalendar extends StatefulWidget {
 }
 
 class _HeartCalendarState extends State<HeartCalendar> {
-  DateTime selectedDate = DateTime(2020, 1, 14);
+  DateTime selectedDate = DateTime.now();
+  double maxHR;
+  double minHR;
+  String maxHRTimeString;
+  String minHRTimeString;
+  Box<RecordingData> box;
 
-  bool _predicate(DateTime day) {
-    if ((day.isAfter(DateTime(2020, 1, 5)) &&
-        day.isBefore(DateTime(2020, 1, 9)))) {
+  bool filterDays(DateTime day) {
+    // return true on days with recordings and on the current day
+    var keysVals = box.keys;
+
+    DateTime currTime = DateTime.now();
+
+    if (currTime.year == day.year &&
+        currTime.month == day.month &&
+        currTime.day == day.day) {
       return true;
     }
+    if (keysVals.isNotEmpty) {
+      for (var item in keysVals) {
+        var recordTime = DateTime.parse(item);
 
-    if ((day.isAfter(DateTime(2020, 1, 10)) &&
-        day.isBefore(DateTime(2020, 1, 15)))) {
-      return true;
-    }
-    if ((day.isAfter(DateTime(2020, 2, 5)) &&
-        day.isBefore(DateTime(2020, 2, 17)))) {
-      return true;
+        if (recordTime.year == day.year &&
+            recordTime.month == day.month &&
+            recordTime.day == day.day) {
+          return true;
+        }
+      }
     }
 
     return false;
@@ -36,9 +55,9 @@ class _HeartCalendarState extends State<HeartCalendar> {
       context: context,
       initialEntryMode: DatePickerEntryMode.calendarOnly,
       initialDate: selectedDate,
-      selectableDayPredicate: _predicate,
-      firstDate: DateTime(2019),
-      lastDate: DateTime(2021),
+      selectableDayPredicate: filterDays,
+      firstDate: DateTime(2021),
+      lastDate: DateTime.now(),
       builder: (BuildContext context, Widget child) {
         return Theme(
           data: ThemeData.dark().copyWith(
@@ -59,6 +78,32 @@ class _HeartCalendarState extends State<HeartCalendar> {
       setState(() {
         selectedDate = picked;
       });
+  }
+
+  List<RecordingData> getDataToday(DateTime day) {
+    Box<RecordingData> box = Hive.box<RecordingData>('recordingDataBox');
+
+    List<RecordingData> todaysData = [];
+    for (var item in box.values) {
+
+      if (item.startTime.year == day.year &&
+          item.startTime.month == day.month &&
+          item.startTime.day == day.day) {
+        todaysData.add(item);
+      }
+    }
+
+    return todaysData;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // open boxes
+    Hive.openBox<RecordingData>('recordingDataBox');
+    box = Hive.box<RecordingData>('recordingDataBox');
+
   }
 
   @override
@@ -121,69 +166,76 @@ class _HeartCalendarState extends State<HeartCalendar> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
-              child: Text(
-                "Trends",
-                style: KardioCareAppTheme.subTitle,
-              ),
-            ),
-            const Divider(
-              color: KardioCareAppTheme.dividerPurple,
-              height: 20,
-              thickness: 1,
-              indent: 19,
-              endIndent: 19,
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(19, 10, 19, 10),
-              child: DailyTrendCharts(),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(19, 15, 19, 15),
-              child: DailyStats(),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(19, 15, 19, 0),
-              child: Text(
-                "Todays Recordings",
-                style: KardioCareAppTheme.subTitle,
-              ),
-            ),
-            const Divider(
-              color: KardioCareAppTheme.dividerPurple,
-              height: 20,
-              thickness: 1,
-              indent: 19,
-              endIndent: 19,
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(9.5, 0, 9.5, 0),
-              child: ListView.builder(
-                shrinkWrap: true,
-                primary: false,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: 4,
-                itemBuilder: (BuildContext context, int index) {
-                  return RecordingCard(
-                    context: context,
-                    index: index,
-                    numRecordings: 4,
-                  );
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(19, 10, 19, 10),
-              child: Container(
-                height: 15,
-                color: KardioCareAppTheme.background,
-              ),
-            ),
-          ],
+        child: ValueListenableBuilder<Box<RecordingData>>(
+          valueListenable: box.listenable(),
+          builder: (context, box, _) {
+            List<RecordingData> todaysData = getDataToday(selectedDate);
+
+            Map<DateTime, double> combinedHRData = {};
+            Map<DateTime, double> combinedHRVData = {};
+            Map<DateTime, double> combinedBloodOxData = {};
+
+            for (RecordingData item in todaysData) {
+              combinedHRData.addAll(item.heartRateData);
+              combinedHRVData.addAll(item.heartRateVarData);
+              combinedBloodOxData.addAll(item.bloodOxData);
+            }
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
+                  child: Text(
+                    "Trends",
+                    style: KardioCareAppTheme.subTitle,
+                  ),
+                ),
+                const Divider(
+                  color: KardioCareAppTheme.dividerPurple,
+                  height: 20,
+                  thickness: 1,
+                  indent: 19,
+                  endIndent: 19,
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(19, 10, 19, 10),
+                  child: DailyTrendCharts(
+                    heartRateData: combinedHRData,
+                    heartRateVarData: combinedHRVData,
+                  ),
+                ),
+                DailyStatsFromData(
+                  combinedHRData: combinedHRData,
+                  combinedBloodOxData: combinedBloodOxData,
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(19, 15, 19, 0),
+                  child: Text(
+                    "Todays Recordings",
+                    style: KardioCareAppTheme.subTitle,
+                  ),
+                ),
+                const Divider(
+                  color: KardioCareAppTheme.dividerPurple,
+                  height: 20,
+                  thickness: 1,
+                  indent: 19,
+                  endIndent: 19,
+                ),
+                RecordingTimeline(
+                  todaysData: todaysData,
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(19, 10, 19, 10),
+                  child: Container(
+                    height: 15,
+                    color: KardioCareAppTheme.background,
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

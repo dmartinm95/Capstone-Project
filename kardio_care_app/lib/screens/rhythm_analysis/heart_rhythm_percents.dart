@@ -29,7 +29,7 @@ class _HeartRhythmPercentsState extends State<HeartRhythmPercents> {
                 child: FittedBox(
                   fit: BoxFit.fitHeight,
                   child: Text(
-                    'Breakdown of Heartbeat Rhythms',
+                    'Detected Heartbeat Rhythms',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 19,
@@ -40,22 +40,22 @@ class _HeartRhythmPercentsState extends State<HeartRhythmPercents> {
               ),
               RhythmRow(
                 name: 'Normal',
-                frequency: 90,
+                frequency: 0,
                 color: KardioCareAppTheme.detailPurple,
               ),
               RhythmRow(
                 name: 'Tachycardia',
-                frequency: 1,
-                color: Colors.red,
+                frequency: 0,
+                color: KardioCareAppTheme.detailGray,
               ),
               RhythmRow(
                 name: 'Bradycardia',
-                frequency: 1,
-                color: Colors.red,
+                frequency: 0,
+                color: KardioCareAppTheme.detailRed,
               ),
               RhythmRow(
                 name: 'Atrial Flutter',
-                frequency: 50,
+                frequency: 0,
                 color: KardioCareAppTheme.detailGreen,
               ),
             ],

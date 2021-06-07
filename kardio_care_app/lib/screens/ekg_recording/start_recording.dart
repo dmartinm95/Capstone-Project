@@ -24,7 +24,7 @@ class StartRecording extends StatelessWidget {
               icon: Icon(Icons.close),
               color: KardioCareAppTheme.background,
               onPressed: () {
-                Navigator.maybePop(context);
+                Navigator.pop(context);
               },
             ),
           ),

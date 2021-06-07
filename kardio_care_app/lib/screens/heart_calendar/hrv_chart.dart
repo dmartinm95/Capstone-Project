@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
+import 'package:kardio_care_app/screens/rhythm_analysis/rhythm_event_chart.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
 
 class HRVChart extends StatefulWidget {
-  const HRVChart({Key key, this.dataValue}) : super(key: key);
-
-  final int dataValue;
+  const HRVChart({Key key, this.heartRateVarData}) : super(key: key);
+  final Map<DateTime, double> heartRateVarData;
 
   @override
   _HRVChartState createState() => _HRVChartState();
@@ -15,26 +15,33 @@ class HRVChart extends StatefulWidget {
 class _HRVChartState extends State<HRVChart> {
   @override
   Widget build(BuildContext context) {
-    final List<SalesData> chartData = [
-      SalesData(DateTime(2015, 1, 1, 7), 35),
-      SalesData(DateTime(2015, 1, 1, 8), 28),
-      SalesData(DateTime(2015, 1, 1, 10), 34),
-      SalesData(DateTime(2015, 1, 1, 12), 32),
-      SalesData(DateTime(2015, 1, 1, 14), 40),
-      SalesData(DateTime(2015, 1, 1, 19), 40)
-    ];
+    List<PlottingData> chartData;
+    if (widget.heartRateVarData != null) {
+      chartData = widget.heartRateVarData.entries
+          .map((entry) => PlottingData(entry.key, entry.value))
+          .toList();
+    } else {
+      chartData = null;
+    }
 
     return SfCartesianChart(
       primaryXAxis: DateTimeAxis(
-        minimum: DateTime(2015, 1, 1, 1),
-        maximum: DateTime(2015, 1, 1, 23),
-        intervalType: DateTimeIntervalType.hours,
+        // minimum: dayStart,
+        // visibleMinimum: dayStart,
+        // maximum: dayEnd,
+        // visibleMaximum: dayEnd,
+        // intervalType: DateTimeIntervalType.hours,
+        rangePadding: ChartRangePadding.additional,
         dateFormat: DateFormat.jm(),
       ),
-      primaryYAxis: NumericAxis(minimum: 0, maximum: 80, interval: 20),
+      primaryYAxis: NumericAxis(
+        // minimum: 0,
+        // maximum: 80,
+        interval: 20,
+      ),
       series: <ChartSeries>[
         // Renders line chart
-        LineSeries<SalesData, DateTime>(
+        ScatterSeries<PlottingData, DateTime>(
             markerSettings: MarkerSettings(
                 shape: DataMarkerType.circle,
                 color: Colors.blue,
@@ -42,15 +49,15 @@ class _HRVChartState extends State<HRVChart> {
                 isVisible: true),
             color: Colors.blue,
             dataSource: chartData,
-            xValueMapper: (SalesData sales, _) => sales.year,
-            yValueMapper: (SalesData sales, _) => sales.sales)
+            xValueMapper: (PlottingData data, _) => data.sampleTime,
+            yValueMapper: (PlottingData data, _) => data.hrv)
       ],
     );
   }
 }
 
-class SalesData {
-  SalesData(this.year, this.sales);
-  final DateTime year;
-  final double sales;
+class PlottingData {
+  PlottingData(this.sampleTime, this.hrv);
+  final DateTime sampleTime;
+  final double hrv;
 }
