@@ -39,6 +39,8 @@ class DeviceScanner with ChangeNotifier {
   int leadOneData = 0;
   List<int> leadDataList = List.filled(SAMPLES_LENGTH, 0);
 
+  bool allNotifyOff = false;
+
   DeviceScanner() {
     _prevLeadIndex = 0;
     bleConnectionNotifier.value = null;
@@ -224,5 +226,17 @@ class DeviceScanner with ChangeNotifier {
 
     bleConnectionNotifier.value = null;
     print("Disconnected");
+  }
+
+  void turnOffAllNotify() async {
+    for (int i = 0; i < bleCharacteristics.length; i++) {
+      if (bleCharacteristics[i] == null) continue;
+
+      await bleCharacteristics[i].setNotifyValue(false);
+    }
+    allNotifyOff = true;
+    activeLeadIndex = -1;
+
+    print("Done turning off all characteristics");
   }
 }

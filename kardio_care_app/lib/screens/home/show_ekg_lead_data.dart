@@ -78,6 +78,7 @@ class ShowEKGLeadData extends StatelessWidget {
 
   callback(int newIndex) {
     print("Clicking on index: $newIndex");
+
     deviceScannerProvider.stopCurrentStream(newIndex);
 
     deviceScannerProvider.listenToStream(newIndex);

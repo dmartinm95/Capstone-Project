@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:intl/intl.dart';
+import 'package:kardio_care_app/util/device_scanner.dart';
 import 'dart:async';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:kardio_care_app/widgets/blood_oxygen_tile.dart';
 import 'package:kardio_care_app/widgets/heart_rate_tile.dart';
+import 'package:provider/provider.dart';
 
 class EKGRecording extends StatefulWidget {
   EKGRecording({Key key}) : super(key: key);
@@ -63,6 +65,9 @@ class _EKGRecordingState extends State<EKGRecording> {
     _totalMinutes = ModalRoute.of(context).settings.arguments;
     print(_totalMinutes);
     // _currMinutes = _totalMinutes;
+
+    final deviceScannerProvider =
+        Provider.of<DeviceScanner>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
@@ -145,6 +150,7 @@ class _EKGRecordingState extends State<EKGRecording> {
                             recording = true;
                           });
                           _startTimer();
+                          deviceScannerProvider.turnOffAllNotify();
                         },
                         style: ElevatedButton.styleFrom(
                           shape: CircleBorder(),
