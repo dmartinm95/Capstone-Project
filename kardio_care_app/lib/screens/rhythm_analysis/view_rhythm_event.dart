@@ -1,16 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:kardio_care_app/screens/rhythm_analysis/rhythm_event_chart.dart';
+import 'package:kardio_care_app/screens/rhythm_analysis/rhythm_event_chart.dart';
+import 'package:kardio_care_app/util/data_storage.dart';
 import 'package:kardio_care_app/widgets/block_radio_button.dart';
 import 'package:kardio_care_app/widgets/recording_stats.dart';
-import 'package:kardio_care_app/widgets/chip_widget.dart'; 
+import 'package:kardio_care_app/widgets/chip_widget.dart';
+import 'package:intl/intl.dart';
+import 'dart:math';
 
-
-class ViewRhythmEvent extends StatelessWidget {
+class ViewRhythmEvent extends StatefulWidget {
   const ViewRhythmEvent({Key key}) : super(key: key);
 
   @override
+  _ViewRhythmEventState createState() => _ViewRhythmEventState();
+}
+
+class _ViewRhythmEventState extends State<ViewRhythmEvent> {
+  int selectedValue = 0;
+  RecordingData recordingData;
+  List<List<double>> singleLeadData;
+
+  @override
   Widget build(BuildContext context) {
+    recordingData = ModalRoute.of(context).settings.arguments;
+
+    singleLeadData = List.generate(
+      recordingData.ekgData.length,
+      (batch) => List.generate(
+        recordingData.ekgData[0].length,
+        (sample) {
+          return recordingData.ekgData[batch][sample][selectedValue];
+        },
+      ),
+    );
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -45,7 +69,8 @@ class ViewRhythmEvent extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
               child: Text(
-                "Events at 7pm on January 5, 2020",
+                'Recording on ' +
+                    DateFormat.yMMMd().add_jm().format(recordingData.startTime),
                 style: KardioCareAppTheme.subTitle,
               ),
             ),
@@ -57,50 +82,58 @@ class ViewRhythmEvent extends StatelessWidget {
               endIndent: 19,
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(19, 10, 19, 10),
-              child: Container(
-                color: Colors.transparent,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(50)),
-                  ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-                        child: FittedBox(
-                          fit: BoxFit.contain,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.35,
-                                width: MediaQuery.of(context).size.width * 0.9,
-                                child: RhythmEventChart(),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-                        child: BlockRadioButton(
-                          buttonLabels: ['I', 'II', 'III', 'V1'],
-                          circleBorder: true,
-                          backgroundColor: KardioCareAppTheme.white,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
+              padding: const EdgeInsets.fromLTRB(19, 0, 19, 0),
+              child: DropdownButton(
+                  hint: const Text('Lead I'),
+                  value: selectedValue,
+                  items: [
+                    DropdownMenuItem(
+                      child: Text("Lead I"),
+                      value: 0,
+                    ),
+                    DropdownMenuItem(
+                      child: Text("Lead II"),
+                      value: 1,
+                    ),
+                    DropdownMenuItem(
+                      child: Text("Lead III"),
+                      value: 2,
+                    ),
+                    DropdownMenuItem(
+                      child: Text("Lead IV"),
+                      value: 3,
+                    ),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      selectedValue = value;
+                    });
+                  }),
+            ),
+            RhythmEventChart(
+              lengthRecordingMin: recordingData.recordingLengthMin,
+              ekgData: singleLeadData,
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
-              child: RecordingStats(),
+              child: RecordingStats(
+                avgHRV: (recordingData.heartRateVarData.values
+                            .toList()
+                            .reduce((a, b) => a + b) ~/
+                        recordingData.heartRateVarData.values.length)
+                    .toInt(),
+                avgHR: (recordingData.heartRateData.values
+                        .toList()
+                        .reduce((a, b) => a + b) ~/
+                    recordingData.heartRateData.values.length),
+                avgO2: (recordingData.bloodOxData.values
+                            .toList()
+                            .reduce((a, b) => a + b) ~/
+                        recordingData.bloodOxData.values.length)
+                    .toInt(),
+                minHR: recordingData.heartRateData.values.reduce(min).toInt(),
+                maxHR: recordingData.heartRateData.values.reduce(max).toInt(),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
@@ -126,7 +159,7 @@ class ViewRhythmEvent extends StatelessWidget {
                     spacing: 5.0,
                     runSpacing: 5.0,
                     children: <Widget>[
-                      // TODO: fetch these from the database 
+                      // TODO: fetch these from the database
                       ChipWidget(chipName: 'Morning'),
                       ChipWidget(chipName: 'Afternoon'),
                       ChipWidget(chipName: 'Evening'),
@@ -195,4 +228,3 @@ class ViewRhythmEvent extends StatelessWidget {
     );
   }
 }
-

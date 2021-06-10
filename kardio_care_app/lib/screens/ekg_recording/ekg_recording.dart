@@ -44,7 +44,7 @@ class _EKGRecordingState extends State<EKGRecording> {
   List<List<List<double>>> generateFakeEKG(int numMinutes) {
     List<List<List<double>>> input = <List<List<double>>>[];
 
-    int batches = (numMinutes * 60 * 500 / 4096).ceil();
+    int batches = (numMinutes * 60 * 400 / 4096).ceil();
 
     for (var k = 0; k < batches; k++) {
       List<List<double>> matrix = <List<double>>[];
@@ -53,7 +53,7 @@ class _EKGRecordingState extends State<EKGRecording> {
         List<double> list = <double>[];
 
         for (var j = 0; j < 12; j++) {
-          list.add(0);
+          list.add(random(10, 100).toDouble());
         }
 
         matrix.add(list);
@@ -172,7 +172,7 @@ class _EKGRecordingState extends State<EKGRecording> {
               animation: true,
               restartAnimation: false,
               animateFromLastPercent: true,
-              animationDuration: 1000,
+              animationDuration: 800,
               percent:
                   (_currMinutes.toDouble() * 60 + _currSeconds.toDouble()) /
                       (_totalMinutes.toDouble() * 60),
