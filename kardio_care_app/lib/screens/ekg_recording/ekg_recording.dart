@@ -41,30 +41,6 @@ class _EKGRecordingState extends State<EKGRecording> {
     return (min + rn.nextInt(max - min));
   }
 
-  List<List<List<double>>> generateFakeEKG(int numMinutes) {
-    List<List<List<double>>> input = <List<List<double>>>[];
-
-    int batches = (numMinutes * 60 * 400 / 4096).ceil();
-
-    for (var k = 0; k < batches; k++) {
-      List<List<double>> matrix = <List<double>>[];
-
-      for (var i = 0; i < 4096; i++) {
-        List<double> list = <double>[];
-
-        for (var j = 0; j < 12; j++) {
-          list.add(random(10, 100).toDouble());
-        }
-
-        matrix.add(list);
-      }
-
-      input.add(matrix);
-    }
-
-    return input;
-  }
-
   void generateFakeData() {
     setState(() {
       bloodOxData[DateTime.now()] = random(10, 80).toDouble();
@@ -82,7 +58,7 @@ class _EKGRecordingState extends State<EKGRecording> {
     }
   }
 
-  void _startTimer() {
+  void _startTimer(DeviceScanner deviceScanner) {
     bloodOxData = {};
     heartRateData = {};
     heartRateVarData = {};
@@ -92,6 +68,8 @@ class _EKGRecordingState extends State<EKGRecording> {
     }
 
     startTime = DateTime.now();
+
+    deviceScanner.connectToAllLeads(_totalMinutes);
 
     generateFakeData();
     fakeDataTimer = Timer.periodic(Duration(seconds: 5), (timer) {
@@ -112,13 +90,22 @@ class _EKGRecordingState extends State<EKGRecording> {
             _countdownTimer.cancel();
             fakeDataTimer.cancel();
             print("Timer Complete");
+
+            print("EKG DATA COLLECTED");
+            List<List<List<double>>> ekgDataCollected =
+                List.from(deviceScanner.ekgDataToStore);
+
             Navigator.pushReplacementNamed(context, '/ekg_results', arguments: {
               'bloodOxData': bloodOxData,
               'heartRateData': heartRateData,
               'heartRateVarData': heartRateVarData,
-              'ekgData': ekgData,
+              'ekgData': ekgDataCollected,
               'startTime': startTime,
               'selectedMinutes': ModalRoute.of(context).settings.arguments
+            }).then((value) {
+              print("Going home from ekg_recording.dart");
+              deviceScanner.switchToStreamIndex(0);
+              deviceScanner.listenToStream(0);
             });
           }
         }
@@ -129,7 +116,6 @@ class _EKGRecordingState extends State<EKGRecording> {
   @override
   Widget build(BuildContext context) {
     _totalMinutes = ModalRoute.of(context).settings.arguments;
-    ekgData = generateFakeEKG(_totalMinutes);
 
     final deviceScannerProvider =
         Provider.of<DeviceScanner>(context, listen: false);
@@ -199,8 +185,7 @@ class _EKGRecordingState extends State<EKGRecording> {
                           setState(() {
                             recording = true;
                           });
-                          _startTimer();
-                          deviceScannerProvider.turnOffAllNotify();
+                          _startTimer(deviceScannerProvider);
                         },
                         style: ElevatedButton.styleFrom(
                           shape: CircleBorder(),
@@ -272,3 +257,5 @@ class _EKGRecordingState extends State<EKGRecording> {
     _stopTimer();
   }
 }
+
+class EKGDataStorage {}

@@ -34,7 +34,6 @@ class _HomeState extends State<Home> {
           ValueListenableBuilder(
             valueListenable: deviceScannerProvider.bleConnectionNotifier,
             builder: (context, value, child) {
-              print("Devicescannervaluelistenable: $value");
               if (value == null) {
                 return Container();
               }

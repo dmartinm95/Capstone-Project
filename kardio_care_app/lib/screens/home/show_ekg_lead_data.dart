@@ -43,10 +43,15 @@ class ShowEKGLeadData extends StatelessWidget {
               flex: 1,
               fit: FlexFit.loose,
               child: Consumer<DeviceScanner>(
-                builder: (context, value, child) {
-                  panTompkinsProvider.addDataToBuffer(value.leadDataList);
+                builder: (context, device, child) {
+                  // panTompkinsProvider.addDataToBuffer(value.leadDataList);
+                  // if (deviceScannerProvider.activeLeadIndex == -1) {
+                  //   ekgDataManager.fillInput(value.allLeadDataList);
+                  // } else {
+                  //   panTompkinsProvider.addDataToBuffer(value.leadDataList);
+                  // }
                   return BuildEKGPlot(
-                    dataValue: value.leadDataList,
+                    dataValue: device.leadDataList,
                     dataFilter: dataFilterInstance,
                   );
                 },
@@ -77,9 +82,9 @@ class ShowEKGLeadData extends StatelessWidget {
   }
 
   callback(int newIndex) {
-    print("Clicking on index: $newIndex");
+    print("Switching stream index to: index $newIndex");
 
-    deviceScannerProvider.stopCurrentStream(newIndex);
+    deviceScannerProvider.switchToStreamIndex(newIndex);
 
     deviceScannerProvider.listenToStream(newIndex);
 

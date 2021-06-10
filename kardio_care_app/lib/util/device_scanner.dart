@@ -14,6 +14,9 @@ class DeviceScanner with ChangeNotifier {
       "44ab8765-80b6-442f-8953-f18e3375549c";
   static const String LEAD_V1_CHAR_UUID =
       "f34748fb-c879-49f6-9719-aea577d5d182";
+  static const String ALL_LEADS_CHAR_UUID =
+      "a0855912-29ea-4b12-a704-c813bdeb351b";
+
   static const String DEVICE_NAME = "Kompression";
   static const int SAMPLES_LENGTH = 10;
   static const int BYTES_TO_RECEIVE = 20;
@@ -30,19 +33,23 @@ class DeviceScanner with ChangeNotifier {
   BluetoothCharacteristic bleLeadTwoCharacteristic;
   BluetoothCharacteristic bleLeadThreeCharacteristic;
   BluetoothCharacteristic bleLeadV1Characteristic;
+  BluetoothCharacteristic bleAllLeadsCharacteristic;
 
   List<BluetoothCharacteristic> bleLeadCharacteristics = List.filled(4, null);
-  int _prevLeadIndex = 0;
   int activeLeadIndex = 0;
 
   // Store real-time incoming data
   int leadOneData = 0;
   List<int> leadDataList = List.filled(SAMPLES_LENGTH, 0);
+  List<int> allLeadDataList = List.filled(4, 0);
 
-  bool allNotifyOff = false;
+  List<List<List<double>>> ekgDataToStore;
+  int ekgDataToStoreIndex = 0;
+  int ekgDataBatchIndex = 0;
+  int batches = 0;
 
   DeviceScanner() {
-    _prevLeadIndex = 0;
+    activeLeadIndex = 0;
     bleConnectionNotifier.value = null;
   }
 
@@ -52,7 +59,11 @@ class DeviceScanner with ChangeNotifier {
 
   // Start searching for bluetooth devices nearby
   Future<void> startScan() async {
-    await FlutterBlue.instance.startScan(timeout: Duration(seconds: 5));
+    try {
+      await FlutterBlue.instance.startScan(timeout: Duration(seconds: 5));
+    } catch (e) {
+      print("Error while startin scan: ${e.toString()}");
+    }
   }
 
   // Go through scan results and find our device
@@ -140,6 +151,10 @@ class DeviceScanner with ChangeNotifier {
     bleLeadV1Characteristic = bleCharacteristics.firstWhere((characteristic) =>
         characteristic.uuid.toString() == LEAD_V1_CHAR_UUID);
 
+    bleAllLeadsCharacteristic = bleCharacteristics.firstWhere(
+        (characteristic) =>
+            characteristic.uuid.toString() == ALL_LEADS_CHAR_UUID);
+
     if (bleLeadOneCharacteristic != null) {
       bleLeadCharacteristics[0] = bleLeadOneCharacteristic;
       print(
@@ -160,6 +175,10 @@ class DeviceScanner with ChangeNotifier {
       print(
           "Found Characteristic! - uuid: ${bleLeadV1Characteristic.uuid.toString()}");
     }
+    if (bleAllLeadsCharacteristic != null) {
+      print(
+          "Found Characteristic! - uuid: ${bleAllLeadsCharacteristic.uuid.toString()}");
+    }
   }
 
   // Start listing to stream data from module
@@ -169,7 +188,7 @@ class DeviceScanner with ChangeNotifier {
           "Characteristic with UUID: ${bleCharacteristics[leadIndex].uuid.toString()} is NULL");
       return;
     }
-    _prevLeadIndex = leadIndex;
+    activeLeadIndex = leadIndex;
 
     if (leadIndex == 0) {
       bleLeadCharacteristics[leadIndex].value.listen((data) {
@@ -190,14 +209,66 @@ class DeviceScanner with ChangeNotifier {
     }
   }
 
-  void stopCurrentStream(int leadIndex) async {
-    if (leadIndex == _prevLeadIndex) {
+  void listenToAllLeadsData() async {
+    if (bleAllLeadsCharacteristic == null) {
+      print(
+          "Characteristic with UUID: ${bleAllLeadsCharacteristic.uuid.toString()} is NULL");
+      return;
+    }
+
+    bleAllLeadsCharacteristic.value.listen((data) {
+      decodeAllLeadsData(data);
+    });
+  }
+
+  void decodeAllLeadsData(List<int> data) {
+    if (ekgDataToStoreIndex >= ekgDataToStore[0].length) {
+      ekgDataBatchIndex++;
+      ekgDataToStoreIndex = 0;
+      print("Batch #$ekgDataBatchIndex");
+    }
+    try {
+      int leadOne = data[0] + 256 * data[1];
+      int leadTwo = data[2] + 256 * data[3];
+      int leadThree = data[4] + 256 * data[5];
+      int leadFour = data[6] + 256 * data[7];
+
+      ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][0] =
+          leadOne.toDouble();
+
+      ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][1] =
+          leadTwo.toDouble();
+
+      ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][2] =
+          leadThree.toDouble();
+
+      ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][3] =
+          leadFour.toDouble();
+
+      ekgDataToStoreIndex++;
+    } catch (error) {
+      print(leadDataList.toString());
+      print("Error: ${error.toString()}");
+    }
+  }
+
+  void switchToStreamIndex(int leadIndex) async {
+    if (bleAllLeadsCharacteristic.isNotifying) {
+      await turnOffNotifyAllLeads();
+    }
+
+    if (activeLeadIndex == leadIndex) {
+      if (!bleLeadCharacteristics[activeLeadIndex].isNotifying) {
+        await bleLeadCharacteristics[activeLeadIndex].setNotifyValue(true);
+        return;
+      }
       return;
     }
 
     try {
-      await bleLeadCharacteristics[_prevLeadIndex].setNotifyValue(false);
-
+      if (bleLeadCharacteristics[activeLeadIndex].isNotifying) {
+        await bleLeadCharacteristics[activeLeadIndex].setNotifyValue(false);
+      }
       await bleLeadCharacteristics[leadIndex].setNotifyValue(true);
 
       activeLeadIndex = leadIndex;
@@ -210,12 +281,12 @@ class DeviceScanner with ChangeNotifier {
   void _decodeData(List<int> data) {
     try {
       int j = 0;
-      for (int i = 0; i < BYTES_TO_RECEIVE; i += 2) {
+      for (int i = 0; i < data.length; i += 2) {
         int dataToAdd = data[i] + 256 * data[i + 1];
         leadDataList[j] = dataToAdd;
         j++;
+        notifyListeners();
       }
-      notifyListeners();
     } catch (error) {
       print(leadDataList.toString());
       print("Error: ${error.toString()}");
@@ -232,15 +303,37 @@ class DeviceScanner with ChangeNotifier {
     print("Disconnected");
   }
 
-  void turnOffAllNotify() async {
-    for (int i = 0; i < bleCharacteristics.length; i++) {
-      if (bleCharacteristics[i] == null) continue;
+  void connectToAllLeads(int numMinutes) async {
+    batches = (numMinutes * 60 * 400 / 4096).ceil();
 
-      await bleCharacteristics[i].setNotifyValue(false);
+    // List.filled(batches, List.filled(4096, List.filled(12, 0)));
+
+    ekgDataToStore = List.generate(batches,
+        (_) => List.generate(4096, (_) => List.generate(12, (_) => 0.0)));
+
+    ekgDataBatchIndex = 0;
+    ekgDataToStoreIndex = 0;
+
+    await turnOffActiveLead();
+    await turnOnNotifyAllLeads();
+    listenToAllLeadsData();
+  }
+
+  Future turnOffActiveLead() async {
+    print("Setting active lead: $activeLeadIndex to false");
+    if (bleCharacteristics[activeLeadIndex].isNotifying) {
+      await bleCharacteristics[activeLeadIndex].setNotifyValue(false);
     }
-    allNotifyOff = true;
-    activeLeadIndex = -1;
+    print("Done turning off active lead");
+  }
 
-    print("Done turning off all characteristics");
+  Future turnOnNotifyAllLeads() async {
+    print("Turning ON all leads");
+    await bleAllLeadsCharacteristic.setNotifyValue(true);
+    print("Done turning ON all leads");
+  }
+
+  Future turnOffNotifyAllLeads() async {
+    await bleAllLeadsCharacteristic.setNotifyValue(false);
   }
 }

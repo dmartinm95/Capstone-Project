@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:kardio_care_app/constants/app_constants.dart';
+import 'package:kardio_care_app/util/device_scanner.dart';
+import 'package:provider/provider.dart';
 
 class StartRecording extends StatelessWidget {
   const StartRecording({Key key}) : super(key: key);
@@ -96,6 +98,9 @@ class FullRectangleTextButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final deviceScannerProvider =
+        Provider.of<DeviceScanner>(context, listen: false);
+
     return Container(
       child: Expanded(
         child: TextButton(
@@ -135,7 +140,11 @@ class FullRectangleTextButton extends StatelessWidget {
               context,
               '/ekg_recording',
               arguments: lengthMinutes,
-            );
+            ).then((value) {
+              print("Going home from start_recording.dart");
+              deviceScannerProvider.switchToStreamIndex(0);
+              deviceScannerProvider.listenToStream(0);
+            });
           },
         ),
       ),

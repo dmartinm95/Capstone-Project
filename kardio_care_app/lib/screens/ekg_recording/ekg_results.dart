@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:kardio_care_app/screens/ekg_recording/recording_charts.dart';
 import 'package:kardio_care_app/util/blurry_loading.dart';
+import 'package:kardio_care_app/util/device_scanner.dart';
 import 'package:kardio_care_app/widgets/recording_stats.dart';
 import 'package:kardio_care_app/util/data_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'dart:math';
 import 'package:kardio_care_app/widgets/filter_chip_widget.dart';
+import 'package:provider/provider.dart';
 
 class EKGResults extends StatefulWidget {
   EKGResults({Key key}) : super(key: key);
@@ -22,6 +24,9 @@ class _EKGResultsState extends State<EKGResults> {
 
   @override
   Widget build(BuildContext context) {
+    final deviceScannerProvider =
+        Provider.of<DeviceScanner>(context, listen: false);
+
     unsavedRecordingData = ModalRoute.of(context).settings.arguments;
     RecordingData dataResults = RecordingData();
     dataResults.bloodOxData = unsavedRecordingData['bloodOxData'];
@@ -223,7 +228,10 @@ class _EKGResultsState extends State<EKGResults> {
                             context,
                             '/ekg_recording',
                             arguments: unsavedRecordingData['selectedMinutes'],
-                          );
+                          ).then((value) {
+                            deviceScannerProvider.switchToStreamIndex(0);
+                            deviceScannerProvider.listenToStream(0);
+                          });
                         },
                       ),
                     ),

@@ -17,7 +17,7 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
   List<LeadData> dataList = <LeadData>[LeadData(0, 0)];
   ChartSeriesController _chartSeriesController;
   int xIndex = 0;
-  int defaultNumberPoints = 1000;
+  int defaultNumberPoints = 500;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
             _chartSeriesController = controller;
           },
           dataSource: updateDataList(widget.dataValue),
-          width: 1.5,
+          width: 1,
           color: Color(0xFFEA517F),
           xValueMapper: (LeadData leadData, _) => leadData.index,
           yValueMapper: (LeadData leadData, _) => leadData.value,
@@ -49,32 +49,21 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
   }
 
   List<LeadData> updateDataList(List<int> data) {
-    // print("Adding data: $data");
-
     if (data == null) {
       return <LeadData>[LeadData(xIndex, 0)];
     }
 
-    // int sum = data.fold(0, (sum, b) => sum + b);
-    // int average = (sum / data.length).round();
-
     for (int i = 0; i < data.length; i++) {
       try {
-        widget.dataFilter.addDataToBuffer(data[i]);
-        if (i % widget.dataFilter.downsampleFactor == 0) {
-          if (widget.dataFilter.isBufferFull) {
-            dataList.add(LeadData(xIndex, widget.dataFilter.getFilteredData()));
-          } else {
-            dataList.add(LeadData(xIndex, data[i]));
-          }
-          xIndex = xIndex + 1;
-        }
+        // widget.dataFilter.addDataToBuffer(data[i]);
+
+        dataList.add(LeadData(xIndex, data[i]));
+        xIndex = xIndex + 1;
       } catch (e) {
         print("Error observed while updating DataList: ${e.toString()}");
       }
 
-      if (dataList.length ==
-          defaultNumberPoints / widget.dataFilter.downsampleFactor) {
+      if (dataList.length == defaultNumberPoints) {
         dataList.removeAt(0);
         _chartSeriesController?.updateDataSource(
           addedDataIndexes: <int>[dataList.length - 1],
