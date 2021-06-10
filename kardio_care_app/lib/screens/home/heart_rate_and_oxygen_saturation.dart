@@ -50,7 +50,9 @@ class _HeartRateAndOxygenSaturationState
             children: [
               Expanded(
                 child: HeartRateTile(
-                  currHR: panTompkinsProvider.currentHeartRate,
+                  currHR: panTompkinsProvider.currentHeartRate == 0
+                      ? null
+                      : panTompkinsProvider.currentHeartRate,
                 ),
               ),
               const VerticalDivider(

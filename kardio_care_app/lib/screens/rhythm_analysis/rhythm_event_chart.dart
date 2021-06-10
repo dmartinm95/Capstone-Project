@@ -20,10 +20,10 @@ class RhythmEventChart extends StatefulWidget {
 class _RhythmEventChartState extends State<RhythmEventChart> {
   int segmentedControlGroupValue = 0;
 
-  int numSamplesToPlot = 256;
+  int numSamplesToPlot = 512;
 
   double _visibleMin = 0;
-  double _visibleMax = 256;
+  double _visibleMax = 512;
 
   int numBatches;
 
@@ -31,7 +31,7 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
 
   @override
   Widget build(BuildContext context) {
-    numBatches = 10;
+    numBatches = 6;
 
     // ((lengthRecordingMin * 60 * 400) / 2048).ceil();
 
@@ -194,7 +194,7 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
   List<ChartSeries<ChartSampleData, String>> getSeries() {
     List<ChartSampleData> test = [];
     int k = 0;
-    for (var i = 0; i < 8; i++) {
+    for (var i = 0; i < 5; i++) {
       for (var j = 0; j < 512; j++) {
         test.add(
             ChartSampleData(k.toString(), k.toString(), widget.ekgData[i][j]));
