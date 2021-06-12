@@ -58,7 +58,7 @@ class _EKGRecordingState extends State<EKGRecording> {
     }
   }
 
-  void _startTimer(DeviceScanner deviceScanner) {
+  void _startTimer(DeviceScanner deviceScanner) async {
     bloodOxData = {};
     heartRateData = {};
     heartRateVarData = {};
@@ -68,8 +68,9 @@ class _EKGRecordingState extends State<EKGRecording> {
     }
 
     startTime = DateTime.now();
-
-    deviceScanner.connectToAllLeads(_totalMinutes);
+    deviceScanner.ekgDataBatchIndex = 0;
+    deviceScanner.ekgDataToStoreIndex = 0;
+    await deviceScanner.connectToAllLeads(_totalMinutes);
 
     generateFakeData();
     fakeDataTimer = Timer.periodic(Duration(seconds: 5), (timer) {
@@ -104,8 +105,7 @@ class _EKGRecordingState extends State<EKGRecording> {
               'selectedMinutes': ModalRoute.of(context).settings.arguments
             }).then((value) {
               print("Going home from ekg_recording.dart");
-              deviceScanner.switchToStreamIndex(0);
-              deviceScanner.listenToStream(0);
+              deviceScanner.switchToMainLead();
             });
           }
         }

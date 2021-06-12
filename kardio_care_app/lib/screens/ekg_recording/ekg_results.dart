@@ -229,8 +229,8 @@ class _EKGResultsState extends State<EKGResults> {
                             '/ekg_recording',
                             arguments: unsavedRecordingData['selectedMinutes'],
                           ).then((value) {
-                            deviceScannerProvider.switchToStreamIndex(0);
-                            deviceScannerProvider.listenToStream(0);
+                            deviceScannerProvider.switchToMainLead();
+                            // deviceScannerProvider.listenToStream(0);
                           });
                         },
                       ),

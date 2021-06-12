@@ -142,8 +142,8 @@ class FullRectangleTextButton extends StatelessWidget {
               arguments: lengthMinutes,
             ).then((value) {
               print("Going home from start_recording.dart");
-              deviceScannerProvider.switchToStreamIndex(0);
-              deviceScannerProvider.listenToStream(0);
+              // deviceScannerProvider.switchToStreamIndex(0);
+              deviceScannerProvider.switchToMainLead();
             });
           },
         ),
