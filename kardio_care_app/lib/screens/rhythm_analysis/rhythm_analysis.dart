@@ -94,7 +94,8 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
                           KardioCareAppTheme.detailPurple,
                           KardioCareAppTheme.detailGreen
                         ],
-                        recordingData: box.values.elementAt(index),
+                        recordingData:
+                            box.values.elementAt(box.values.length - 1 - index),
                       );
                     },
                   ),

@@ -17,29 +17,30 @@ class ViewRhythmEvent extends StatefulWidget {
 }
 
 class _ViewRhythmEventState extends State<ViewRhythmEvent> {
-  int selectedValue = 0;
-  RecordingData recordingData;
-  List<List<double>> singleLeadData;
+  int selectedLead = 0;
+  // RecordingData recordingData;
+  // List<List<double>> singleLeadData;
 
   @override
   Widget build(BuildContext context) {
-    recordingData = ModalRoute.of(context).settings.arguments;
+    final RecordingData recordingData =
+        ModalRoute.of(context).settings.arguments;
 
-    singleLeadData = List.generate(
-      recordingData.ekgData.length,
-      (batch) => List.generate(
-        recordingData.ekgData[0].length,
-        (sample) {
-          return recordingData.ekgData[batch][sample][selectedValue];
-        },
-      ),
-    );
+    // singleLeadData = List.generate(
+    //   recordingData.ekgData.length,
+    //   (batch) => List.generate(
+    //     recordingData.ekgData[0].length,
+    //     (sample) {
+    //       return recordingData.ekgData[batch][sample][selectedValue];
+    //     },
+    //   ),
+    // );
 
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          "Atrial Flutter Events",
+          "Recording Rhythms",
           style: KardioCareAppTheme.screenTitleText,
         ),
         centerTitle: true,
@@ -70,7 +71,9 @@ class _ViewRhythmEventState extends State<ViewRhythmEvent> {
               padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
               child: Text(
                 'Recording on ' +
-                    DateFormat.yMMMd().add_jm().format(recordingData.startTime),
+                    DateFormat.yMMMd().format(recordingData.startTime) +
+                    ' at ' +
+                    DateFormat.jm().format(recordingData.startTime),
                 style: KardioCareAppTheme.subTitle,
               ),
             ),
@@ -83,36 +86,100 @@ class _ViewRhythmEventState extends State<ViewRhythmEvent> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 0, 19, 0),
-              child: DropdownButton(
-                  hint: const Text('Lead I'),
-                  value: selectedValue,
-                  items: [
-                    DropdownMenuItem(
-                      child: Text("Lead I"),
-                      value: 0,
+              child: Row(
+                children: [
+                  DropdownButton(
+                    hint: const Text(
+                      'Lead I',
+                      style: TextStyle(
+                        color: KardioCareAppTheme.detailGray,
+                      ),
                     ),
-                    DropdownMenuItem(
-                      child: Text("Lead II"),
-                      value: 1,
+                    value: selectedLead,
+                    items: [
+                      DropdownMenuItem(
+                        child: Text(
+                          "Lead I",
+                          style: TextStyle(
+                            color: KardioCareAppTheme.detailGray,
+                          ),
+                        ),
+                        value: 0,
+                      ),
+                      DropdownMenuItem(
+                        child: Text(
+                          "Lead II",
+                          style: TextStyle(
+                            color: KardioCareAppTheme.detailGray,
+                          ),
+                        ),
+                        value: 1,
+                      ),
+                      DropdownMenuItem(
+                        child: Text(
+                          "Lead III",
+                          style: TextStyle(
+                            color: KardioCareAppTheme.detailGray,
+                          ),
+                        ),
+                        value: 2,
+                      ),
+                      DropdownMenuItem(
+                        child: Text(
+                          "Lead IV",
+                          style: TextStyle(
+                            color: KardioCareAppTheme.detailGray,
+                          ),
+                        ),
+                        value: 3,
+                      ),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        selectedLead = value;
+                      });
+                    },
+                  ),
+                  Expanded(child: SizedBox()),
+                  DropdownButton(
+                    hint: const Text(
+                      'Rhythms',
+                      style: TextStyle(
+                        color: KardioCareAppTheme.detailGray,
+                      ),
                     ),
-                    DropdownMenuItem(
-                      child: Text("Lead III"),
-                      value: 2,
-                    ),
-                    DropdownMenuItem(
-                      child: Text("Lead IV"),
-                      value: 3,
-                    ),
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      selectedValue = value;
-                    });
-                  }),
+                    // value: 0,
+                    items: [
+                      DropdownMenuItem(
+                        child: Text(
+                          "All",
+                          style: TextStyle(
+                            color: KardioCareAppTheme.detailGray,
+                          ),
+                        ),
+                        value: 0,
+                      ),
+                      DropdownMenuItem(
+                        child: Text(
+                          "Abnormal",
+                          style: TextStyle(
+                            color: KardioCareAppTheme.detailGray,
+                          ),
+                        ),
+                        value: 1,
+                      ),
+                    ],
+                    onChanged: (value) {},
+                  ),
+                ],
+              ),
             ),
             RhythmEventChart(
               lengthRecordingMin: recordingData.recordingLengthMin,
-              ekgData: singleLeadData,
+              ekgData: recordingData.ekgData,
+              selectedLead: selectedLead,
+              numBatches:
+                  (recordingData.recordingLengthMin * 60 * 400 / 4096).ceil(),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
