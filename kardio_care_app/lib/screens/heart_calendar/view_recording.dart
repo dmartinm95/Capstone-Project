@@ -3,7 +3,8 @@ import 'package:kardio_care_app/app_theme.dart';
 import 'package:kardio_care_app/screens/ekg_recording/recording_charts.dart';
 import 'package:kardio_care_app/widgets/recording_stats.dart';
 import 'dart:math';
-import 'package:kardio_care_app/widgets/chip_widget.dart'; 
+import 'package:intl/intl.dart';
+import 'package:kardio_care_app/widgets/chip_widget.dart';
 
 class ViewRecording extends StatefulWidget {
   ViewRecording({
@@ -25,12 +26,14 @@ class _ViewRecordingState extends State<ViewRecording> {
     Map<DateTime, double> heartRateVarData =
         selectedRecordingData['heartRateVarData'];
     Map<DateTime, double> bloodOxData = selectedRecordingData['bloodOxData'];
+    DateTime timeTaken = selectedRecordingData['dateTimeOfRecording'];
+    String screenTitle = DateFormat.yMEd().add_jm().format(timeTaken);
 
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          "Results",
+          screenTitle,
           style: KardioCareAppTheme.screenTitleText,
         ),
         centerTitle: true,
@@ -104,7 +107,7 @@ class _ViewRecordingState extends State<ViewRecording> {
                     spacing: 5.0,
                     runSpacing: 5.0,
                     children: <Widget>[
-                      // TODO: fetch these from the database 
+                      // TODO: fetch these from the database
                       ChipWidget(chipName: 'Morning'),
                       ChipWidget(chipName: 'Afternoon'),
                       ChipWidget(chipName: 'Evening'),

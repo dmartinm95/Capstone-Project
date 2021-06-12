@@ -158,7 +158,7 @@ class _EKGRecordingState extends State<EKGRecording> {
               animation: true,
               restartAnimation: false,
               animateFromLastPercent: true,
-              animationDuration: 1000,
+              animationDuration: 800,
               percent:
                   (_currMinutes.toDouble() * 60 + _currSeconds.toDouble()) /
                       (_totalMinutes.toDouble() * 60),

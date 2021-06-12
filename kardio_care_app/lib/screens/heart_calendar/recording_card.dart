@@ -112,6 +112,7 @@ class RecordingCard extends StatelessWidget {
                   'bloodOxData': bloodOxData,
                   'heartRateData': heartRateData,
                   'heartRateVarData': heartRateVarData,
+                  'dateTimeOfRecording': time,
                 });
               },
             ),

@@ -12,7 +12,6 @@ import 'package:kardio_care_app/screens/rhythm_analysis/view_rhythm_event.dart';
 import 'package:kardio_care_app/util/pan_tompkins.dart';
 import 'package:provider/provider.dart';
 import 'package:kardio_care_app/util/device_scanner.dart';
-import 'package:kardio_care_app/screens/rhythm_analysis/all_rhythm_events.dart';
 import 'package:kardio_care_app/util/data_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -45,7 +44,6 @@ class MyApp extends StatelessWidget {
           '/start_recording': (context) => StartRecording(),
           '/ekg_recording': (context) => EKGRecording(),
           '/ekg_results': (context) => EKGResults(),
-          '/all_rhythm_events': (context) => AllRhythmEvents(),
           '/view_rhythm_event': (context) => ViewRhythmEvent(),
           '/view_recording': (context) => ViewRecording(),
         },
