@@ -18,6 +18,7 @@ class ViewRhythmEvent extends StatefulWidget {
 
 class _ViewRhythmEventState extends State<ViewRhythmEvent> {
   int selectedLead = 0;
+  bool allRhythms = true;
   // RecordingData recordingData;
   // List<List<double>> singleLeadData;
 
@@ -142,34 +143,38 @@ class _ViewRhythmEventState extends State<ViewRhythmEvent> {
                   ),
                   Expanded(child: SizedBox()),
                   DropdownButton(
-                    hint: const Text(
-                      'Rhythms',
-                      style: TextStyle(
-                        color: KardioCareAppTheme.detailGray,
-                      ),
-                    ),
-                    // value: 0,
+                    // hint: Text(
+                    //   'Rhythms',
+                    //   style: TextStyle(
+                    //     color: KardioCareAppTheme.detailGray,
+                    //   ),
+                    // ),
+                    value: allRhythms,
                     items: [
                       DropdownMenuItem(
                         child: Text(
-                          "All",
+                          "All Rhythms",
                           style: TextStyle(
                             color: KardioCareAppTheme.detailGray,
                           ),
                         ),
-                        value: 0,
+                        value: true,
                       ),
                       DropdownMenuItem(
                         child: Text(
-                          "Abnormal",
+                          "Abnormal Rhythms",
                           style: TextStyle(
                             color: KardioCareAppTheme.detailGray,
                           ),
                         ),
-                        value: 1,
+                        value: false,
                       ),
                     ],
-                    onChanged: (value) {},
+                    onChanged: (value) {
+                      setState(() {
+                        allRhythms = value;
+                      });
+                    },
                   ),
                 ],
               ),
@@ -180,6 +185,7 @@ class _ViewRhythmEventState extends State<ViewRhythmEvent> {
               selectedLead: selectedLead,
               numBatches:
                   (recordingData.recordingLengthMin * 60 * 400 / 4096).ceil(),
+              allRhythms: allRhythms,
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),

@@ -83,6 +83,7 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
                     padding: EdgeInsets.zero,
                     shrinkWrap: true,
                     primary: false,
+                    reverse: true,
                     physics: NeverScrollableScrollPhysics(),
                     itemCount: box.keys.length,
                     itemBuilder: (BuildContext context, int index) {
@@ -94,8 +95,7 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
                           KardioCareAppTheme.detailPurple,
                           KardioCareAppTheme.detailGreen
                         ],
-                        recordingData:
-                            box.values.elementAt(box.values.length - 1 - index),
+                        recordingData: box.values.elementAt(index),
                       );
                     },
                   ),

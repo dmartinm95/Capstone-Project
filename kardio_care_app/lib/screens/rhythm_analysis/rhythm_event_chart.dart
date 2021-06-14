@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:kardio_care_app/app_theme.dart';
@@ -18,13 +19,15 @@ class RhythmEventChart extends StatefulWidget {
       this.lengthRecordingMin,
       this.ekgData,
       this.selectedLead,
-      this.numBatches})
+      this.numBatches,
+      this.allRhythms})
       : super(key: key);
 
   final List<List<List<double>>> ekgData;
   final int lengthRecordingMin;
   final int selectedLead;
   final int numBatches;
+  final bool allRhythms;
 
   @override
   _RhythmEventChartState createState() => _RhythmEventChartState();
@@ -32,8 +35,14 @@ class RhythmEventChart extends StatefulWidget {
 
 class _RhythmEventChartState extends State<RhythmEventChart> {
   int batchIndex;
+  int numBatches;
+  List<List<List<double>>> ekgData;
   int downSampleAmount;
   int numSamplesToPlot;
+  // int numberOfAbnormalRhythms
+  List<int> abnormalRhythmBatchNumbers;
+  List<String> rhythms;
+  // int abnormalBatchIndex;
 
   ScrollController _scrollController = ScrollController();
 
@@ -44,15 +53,39 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
     batchIndex = 0;
     downSampleAmount = 8;
     numSamplesToPlot = (4096 / downSampleAmount).ceil();
+
+    abnormalRhythmBatchNumbers = [0, 5];
   }
 
   var currentPlottingData;
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.allRhythms) {
+      numBatches = 2;
+      if (batchIndex > numBatches - 1) {
+        batchIndex = 0;
+
+        _scrollController.animateTo(0,
+            duration: new Duration(milliseconds: 700), curve: Curves.ease);
+      }
+
+      ekgData = [widget.ekgData[0], widget.ekgData[5]];
+      rhythms = ["Atrial Flutter", "Atrial Flutter"];
+    } else {
+      numBatches = widget.numBatches;
+      ekgData = widget.ekgData;
+      rhythms = [];
+      for (var i = 0; i < widget.numBatches; i++) {
+        rhythms.add("Normal Rhythm");
+      }
+      rhythms[0] = "Atrial Flutter";
+      rhythms[5] = "Atrial Flutter";
+    }
+
     currentPlottingData = List.generate(
         numSamplesToPlot,
-        (index) => widget.ekgData[batchIndex][index + downSampleAmount - 1]
+        (index) => ekgData[batchIndex][index + downSampleAmount - 1]
             [widget.selectedLead]);
 
     return Container(
@@ -100,8 +133,7 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
                       child: ListView.builder(
                           controller: _scrollController,
                           scrollDirection: Axis.horizontal,
-                          shrinkWrap: true,
-                          itemCount: widget.numBatches,
+                          itemCount: numBatches,
                           itemBuilder: (context, index) {
                             return Container(
                               width: MediaQuery.of(context).size.width * 0.5,
@@ -122,7 +154,7 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
                                         MainAxisAlignment.spaceEvenly,
                                     children: [
                                       Text(
-                                        'Normal\nRhythm',
+                                        rhythms[index],
                                         style: TextStyle(
                                           color: KardioCareAppTheme.detailGray,
                                         ),
@@ -145,7 +177,7 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
                     height: 100,
                     child: TextButton(
                       style: TextButton.styleFrom(
-                        backgroundColor: batchIndex == (widget.numBatches - 1)
+                        backgroundColor: batchIndex == (numBatches - 1)
                             ? Colors.grey.shade500
                             : KardioCareAppTheme.actionBlue,
                         // shape: RoundedRectangleBorder(
@@ -159,9 +191,8 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
                         size: 30,
                       ),
                       // ),
-                      onPressed: batchIndex == (widget.numBatches - 1)
-                          ? null
-                          : nextBatch,
+                      onPressed:
+                          batchIndex == (numBatches - 1) ? null : nextBatch,
                     ),
                   ),
                 ],
@@ -173,9 +204,15 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
                 alignment: MainAxisAlignment.center,
                 width: MediaQuery.of(context).size.width * 0.9,
                 lineHeight: 5.0,
-                percent:
-                    ((batchIndex + 1) * numSamplesToPlot ?? 0.0).toDouble() /
-                        (widget.numBatches.toDouble() * numSamplesToPlot),
+                percent: (((widget.allRhythms
+                                        ? batchIndex
+                                        : abnormalRhythmBatchNumbers[
+                                            batchIndex]) +
+                                    1) *
+                                numSamplesToPlot ??
+                            0.0)
+                        .toDouble() /
+                    (widget.numBatches.toDouble() * numSamplesToPlot),
                 progressColor: KardioCareAppTheme.dividerPurple,
               ),
             ),
@@ -196,7 +233,7 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
 
   void nextBatch() {
     int index = batchIndex;
-    if (batchIndex != (widget.numBatches - 1)) {
+    if (batchIndex != (numBatches - 1)) {
       index = batchIndex + 1;
     }
 
@@ -261,9 +298,16 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
         //   isVisible: true,
         //   labelAlignment: ChartDataLabelAlignment.outer,
         // ),
-        xValueMapper: (double sales, int test) =>
-            ((test + numSamplesToPlot * batchIndex) / (400 / downSampleAmount))
-                .toString(),
+        xValueMapper: (double sales, int index) {
+          int batchIndexAllRhythms = batchIndex;
+          if (!widget.allRhythms) {
+            batchIndexAllRhythms = abnormalRhythmBatchNumbers[batchIndex];
+          }
+
+          return ((index + numSamplesToPlot * batchIndexAllRhythms) /
+                  (400 / downSampleAmount))
+              .toString();
+        },
         yValueMapper: (double sales, _) => sales,
       ),
     ];
