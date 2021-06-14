@@ -19,27 +19,39 @@ class _HeartRhythmPercentsState extends State<HeartRhythmPercents> {
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 10, 10, 20),
+          padding: const EdgeInsets.fromLTRB(10, 0, 10, 20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: FittedBox(
-                  fit: BoxFit.fitHeight,
-                  child: Text(
-                    'Detected Heartbeat Rhythms',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 19,
-                      color: KardioCareAppTheme.detailGray,
-                    ),
-                  ),
-                ),
+              // Padding(
+              //   padding: const EdgeInsets.all(4.0),
+              //   child: FittedBox(
+              //     fit: BoxFit.fitHeight,
+              //     child: Text(
+              //       'Detected Heartbeat Rhythms',
+              //       style: TextStyle(
+              //         fontWeight: FontWeight.bold,
+              //         fontSize: 19,
+              //         color: KardioCareAppTheme.detailGray,
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              
+
+              RhythmRow(
+                name: 'No Detected Arrhythmia',
+                frequency: 0,
+                color: KardioCareAppTheme.detailPurple,
               ),
               RhythmRow(
-                name: 'Normal',
+                name: '1st degree AV block',
+                frequency: 0,
+                color: KardioCareAppTheme.detailPurple,
+              ),
+              RhythmRow(
+                name: 'Bundle branch block',
                 frequency: 0,
                 color: KardioCareAppTheme.detailPurple,
               ),
@@ -54,7 +66,7 @@ class _HeartRhythmPercentsState extends State<HeartRhythmPercents> {
                 color: KardioCareAppTheme.detailRed,
               ),
               RhythmRow(
-                name: 'Atrial Flutter',
+                name: 'Atrial Fibrillation',
                 frequency: 0,
                 color: KardioCareAppTheme.detailGreen,
               ),
@@ -80,7 +92,7 @@ class RhythmRow extends StatelessWidget {
       child: Column(
         children: [
           SizedBox(
-            height: 20,
+            height: 15,
           ),
           Row(
             // mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 
-
 class FilterChipWidget extends StatefulWidget {
   final String chipName;
 
@@ -20,7 +19,7 @@ class _FilterChipWidgetState extends State<FilterChipWidget> {
       label: Text(widget.chipName),
       labelStyle: TextStyle(
           color: KardioCareAppTheme.white,
-          fontSize: 16.0,
+          // fontSize: 16.0,
           fontWeight: FontWeight.w500),
       selected: _isSelected,
       checkmarkColor: KardioCareAppTheme.detailGray,

@@ -55,6 +55,11 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
     numSamplesToPlot = (4096 / downSampleAmount).ceil();
 
     abnormalRhythmBatchNumbers = [0, 5];
+    // for (int i = 0; i < rhythms.length; i++) {
+    //   if (rhythms[i] != 'No Abnormal Rhythm') {
+    //     abnormalRhythmBatchNumbers.add(i);
+    //   }
+    // }
   }
 
   var currentPlottingData;
@@ -70,17 +75,21 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
             duration: new Duration(milliseconds: 700), curve: Curves.ease);
       }
 
-      ekgData = [widget.ekgData[0], widget.ekgData[5]];
-      rhythms = ["Atrial Flutter", "Atrial Flutter"];
+      ekgData = List.generate(abnormalRhythmBatchNumbers.length,
+          (index) => widget.ekgData[abnormalRhythmBatchNumbers[index]]);
+
+      rhythms = ["Atrial Fibrillation", "Atrial Fibrillation"];
+      // rhythms =
+      //     List.generate(abnormalRhythmBatchNumbers.length, (index) => widget.rhythms[abnormalRhythmBatchNumbers[index]]);
     } else {
       numBatches = widget.numBatches;
       ekgData = widget.ekgData;
       rhythms = [];
       for (var i = 0; i < widget.numBatches; i++) {
-        rhythms.add("Normal Rhythm");
+        rhythms.add("No Abnormal Rhythm");
       }
-      rhythms[0] = "Atrial Flutter";
-      rhythms[5] = "Atrial Flutter";
+      rhythms[0] = "Atrial Fibrillation";
+      rhythms[5] = "Atrial Fibrillation";
     }
 
     currentPlottingData = List.generate(
@@ -138,13 +147,25 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
                             return Container(
                               width: MediaQuery.of(context).size.width * 0.5,
                               child: Card(
+                                shape: (index == batchIndex)
+                                    ? RoundedRectangleBorder(
+                                        side: BorderSide(
+                                            color:
+                                                KardioCareAppTheme.actionBlue,
+                                            width: 2.0),
+                                        borderRadius:
+                                            BorderRadius.circular(4.0))
+                                    : RoundedRectangleBorder(
+                                        side: BorderSide(
+                                            color: Colors.white, width: 2.0),
+                                        borderRadius:
+                                            BorderRadius.circular(4.0)),
                                 elevation: 6.0,
                                 child: TextButton(
                                   style: TextButton.styleFrom(
                                     // minimumSize:
                                     //     Size.fromWidth(MediaQuery.of(context).size.width),
-                                    backgroundColor:
-                                        KardioCareAppTheme.background,
+                                    backgroundColor: KardioCareAppTheme.white,
                                   ),
                                   onPressed: () {
                                     switchBatch(index);
@@ -152,18 +173,56 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
                                   child: Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
+                                      // Container(
+                                      //   width:
+                                      //       MediaQuery.of(context).size.width *
+                                      //           0.38,
+                                      //   height: 5,
+                                      //   decoration: BoxDecoration(
+                                      //       color:
+                                      //           KardioCareAppTheme.detailGreen,
+                                      //       borderRadius: BorderRadius.all(
+                                      //           Radius.circular(1000))),
+                                      // ),
+                                      // FittedBox(
+                                      // fit: BoxFit,
+
                                       Text(
                                         rhythms[index],
+                                        textAlign: TextAlign.center,
                                         style: TextStyle(
                                           color: KardioCareAppTheme.detailGray,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
                                         ),
                                       ),
+                                      Text(
+                                        "Detected",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: KardioCareAppTheme.detailGray,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w300,
+                                        ),
+                                      ),
+                                      // ),
                                       if (index == batchIndex)
-                                        Icon(
-                                          Icons.check,
-                                          color: KardioCareAppTheme.actionBlue,
-                                        )
+                                        rhythms[index] == "No Abnormal Rhythm"
+                                            ? Icon(
+                                                Icons.check,
+                                                color: KardioCareAppTheme
+                                                    .detailGreen,
+                                                // size: 10,
+                                              )
+                                            : Icon(
+                                                Icons.warning,
+                                                color: KardioCareAppTheme
+                                                    .detailRed,
+                                                // size: 10,
+                                              ),
                                     ],
                                   ),
                                 ),

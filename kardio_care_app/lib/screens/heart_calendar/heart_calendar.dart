@@ -85,7 +85,6 @@ class _HeartCalendarState extends State<HeartCalendar> {
 
     List<RecordingData> todaysData = [];
     for (var item in box.values) {
-
       if (item.startTime.year == day.year &&
           item.startTime.month == day.month &&
           item.startTime.day == day.day) {
@@ -103,7 +102,6 @@ class _HeartCalendarState extends State<HeartCalendar> {
     // open boxes
     Hive.openBox<RecordingData>('recordingDataBox');
     box = Hive.box<RecordingData>('recordingDataBox');
-
   }
 
   @override
@@ -229,7 +227,7 @@ class _HeartCalendarState extends State<HeartCalendar> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(19, 10, 19, 10),
                   child: Container(
-                    height: 15,
+                    height: MediaQuery.of(context).size.height * 0.02,
                     color: KardioCareAppTheme.background,
                   ),
                 ),

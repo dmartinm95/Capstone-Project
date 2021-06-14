@@ -65,7 +65,7 @@ class _HomeState extends State<Home> {
             ),
             HeartRateAndOxygenSaturation(),
             SizedBox(
-              height: 60,
+              height: MediaQuery.of(context).size.height * 0.10,
             )
           ],
         ),

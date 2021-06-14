@@ -19,23 +19,11 @@ class ViewRhythmEvent extends StatefulWidget {
 class _ViewRhythmEventState extends State<ViewRhythmEvent> {
   int selectedLead = 0;
   bool allRhythms = true;
-  // RecordingData recordingData;
-  // List<List<double>> singleLeadData;
 
   @override
   Widget build(BuildContext context) {
     final RecordingData recordingData =
         ModalRoute.of(context).settings.arguments;
-
-    // singleLeadData = List.generate(
-    //   recordingData.ekgData.length,
-    //   (batch) => List.generate(
-    //     recordingData.ekgData[0].length,
-    //     (sample) {
-    //       return recordingData.ekgData[batch][sample][selectedValue];
-    //     },
-    //   ),
-    // );
 
     return Scaffold(
       appBar: AppBar(
