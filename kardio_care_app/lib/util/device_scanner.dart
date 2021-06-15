@@ -47,6 +47,7 @@ class DeviceScanner with ChangeNotifier {
   int ekgDataToStoreIndex = 0;
   int ekgDataBatchIndex = 0;
   int batches = 0;
+  bool doneRecording = false;
 
   DeviceScanner() {
     activeLeadIndex = 0;
@@ -226,13 +227,13 @@ class DeviceScanner with ChangeNotifier {
       return;
     }
     if (ekgDataToStoreIndex >= ekgDataToStore[0].length) {
+      print("Store Index: $ekgDataToStoreIndex");
       ekgDataBatchIndex++;
       ekgDataToStoreIndex = 0;
+
       print("Batch #$ekgDataBatchIndex");
     }
     try {
-      // [45, 8, 122, 9, 154, 12, 155, 12, 155, 12, 157, 12, 154, 12, 155, 12]
-
       int nextDataToStoreIndex = ekgDataToStoreIndex + 1;
       int currLead = 0;
       int currSample = 0;
@@ -248,54 +249,29 @@ class DeviceScanner with ChangeNotifier {
         currSample++;
       }
       ekgDataToStoreIndex += 2;
-
-      // int leadOne = data[0] + 256 * data[1];
-      // int leadTwo = data[2] + 256 * data[3];
-      // int leadThree = data[4] + 256 * data[5];
-      // int leadFour = data[6] + 256 * data[7];
-
-      // print(
-      //     "lead one: $leadOne\t two: $leadTwo\t three: $leadThree\t four: $leadFour");
-
-      // ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][0] =
-      //     leadOne.toDouble();
-
-      // ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][1] =
-      //     leadTwo.toDouble();
-
-      // ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][2] =
-      //     leadThree.toDouble();
-
-      // ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][3] =
-      //     leadFour.toDouble();
-
-      // ekgDataToStoreIndex++;
     } catch (error) {
       print("Error while decoding all lead data: ${error.toString()}");
     }
   }
 
-  Future switchToMainLead() async {
+  void switchToActiveLead() async {
+    if (doneRecording) {
+      return;
+    }
+
+    print("Starting switch");
+    await Future.delayed(Duration(milliseconds: 250));
+    print("Finished switch");
     try {
-      await turnOffNotifyAllLeads();
-      await turnOnMainLead();
-      await Future.delayed(Duration(seconds: 1));
-      listenToStream(0);
+      await turnOnActiveLead();
+      listenToStream(activeLeadIndex);
     } catch (e) {
       print("Error while switching to main lead: ${e.toString()}");
     }
   }
 
   void switchToStreamIndex(int leadIndex) async {
-    // if (bleAllLeadsCharacteristic.isNotifying) {
-    //   await turnOffNotifyAllLeads();
-    // }
-
     if (activeLeadIndex == leadIndex) {
-      // if (!bleLeadCharacteristics[activeLeadIndex].isNotifying) {
-      //   await bleLeadCharacteristics[activeLeadIndex].setNotifyValue(true);
-      //   return;
-      // }
       return;
     }
 
@@ -342,8 +318,6 @@ class DeviceScanner with ChangeNotifier {
 
     print("Number of batches required: $batches");
 
-    // List.filled(batches, List.filled(4096, List.filled(12, 0)));
-
     ekgDataToStore = List.generate(batches,
         (_) => List.generate(4096, (_) => List.generate(12, (_) => 0.0)));
 
@@ -352,7 +326,6 @@ class DeviceScanner with ChangeNotifier {
     // ekgDataBatchIndex = 0;
     // ekgDataToStoreIndex = 0;
 
-    await turnOffActiveLead();
     await turnOnNotifyAllLeads();
     listenToAllLeadsData();
   }
@@ -367,15 +340,20 @@ class DeviceScanner with ChangeNotifier {
 
   Future turnOnNotifyAllLeads() async {
     print("Turning ON all leads");
-    await bleAllLeadsCharacteristic.setNotifyValue(true);
+    if (!bleAllLeadsCharacteristic.isNotifying) {
+      await bleAllLeadsCharacteristic.setNotifyValue(true);
+    }
     print("Done turning ON all leads");
   }
 
   Future turnOffNotifyAllLeads() async {
-    await bleAllLeadsCharacteristic.setNotifyValue(false);
+    if (bleAllLeadsCharacteristic.isNotifying) {
+      await bleAllLeadsCharacteristic.setNotifyValue(false);
+      bleAllLeadsCharacteristic.value.listen((event) {}).cancel();
+    }
   }
 
-  Future turnOnMainLead() async {
-    await bleCharacteristics[0].setNotifyValue(true);
+  Future turnOnActiveLead() async {
+    await bleCharacteristics[activeLeadIndex].setNotifyValue(true);
   }
 }

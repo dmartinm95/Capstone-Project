@@ -204,7 +204,8 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
                                       ),
                                       // ),
                                       if (index == batchIndex)
-                                        currRhythms[index] == "No Abnormal Rhythm"
+                                        currRhythms[index] ==
+                                                "No Abnormal Rhythm"
                                             ? Icon(
                                                 Icons.check,
                                                 color: KardioCareAppTheme
@@ -339,7 +340,7 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
     );
   }
 
-  /// Returns the chart series
+  // Returns the chart series
   List<ChartSeries<double, String>> getSeries() {
     return <ChartSeries<double, String>>[
       FastLineSeries<double, String>(

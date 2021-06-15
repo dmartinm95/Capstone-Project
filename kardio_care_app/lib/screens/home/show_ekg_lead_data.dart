@@ -16,7 +16,7 @@ class ShowEKGLeadData extends StatelessWidget {
 
   final Size size;
   final DeviceScanner deviceScannerProvider;
-  final dataFilterInstance = new DataFilter();
+  // final dataFilterInstance = new DataFilter();
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +52,7 @@ class ShowEKGLeadData extends StatelessWidget {
                   // }
                   return BuildEKGPlot(
                     dataValue: device.leadDataList,
-                    dataFilter: dataFilterInstance,
+                    dataFilter: null,
                   );
                 },
               ),
@@ -88,6 +88,6 @@ class ShowEKGLeadData extends StatelessWidget {
 
     deviceScannerProvider.listenToStream(newIndex);
 
-    dataFilterInstance.resetBuffer();
+    // dataFilterInstance.resetBuffer();
   }
 }

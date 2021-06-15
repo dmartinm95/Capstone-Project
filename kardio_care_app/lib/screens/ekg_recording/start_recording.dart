@@ -136,14 +136,15 @@ class FullRectangleTextButton extends StatelessWidget {
           ),
           // ),
           onPressed: () {
+            deviceScannerProvider.turnOffActiveLead();
             Navigator.pushReplacementNamed(
               context,
               '/ekg_recording',
               arguments: lengthMinutes,
             ).then((value) {
               print("Going home from start_recording.dart");
-              deviceScannerProvider.switchToStreamIndex(0);
-              deviceScannerProvider.listenToStream(0);
+              deviceScannerProvider.turnOffNotifyAllLeads();
+              deviceScannerProvider.switchToActiveLead();
             });
           },
         ),

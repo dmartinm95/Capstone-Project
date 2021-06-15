@@ -49,7 +49,7 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
   }
 
   List<LeadData> updateDataList(List<int> data) {
-    if (data == null) {
+    if (data.isEmpty) {
       return <LeadData>[LeadData(xIndex, 0)];
     }
 
@@ -59,20 +59,20 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
 
         dataList.add(LeadData(xIndex, data[i]));
         xIndex = xIndex + 1;
+
+        if (dataList.length >= defaultNumberPoints) {
+          dataList.removeAt(0);
+          _chartSeriesController?.updateDataSource(
+            addedDataIndexes: <int>[dataList.length - 1],
+            removedDataIndexes: <int>[0],
+          );
+        } else {
+          _chartSeriesController?.updateDataSource(
+            addedDataIndexes: <int>[dataList.length - 1],
+          );
+        }
       } catch (e) {
         print("Error observed while updating DataList: ${e.toString()}");
-      }
-
-      if (dataList.length == defaultNumberPoints) {
-        dataList.removeAt(0);
-        _chartSeriesController?.updateDataSource(
-          addedDataIndexes: <int>[dataList.length - 1],
-          removedDataIndexes: <int>[0],
-        );
-      } else {
-        _chartSeriesController?.updateDataSource(
-          addedDataIndexes: <int>[dataList.length - 1],
-        );
       }
     }
 

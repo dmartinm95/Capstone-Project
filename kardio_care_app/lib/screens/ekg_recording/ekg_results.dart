@@ -62,6 +62,9 @@ class _EKGResultsState extends State<EKGResults> {
               icon: Icon(Icons.close),
               color: KardioCareAppTheme.background,
               onPressed: () {
+                deviceScannerProvider.doneRecording = false;
+                deviceScannerProvider.switchToActiveLead();
+                print("Pressed X");
                 Navigator.maybePop(context);
               },
             ),
@@ -185,6 +188,8 @@ class _EKGResultsState extends State<EKGResults> {
                               return BlurryLoading();
                             },
                           );
+                          deviceScannerProvider.doneRecording = false;
+                          deviceScannerProvider.switchToActiveLead();
 
                           // Peform Neural Network analysis
                           await Future.delayed(Duration(seconds: 2));
@@ -193,6 +198,7 @@ class _EKGResultsState extends State<EKGResults> {
                               .classify(unsavedRecordingData['ekgData']);
 
                           print('Saving recording results');
+                          print('save results');
 
                           await box.put(
                               unsavedRecordingData['startTime']
@@ -236,13 +242,15 @@ class _EKGResultsState extends State<EKGResults> {
                         ),
                         // ),
                         onPressed: () {
+                          deviceScannerProvider.doneRecording = false;
                           Navigator.pushReplacementNamed(
                             context,
                             '/ekg_recording',
                             arguments: unsavedRecordingData['selectedMinutes'],
                           ).then((value) {
-                            deviceScannerProvider.switchToStreamIndex(0);
-                            deviceScannerProvider.listenToStream(0);
+                            print("Going home from start_recording.dart");
+                            deviceScannerProvider.turnOffNotifyAllLeads();
+                            deviceScannerProvider.switchToActiveLead();
                           });
                         },
                       ),
