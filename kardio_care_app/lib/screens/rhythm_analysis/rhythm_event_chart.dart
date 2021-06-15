@@ -20,10 +20,12 @@ class RhythmEventChart extends StatefulWidget {
       this.ekgData,
       this.selectedLead,
       this.numBatches,
-      this.allRhythms})
+      this.allRhythms,
+      this.rhythms})
       : super(key: key);
 
   final List<List<List<double>>> ekgData;
+  final List<String> rhythms;
   final int lengthRecordingMin;
   final int selectedLead;
   final int numBatches;
@@ -39,10 +41,8 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
   List<List<List<double>>> ekgData;
   int downSampleAmount;
   int numSamplesToPlot;
-  // int numberOfAbnormalRhythms
   List<int> abnormalRhythmBatchNumbers;
-  List<String> rhythms;
-  // int abnormalBatchIndex;
+  List<String> currRhythms;
 
   ScrollController _scrollController = ScrollController();
 
@@ -54,12 +54,12 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
     downSampleAmount = 8;
     numSamplesToPlot = (4096 / downSampleAmount).ceil();
 
-    abnormalRhythmBatchNumbers = [0, 5];
-    // for (int i = 0; i < rhythms.length; i++) {
-    //   if (rhythms[i] != 'No Abnormal Rhythm') {
-    //     abnormalRhythmBatchNumbers.add(i);
-    //   }
-    // }
+    abnormalRhythmBatchNumbers = [];
+    for (int i = 0; i < widget.rhythms.length; i++) {
+      if (widget.rhythms[i] != 'No Abnormal Rhythm') {
+        abnormalRhythmBatchNumbers.add(i);
+      }
+    }
   }
 
   var currentPlottingData;
@@ -78,18 +78,12 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
       ekgData = List.generate(abnormalRhythmBatchNumbers.length,
           (index) => widget.ekgData[abnormalRhythmBatchNumbers[index]]);
 
-      rhythms = ["Atrial Fibrillation", "Atrial Fibrillation"];
-      // rhythms =
-      //     List.generate(abnormalRhythmBatchNumbers.length, (index) => widget.rhythms[abnormalRhythmBatchNumbers[index]]);
+      currRhythms = List.generate(abnormalRhythmBatchNumbers.length,
+          (index) => widget.rhythms[abnormalRhythmBatchNumbers[index]]);
     } else {
+      currRhythms = widget.rhythms;
       numBatches = widget.numBatches;
       ekgData = widget.ekgData;
-      rhythms = [];
-      for (var i = 0; i < widget.numBatches; i++) {
-        rhythms.add("No Abnormal Rhythm");
-      }
-      rhythms[0] = "Atrial Fibrillation";
-      rhythms[5] = "Atrial Fibrillation";
     }
 
     currentPlottingData = List.generate(
@@ -191,7 +185,7 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
                                       // fit: BoxFit,
 
                                       Text(
-                                        rhythms[index],
+                                        currRhythms[index],
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           color: KardioCareAppTheme.detailGray,
@@ -210,7 +204,7 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
                                       ),
                                       // ),
                                       if (index == batchIndex)
-                                        rhythms[index] == "No Abnormal Rhythm"
+                                        currRhythms[index] == "No Abnormal Rhythm"
                                             ? Icon(
                                                 Icons.check,
                                                 color: KardioCareAppTheme

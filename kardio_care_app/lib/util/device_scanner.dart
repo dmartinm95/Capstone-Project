@@ -222,46 +222,80 @@ class DeviceScanner with ChangeNotifier {
   }
 
   void decodeAllLeadsData(List<int> data) {
+    if (ekgDataBatchIndex >= batches) {
+      return;
+    }
     if (ekgDataToStoreIndex >= ekgDataToStore[0].length) {
       ekgDataBatchIndex++;
       ekgDataToStoreIndex = 0;
       print("Batch #$ekgDataBatchIndex");
     }
     try {
-      int leadOne = data[0] + 256 * data[1];
-      int leadTwo = data[2] + 256 * data[3];
-      int leadThree = data[4] + 256 * data[5];
-      int leadFour = data[6] + 256 * data[7];
+      // [45, 8, 122, 9, 154, 12, 155, 12, 155, 12, 157, 12, 154, 12, 155, 12]
 
-      ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][0] =
-          leadOne.toDouble();
+      int nextDataToStoreIndex = ekgDataToStoreIndex + 1;
+      int currLead = 0;
+      int currSample = 0;
+      for (int currByte = 0; currByte < 16; currByte += 2) {
+        currLead = (currByte / 4).floor();
+        if (currSample % 2 == 0) {
+          ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][currLead] =
+              (data[currByte] + 256 * data[currByte + 1]).toDouble();
+        } else {
+          ekgDataToStore[ekgDataBatchIndex][nextDataToStoreIndex][currLead] =
+              (data[currByte] + 256 * data[currByte + 1]).toDouble();
+        }
+        currSample++;
+      }
+      ekgDataToStoreIndex += 2;
 
-      ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][1] =
-          leadTwo.toDouble();
+      // int leadOne = data[0] + 256 * data[1];
+      // int leadTwo = data[2] + 256 * data[3];
+      // int leadThree = data[4] + 256 * data[5];
+      // int leadFour = data[6] + 256 * data[7];
 
-      ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][2] =
-          leadThree.toDouble();
+      // print(
+      //     "lead one: $leadOne\t two: $leadTwo\t three: $leadThree\t four: $leadFour");
 
-      ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][3] =
-          leadFour.toDouble();
+      // ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][0] =
+      //     leadOne.toDouble();
 
-      ekgDataToStoreIndex++;
+      // ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][1] =
+      //     leadTwo.toDouble();
+
+      // ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][2] =
+      //     leadThree.toDouble();
+
+      // ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][3] =
+      //     leadFour.toDouble();
+
+      // ekgDataToStoreIndex++;
     } catch (error) {
-      print(leadDataList.toString());
-      print("Error: ${error.toString()}");
+      print("Error while decoding all lead data: ${error.toString()}");
+    }
+  }
+
+  Future switchToMainLead() async {
+    try {
+      await turnOffNotifyAllLeads();
+      await turnOnMainLead();
+      await Future.delayed(Duration(seconds: 1));
+      listenToStream(0);
+    } catch (e) {
+      print("Error while switching to main lead: ${e.toString()}");
     }
   }
 
   void switchToStreamIndex(int leadIndex) async {
-    if (bleAllLeadsCharacteristic.isNotifying) {
-      await turnOffNotifyAllLeads();
-    }
+    // if (bleAllLeadsCharacteristic.isNotifying) {
+    //   await turnOffNotifyAllLeads();
+    // }
 
     if (activeLeadIndex == leadIndex) {
-      if (!bleLeadCharacteristics[activeLeadIndex].isNotifying) {
-        await bleLeadCharacteristics[activeLeadIndex].setNotifyValue(true);
-        return;
-      }
+      // if (!bleLeadCharacteristics[activeLeadIndex].isNotifying) {
+      //   await bleLeadCharacteristics[activeLeadIndex].setNotifyValue(true);
+      //   return;
+      // }
       return;
     }
 
@@ -303,16 +337,20 @@ class DeviceScanner with ChangeNotifier {
     print("Disconnected");
   }
 
-  void connectToAllLeads(int numMinutes) async {
+  Future connectToAllLeads(int numMinutes) async {
     batches = (numMinutes * 60 * 400 / 4096).ceil();
+
+    print("Number of batches required: $batches");
 
     // List.filled(batches, List.filled(4096, List.filled(12, 0)));
 
     ekgDataToStore = List.generate(batches,
         (_) => List.generate(4096, (_) => List.generate(12, (_) => 0.0)));
 
-    ekgDataBatchIndex = 0;
-    ekgDataToStoreIndex = 0;
+    print(
+        "Initial state: batchIndex = $ekgDataBatchIndex\t storeIndex = $ekgDataToStoreIndex");
+    // ekgDataBatchIndex = 0;
+    // ekgDataToStoreIndex = 0;
 
     await turnOffActiveLead();
     await turnOnNotifyAllLeads();
@@ -335,5 +373,9 @@ class DeviceScanner with ChangeNotifier {
 
   Future turnOffNotifyAllLeads() async {
     await bleAllLeadsCharacteristic.setNotifyValue(false);
+  }
+
+  Future turnOnMainLead() async {
+    await bleCharacteristics[0].setNotifyValue(true);
   }
 }

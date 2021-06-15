@@ -19,13 +19,12 @@ class RecordingDataAdapter extends TypeAdapter<RecordingData> {
     return RecordingData()
       ..startTime = fields[0] as DateTime
       ..recordingLengthMin = fields[1] as int
-      ..abnormalRhythmPresent = fields[2] as bool
-      ..tags = (fields[3] as List)?.cast<String>()
-      ..heartRateData = (fields[4] as Map)?.cast<DateTime, double>()
-      ..heartRateVarData = (fields[5] as Map)?.cast<DateTime, double>()
-      ..bloodOxData = (fields[6] as Map)?.cast<DateTime, double>()
-      ..rhythms = (fields[7] as List)?.cast<String>()
-      ..ekgData = (fields[8] as List)
+      ..tags = (fields[2] as List)?.cast<String>()
+      ..heartRateData = (fields[3] as Map)?.cast<DateTime, double>()
+      ..heartRateVarData = (fields[4] as Map)?.cast<DateTime, double>()
+      ..bloodOxData = (fields[5] as Map)?.cast<DateTime, double>()
+      ..rhythms = (fields[6] as List)?.cast<String>()
+      ..ekgData = (fields[7] as List)
           ?.map((dynamic e) => (e as List)
               ?.map((dynamic e) => (e as List)?.cast<double>())
               ?.toList())
@@ -35,24 +34,22 @@ class RecordingDataAdapter extends TypeAdapter<RecordingData> {
   @override
   void write(BinaryWriter writer, RecordingData obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.startTime)
       ..writeByte(1)
       ..write(obj.recordingLengthMin)
       ..writeByte(2)
-      ..write(obj.abnormalRhythmPresent)
-      ..writeByte(3)
       ..write(obj.tags)
-      ..writeByte(4)
+      ..writeByte(3)
       ..write(obj.heartRateData)
-      ..writeByte(5)
+      ..writeByte(4)
       ..write(obj.heartRateVarData)
-      ..writeByte(6)
+      ..writeByte(5)
       ..write(obj.bloodOxData)
-      ..writeByte(7)
+      ..writeByte(6)
       ..write(obj.rhythms)
-      ..writeByte(8)
+      ..writeByte(7)
       ..write(obj.ekgData);
   }
 

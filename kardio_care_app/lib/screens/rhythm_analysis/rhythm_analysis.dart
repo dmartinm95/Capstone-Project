@@ -125,7 +125,11 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
                       return HeartEventCard(
                         context: context,
                         index: index,
-                        rhythms: ['No Detected Arrhythmia'],
+                        rhythms: box.values
+                            .elementAt(index)
+                            .rhythms
+                            .toSet()
+                            .toList(),
                         rhythmColors: [
                           KardioCareAppTheme.detailPurple,
                           KardioCareAppTheme.detailGreen

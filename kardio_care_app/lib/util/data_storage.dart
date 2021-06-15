@@ -1,11 +1,8 @@
 import 'package:hive/hive.dart';
 part 'data_storage.g.dart';
 
-
 @HiveType(typeId: 0)
 class RecordingData extends HiveObject {
-
-  
   @HiveField(0)
   DateTime startTime;
 
@@ -13,24 +10,21 @@ class RecordingData extends HiveObject {
   int recordingLengthMin;
 
   @HiveField(2)
-  bool abnormalRhythmPresent;
-
-  @HiveField(3)
   List<String> tags;
 
-  @HiveField(4)
+  @HiveField(3)
   Map<DateTime, double> heartRateData;
 
-  @HiveField(5)
-  Map<DateTime, double> heartRateVarData;
+  @HiveField(4)
+  Map<DateTime, double> heartRateVarData;  
 
-  @HiveField(6)
+  @HiveField(5)
   Map<DateTime, double> bloodOxData;
 
-  @HiveField(7)
+  @HiveField(6)
   List<String> rhythms;
 
-  @HiveField(8)
+  @HiveField(7)
   List<List<List<double>>> ekgData;
 }
 

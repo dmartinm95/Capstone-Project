@@ -10,6 +10,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'dart:math';
 import 'package:kardio_care_app/widgets/filter_chip_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:kardio_care_app/util/ekg_classifier.dart';
 
 class EKGResults extends StatefulWidget {
   EKGResults({Key key}) : super(key: key);
@@ -21,6 +22,14 @@ class EKGResults extends StatefulWidget {
 class _EKGResultsState extends State<EKGResults> {
   var unsavedRecordingData;
   final box = Hive.box<RecordingData>('recordingDataBox');
+
+  EKGClassifier _ekgClassifier;
+
+  @override
+  void initState() {
+    super.initState();
+    _ekgClassifier = EKGClassifier();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -169,28 +178,31 @@ class _EKGResultsState extends State<EKGResults> {
                         ),
                         // ),
                         onPressed: () async {
-                          print('save results');
+                          showDialog(
+                            barrierDismissible: false,
+                            context: context,
+                            builder: (BuildContext context) {
+                              return BlurryLoading();
+                            },
+                          );
+
+                          // Peform Neural Network analysis
+                          await Future.delayed(Duration(seconds: 2));
+                          dataResults.rhythms = [];
+                          dataResults.rhythms = _ekgClassifier
+                              .classify(unsavedRecordingData['ekgData']);
+
+                          print('Saving recording results');
 
                           await box.put(
                               unsavedRecordingData['startTime']
                                   .toIso8601String(),
                               dataResults);
 
-                          print('saved');
-
-                          // showDialog(
-                          //   barrierDismissible: false,
-                          //   context: context,
-                          //   builder: (BuildContext context) {
-                          //     return BlurryLoading();
-                          //   },
-                          // );
-
-                          // TODO: Peform Neural Network analysis here
-                          // await Future.delayed(Duration(seconds: 3));
+                          print('Saved');
 
                           // pop the dialog
-                          // Navigator.of(context).pop();
+                          Navigator.of(context).pop();
 
                           // pop the screen
                           Navigator.of(context).maybePop();
