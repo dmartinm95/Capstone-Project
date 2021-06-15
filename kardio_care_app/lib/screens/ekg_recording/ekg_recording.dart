@@ -58,7 +58,7 @@ class _EKGRecordingState extends State<EKGRecording> {
     }
   }
 
-  void _startTimer(DeviceScanner deviceScanner) async {
+  void _startTimer(DeviceScanner deviceScanner) {
     bloodOxData = {};
     heartRateData = {};
     heartRateVarData = {};
@@ -70,7 +70,7 @@ class _EKGRecordingState extends State<EKGRecording> {
     startTime = DateTime.now();
     deviceScanner.ekgDataBatchIndex = 0;
     deviceScanner.ekgDataToStoreIndex = 0;
-    await deviceScanner.connectToAllLeads(_totalMinutes);
+    deviceScanner.connectToAllLeads(_totalMinutes);
 
     generateFakeData();
     fakeDataTimer = Timer.periodic(Duration(seconds: 5), (timer) {
@@ -95,6 +95,8 @@ class _EKGRecordingState extends State<EKGRecording> {
             print("EKG DATA COLLECTED");
             List<List<List<double>>> ekgDataCollected =
                 List.from(deviceScanner.ekgDataToStore);
+            deviceScanner.doneRecording = true;
+            deviceScanner.turnOffNotifyAllLeads();
 
             Navigator.pushReplacementNamed(context, '/ekg_results', arguments: {
               'bloodOxData': bloodOxData,
@@ -103,9 +105,6 @@ class _EKGRecordingState extends State<EKGRecording> {
               'ekgData': ekgDataCollected,
               'startTime': startTime,
               'selectedMinutes': ModalRoute.of(context).settings.arguments
-            }).then((value) {
-              print("Going home from ekg_recording.dart");
-              deviceScanner.switchToMainLead();
             });
           }
         }
@@ -255,6 +254,7 @@ class _EKGRecordingState extends State<EKGRecording> {
   void dispose() {
     super.dispose();
     _stopTimer();
+    print("Disposing ekg_recording.dart screen");
   }
 }
 

@@ -194,7 +194,7 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
   List<ChartSeries<ChartSampleData, String>> getSeries() {
     List<ChartSampleData> test = [];
     int k = 0;
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < 6; i++) {
       for (var j = 0; j < 512; j++) {
         test.add(
             ChartSampleData(k.toString(), k.toString(), widget.ekgData[i][j]));
