@@ -10,17 +10,53 @@ import 'package:provider/provider.dart';
 import 'package:kardio_care_app/util/device_scanner.dart';
 
 class Home extends StatefulWidget {
+  Home({Key key, this.deviceScannerProvider}) : super(key: key);
+
+  final DeviceScanner deviceScannerProvider;
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
   @override
+  void initState() {
+    print("Home screen init");
+
+    if (widget.deviceScannerProvider.bleConnectionNotifier.value != null) {
+      print("Turning ON notify from active lead");
+      if (!widget
+          .deviceScannerProvider
+          .bleLeadCharacteristics[widget.deviceScannerProvider.activeLeadIndex]
+          .isNotifying) {
+        widget.deviceScannerProvider.turnOnActiveLead();
+      }
+    }
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    print("Home screen disposed");
+
+    if (widget.deviceScannerProvider.bleConnectionNotifier.value != null) {
+      print("Turning OFF notify from active lead");
+      if (widget
+          .deviceScannerProvider
+          .bleLeadCharacteristics[widget.deviceScannerProvider.activeLeadIndex]
+          .isNotifying) {
+        widget.deviceScannerProvider.turnOffActiveLead();
+      }
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
 
-    final deviceScannerProvider =
-        Provider.of<DeviceScanner>(context, listen: false);
+    // final deviceScannerProvider =
+    //     Provider.of<DeviceScanner>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
@@ -32,13 +68,13 @@ class _HomeState extends State<Home> {
         centerTitle: true,
         actions: [
           ValueListenableBuilder(
-            valueListenable: deviceScannerProvider.bleConnectionNotifier,
+            valueListenable: widget.deviceScannerProvider.bleConnectionNotifier,
             builder: (context, value, child) {
               if (value == null) {
                 return Container();
               }
               return AppBarDisconnectBtn(
-                  deviceScannerProvider: deviceScannerProvider);
+                  deviceScannerProvider: widget.deviceScannerProvider);
             },
           ),
         ],
@@ -49,17 +85,18 @@ class _HomeState extends State<Home> {
           children: <Widget>[
             // WelcomeMessage(size: size),
             ValueListenableBuilder(
-              valueListenable: deviceScannerProvider.bleConnectionNotifier,
+              valueListenable:
+                  widget.deviceScannerProvider.bleConnectionNotifier,
               builder: (context, value, child) {
                 if (value == null) {
                   return SearchAndConnectBtn(
                     size: size,
-                    deviceScannerProvider: deviceScannerProvider,
+                    deviceScannerProvider: widget.deviceScannerProvider,
                   );
                 }
                 return ShowEKGLeadData(
                   size: size,
-                  deviceScannerProvider: deviceScannerProvider,
+                  deviceScannerProvider: widget.deviceScannerProvider,
                 );
               },
             ),

@@ -82,11 +82,9 @@ class ShowEKGLeadData extends StatelessWidget {
   }
 
   callback(int newIndex) {
-    print("Switching stream index to: index $newIndex");
+    print("Switching stream to new index: $newIndex");
 
     deviceScannerProvider.switchToStreamIndex(newIndex);
-
-    deviceScannerProvider.listenToStream(newIndex);
 
     // dataFilterInstance.resetBuffer();
   }

@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:rxdart/rxdart.dart';
+
+// TODO: FIX switching leads notify null issue
+// TODO: Loading animation while saving data
+// TODO: Reseting the ekg batch index everytime
 
 class DeviceScanner with ChangeNotifier {
   // Arduino Nano 33 BLE details
@@ -49,12 +52,18 @@ class DeviceScanner with ChangeNotifier {
   int batches = 0;
   bool doneRecording = false;
 
+  StreamSubscription<List<int>> subscription;
+  StreamSubscription<List<int>> currentLeadSubscription;
+
   DeviceScanner() {
     activeLeadIndex = 0;
     bleConnectionNotifier.value = null;
   }
 
   void dispose() {
+    print("Disposing device scanner");
+    subscription.cancel();
+    currentLeadSubscription.cancel();
     super.dispose();
   }
 
@@ -112,11 +121,11 @@ class DeviceScanner with ChangeNotifier {
       print("Getting characteristics");
       await _getCustomCharacteristic();
       print("Setting notify to true");
-      await bleLeadOneCharacteristic.setNotifyValue(true);
-      print("Connected");
+      activeLeadIndex = 0;
+      await bleLeadCharacteristics[activeLeadIndex].setNotifyValue(true);
       bleConnectionNotifier.value = bleDevice;
-
-      listenToStream(0);
+      print("Connected");
+      listenToStream(activeLeadIndex);
       print("Listening to stream");
       return true;
     } catch (error) {
@@ -179,6 +188,7 @@ class DeviceScanner with ChangeNotifier {
     if (bleAllLeadsCharacteristic != null) {
       print(
           "Found Characteristic! - uuid: ${bleAllLeadsCharacteristic.uuid.toString()}");
+      subscription = bleAllLeadsCharacteristic.value.listen((event) {});
     }
   }
 
@@ -189,68 +199,113 @@ class DeviceScanner with ChangeNotifier {
           "Characteristic with UUID: ${bleCharacteristics[leadIndex].uuid.toString()} is NULL");
       return;
     }
-    activeLeadIndex = leadIndex;
 
     if (leadIndex == 0) {
-      bleLeadCharacteristics[leadIndex].value.listen((data) {
+      currentLeadSubscription =
+          bleLeadCharacteristics[leadIndex].value.listen((data) {
         _decodeData(data);
       });
     } else if (leadIndex == 1) {
-      bleLeadCharacteristics[leadIndex].value.listen((data) {
+      currentLeadSubscription =
+          bleLeadCharacteristics[leadIndex].value.listen((data) {
         _decodeData(data);
       });
     } else if (leadIndex == 2) {
-      bleLeadCharacteristics[leadIndex].value.listen((data) {
+      currentLeadSubscription =
+          bleLeadCharacteristics[leadIndex].value.listen((data) {
         _decodeData(data);
       });
     } else if (leadIndex == 3) {
-      bleLeadCharacteristics[leadIndex].value.listen((data) {
+      currentLeadSubscription =
+          bleLeadCharacteristics[leadIndex].value.listen((data) {
         _decodeData(data);
       });
     }
   }
 
-  void listenToAllLeadsData() async {
+  // Switch between all four leads in the Home screen
+  void switchToStreamIndex(int leadIndex) async {
+    if (activeLeadIndex == leadIndex) {
+      print("Same index as before, do nothing");
+      return;
+    }
+
+    try {
+      if (bleLeadCharacteristics[activeLeadIndex].isNotifying) {
+        await bleLeadCharacteristics[activeLeadIndex].setNotifyValue(false);
+      }
+
+      await bleLeadCharacteristics[leadIndex].setNotifyValue(true);
+
+      activeLeadIndex = leadIndex;
+
+      if (currentLeadSubscription != null) {
+        currentLeadSubscription.cancel();
+      }
+
+      listenToStream(activeLeadIndex);
+    } catch (e) {
+      print(
+          "Error while switching to stream at index $leadIndex: ${e.toString()}");
+
+      // In case of error set notify to True on lead 0
+      print("Reseting active lead index to 0");
+      activeLeadIndex = 0;
+      for (int i = 1; i < bleLeadCharacteristics.length; i++) {
+        if (bleLeadCharacteristics[i].isNotifying) {
+          await bleLeadCharacteristics[i].setNotifyValue(false);
+        }
+      }
+
+      if (!bleLeadCharacteristics[activeLeadIndex].isNotifying) {
+        await bleLeadCharacteristics[activeLeadIndex].setNotifyValue(true);
+      }
+    }
+  }
+
+  void listenToAllLeadsData() {
     if (bleAllLeadsCharacteristic == null) {
       print(
           "Characteristic with UUID: ${bleAllLeadsCharacteristic.uuid.toString()} is NULL");
       return;
     }
-
-    bleAllLeadsCharacteristic.value.listen((data) {
+    subscription = bleAllLeadsCharacteristic.value.listen((data) {
       decodeAllLeadsData(data);
     });
   }
 
   void decodeAllLeadsData(List<int> data) {
     if (ekgDataBatchIndex >= batches) {
+      print("At batch number $batches, already. Max reached");
       return;
     }
+
     if (ekgDataToStoreIndex >= ekgDataToStore[0].length) {
       print("Store Index: $ekgDataToStoreIndex");
       ekgDataBatchIndex++;
       ekgDataToStoreIndex = 0;
 
-      print("Batch #$ekgDataBatchIndex");
-    }
-    try {
-      int nextDataToStoreIndex = ekgDataToStoreIndex + 1;
-      int currLead = 0;
-      int currSample = 0;
-      for (int currByte = 0; currByte < 16; currByte += 2) {
-        currLead = (currByte / 4).floor();
-        if (currSample % 2 == 0) {
-          ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][currLead] =
-              (data[currByte] + 256 * data[currByte + 1]).toDouble();
-        } else {
-          ekgDataToStore[ekgDataBatchIndex][nextDataToStoreIndex][currLead] =
-              (data[currByte] + 256 * data[currByte + 1]).toDouble();
+      print("Now filling Batch #$ekgDataBatchIndex");
+    } else {
+      try {
+        int nextDataToStoreIndex = ekgDataToStoreIndex + 1;
+        int currLead = 0;
+        int currSample = 0;
+        for (int currByte = 0; currByte < 16; currByte += 2) {
+          currLead = (currByte / 4).floor();
+          if (currSample % 2 == 0) {
+            ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][currLead] =
+                (data[currByte] + 256 * data[currByte + 1]).toDouble();
+          } else {
+            ekgDataToStore[ekgDataBatchIndex][nextDataToStoreIndex][currLead] =
+                (data[currByte] + 256 * data[currByte + 1]).toDouble();
+          }
+          currSample++;
         }
-        currSample++;
+        ekgDataToStoreIndex += 2;
+      } catch (error) {
+        print("Error while decoding all lead data: ${error.toString()}");
       }
-      ekgDataToStoreIndex += 2;
-    } catch (error) {
-      print("Error while decoding all lead data: ${error.toString()}");
     }
   }
 
@@ -259,31 +314,34 @@ class DeviceScanner with ChangeNotifier {
       return;
     }
 
-    print("Starting switch");
+    print("Waiting for 250 ms before switching");
     await Future.delayed(Duration(milliseconds: 250));
-    print("Finished switch");
+
     try {
-      await turnOnActiveLead();
+      await bleCharacteristics[activeLeadIndex].setNotifyValue(true);
+
+      if (currentLeadSubscription != null) {
+        currentLeadSubscription.cancel();
+      }
+
       listenToStream(activeLeadIndex);
+
+      print("Finished switch");
     } catch (e) {
       print("Error while switching to main lead: ${e.toString()}");
-    }
-  }
 
-  void switchToStreamIndex(int leadIndex) async {
-    if (activeLeadIndex == leadIndex) {
-      return;
-    }
-
-    try {
-      if (bleLeadCharacteristics[activeLeadIndex].isNotifying) {
-        await bleLeadCharacteristics[activeLeadIndex].setNotifyValue(false);
+      // In case of error set notify to True on lead 0
+      print("Reseting active lead index to 0");
+      activeLeadIndex = 0;
+      for (int i = 1; i < bleLeadCharacteristics.length; i++) {
+        if (bleLeadCharacteristics[i].isNotifying) {
+          await bleLeadCharacteristics[i].setNotifyValue(false);
+        }
       }
-      await bleLeadCharacteristics[leadIndex].setNotifyValue(true);
 
-      activeLeadIndex = leadIndex;
-    } catch (e) {
-      print("Error while stopping current stream: ${e.toString()}");
+      if (!bleLeadCharacteristics[activeLeadIndex].isNotifying) {
+        await bleLeadCharacteristics[activeLeadIndex].setNotifyValue(true);
+      }
     }
   }
 
@@ -313,7 +371,12 @@ class DeviceScanner with ChangeNotifier {
     print("Disconnected");
   }
 
-  Future connectToAllLeads(int numMinutes) async {
+  void connectToAllLeads(int numMinutes) async {
+    if (subscription != null) {
+      print("Subscription exists already!");
+      subscription.cancel();
+    }
+
     batches = (numMinutes * 60 * 400 / 4096).ceil();
 
     print("Number of batches required: $batches");
@@ -321,10 +384,10 @@ class DeviceScanner with ChangeNotifier {
     ekgDataToStore = List.generate(batches,
         (_) => List.generate(4096, (_) => List.generate(12, (_) => 0.0)));
 
+    ekgDataBatchIndex = 0;
+    ekgDataToStoreIndex = 0;
     print(
         "Initial state: batchIndex = $ekgDataBatchIndex\t storeIndex = $ekgDataToStoreIndex");
-    // ekgDataBatchIndex = 0;
-    // ekgDataToStoreIndex = 0;
 
     await turnOnNotifyAllLeads();
     listenToAllLeadsData();
@@ -349,7 +412,8 @@ class DeviceScanner with ChangeNotifier {
   Future turnOffNotifyAllLeads() async {
     if (bleAllLeadsCharacteristic.isNotifying) {
       await bleAllLeadsCharacteristic.setNotifyValue(false);
-      bleAllLeadsCharacteristic.value.listen((event) {}).cancel();
+      print("Waiting for 250 ms");
+      await Future.delayed(Duration(milliseconds: 250));
     }
   }
 

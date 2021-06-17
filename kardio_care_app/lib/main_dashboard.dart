@@ -16,6 +16,7 @@ class MainDashboard extends StatefulWidget {
 class _MainDashboardState extends State<MainDashboard> {
   // to track currently selected screen
   int currentScreenIndex = 0;
+  bool doOnce = true;
 
   final List<Widget> screens = [
     Home(),
@@ -28,9 +29,23 @@ class _MainDashboardState extends State<MainDashboard> {
   Widget currentScreen = Home();
 
   @override
+  void initState() {
+    super.initState();
+    doOnce = true;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final deviceScannerProvider =
         Provider.of<DeviceScanner>(context, listen: false);
+
+    if (doOnce) {
+      currentScreen = Home(
+        deviceScannerProvider: deviceScannerProvider,
+      );
+      doOnce = false;
+    }
+
     return Scaffold(
       extendBody: true,
       body: PageStorage(
@@ -68,7 +83,8 @@ class _MainDashboardState extends State<MainDashboard> {
                 ),
                 onPressed: () {
                   setState(() {
-                    currentScreen = Home();
+                    currentScreen =
+                        Home(deviceScannerProvider: deviceScannerProvider);
                     currentScreenIndex = 0;
                   });
                 },

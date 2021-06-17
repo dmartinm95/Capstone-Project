@@ -11,7 +11,11 @@ import 'package:provider/provider.dart';
 import 'package:kardio_care_app/constants/app_constants.dart';
 
 class EKGRecording extends StatefulWidget {
-  EKGRecording({Key key}) : super(key: key);
+  EKGRecording({Key key, this.deviceScannerProvider, this.totalMinutes})
+      : super(key: key);
+
+  final DeviceScanner deviceScannerProvider;
+  final int totalMinutes;
 
   @override
   _EKGRecordingState createState() => _EKGRecordingState();
@@ -27,7 +31,7 @@ class _EKGRecordingState extends State<EKGRecording> {
   int _currSeconds = 0;
   int _currMinutes = 0;
 
-  int _totalMinutes;
+  int _totalMinutes = 0;
 
   bool recording = false;
 
@@ -35,6 +39,24 @@ class _EKGRecordingState extends State<EKGRecording> {
   Timer fakeDataTimer;
 
   var f = NumberFormat("00");
+
+  @override
+  void initState() {
+    _totalMinutes = widget.totalMinutes;
+    print("INIT state");
+    print("Device name: ${widget.deviceScannerProvider.bleDevice.name}");
+    print("Total time selected: $_totalMinutes minutes");
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _stopTimer();
+    print("Disposing ekg_recording.dart screen");
+    widget.deviceScannerProvider.turnOffNotifyAllLeads();
+    widget.deviceScannerProvider.switchToActiveLead();
+    super.dispose();
+  }
 
   int random(int min, int max) {
     var rn = Random();
@@ -68,9 +90,8 @@ class _EKGRecordingState extends State<EKGRecording> {
     }
 
     startTime = DateTime.now();
-    deviceScanner.ekgDataBatchIndex = 0;
-    deviceScanner.ekgDataToStoreIndex = 0;
-    deviceScanner.connectToAllLeads(_totalMinutes);
+
+    widget.deviceScannerProvider.connectToAllLeads(_totalMinutes);
 
     generateFakeData();
     fakeDataTimer = Timer.periodic(Duration(seconds: 5), (timer) {
@@ -94,10 +115,11 @@ class _EKGRecordingState extends State<EKGRecording> {
 
             print("EKG DATA COLLECTED");
             List<List<List<double>>> ekgDataCollected =
-                List.from(deviceScanner.ekgDataToStore);
-            deviceScanner.doneRecording = true;
-            deviceScanner.turnOffNotifyAllLeads();
+                List.from(widget.deviceScannerProvider.ekgDataToStore);
+            widget.deviceScannerProvider.doneRecording = true;
+            widget.deviceScannerProvider.turnOffNotifyAllLeads();
 
+            print("Going to ekg_results screen");
             Navigator.pushReplacementNamed(context, '/ekg_results', arguments: {
               'bloodOxData': bloodOxData,
               'heartRateData': heartRateData,
@@ -114,10 +136,7 @@ class _EKGRecordingState extends State<EKGRecording> {
 
   @override
   Widget build(BuildContext context) {
-    _totalMinutes = ModalRoute.of(context).settings.arguments;
-
-    final deviceScannerProvider =
-        Provider.of<DeviceScanner>(context, listen: false);
+    // _totalMinutes = ModalRoute.of(context).settings.arguments;
 
     return Scaffold(
       appBar: AppBar(
@@ -184,7 +203,7 @@ class _EKGRecordingState extends State<EKGRecording> {
                           setState(() {
                             recording = true;
                           });
-                          _startTimer(deviceScannerProvider);
+                          _startTimer(null);
                         },
                         style: ElevatedButton.styleFrom(
                           shape: CircleBorder(),
@@ -249,13 +268,4 @@ class _EKGRecordingState extends State<EKGRecording> {
       ),
     );
   }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _stopTimer();
-    print("Disposing ekg_recording.dart screen");
-  }
 }
-
-class EKGDataStorage {}

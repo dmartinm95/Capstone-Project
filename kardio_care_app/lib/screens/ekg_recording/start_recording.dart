@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:kardio_care_app/constants/app_constants.dart';
+import 'package:kardio_care_app/screens/ekg_recording/ekg_recording.dart';
 import 'package:kardio_care_app/util/device_scanner.dart';
 import 'package:provider/provider.dart';
 
@@ -137,15 +138,20 @@ class FullRectangleTextButton extends StatelessWidget {
           // ),
           onPressed: () {
             deviceScannerProvider.turnOffActiveLead();
-            Navigator.pushReplacementNamed(
-              context,
-              '/ekg_recording',
-              arguments: lengthMinutes,
-            ).then((value) {
-              print("Going home from start_recording.dart");
-              deviceScannerProvider.turnOffNotifyAllLeads();
-              deviceScannerProvider.switchToActiveLead();
-            });
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                settings: const RouteSettings(name: "\ekg_recording"),
+                builder: (context) => EKGRecording(
+                  deviceScannerProvider: deviceScannerProvider,
+                  totalMinutes: lengthMinutes,
+                ),
+              ),
+            );
+            // ).then((value) {
+            //   print("Going home from start_recording.dart");
+            //   deviceScannerProvider.turnOffNotifyAllLeads();
+            //   deviceScannerProvider.switchToActiveLead();
+            // });
           },
         ),
       ),
