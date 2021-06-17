@@ -277,6 +277,8 @@ class DeviceScanner with ChangeNotifier {
   void decodeAllLeadsData(List<int> data) {
     if (ekgDataBatchIndex >= batches) {
       print("At batch number $batches, already. Max reached");
+      print("Turning off notify on All leads");
+      turnOffNotifyAllLeads();
       return;
     }
 

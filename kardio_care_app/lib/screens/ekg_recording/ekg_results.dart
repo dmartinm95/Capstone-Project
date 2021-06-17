@@ -216,46 +216,6 @@ class _EKGResultsState extends State<EKGResults> {
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                          backgroundColor: KardioCareAppTheme.background,
-
-                          shape: RoundedRectangleBorder(
-                              side: BorderSide(
-                                  width: 3.0,
-                                  color: KardioCareAppTheme.actionBlue),
-                              borderRadius: BorderRadius.circular(18)),
-                          // shape: BeveledRectangleBorder(),
-                        ),
-                        // child: Padding(
-                        // padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Restart",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.normal,
-                            color: KardioCareAppTheme.actionBlue,
-                          ),
-                        ),
-                        // ),
-                        onPressed: () {
-                          deviceScannerProvider.doneRecording = false;
-                          Navigator.pushReplacementNamed(
-                            context,
-                            '/ekg_recording',
-                            arguments: unsavedRecordingData['selectedMinutes'],
-                          ).then((value) {
-                            print("Going home from start_recording.dart");
-                            deviceScannerProvider.turnOffNotifyAllLeads();
-                            deviceScannerProvider.switchToActiveLead();
-                          });
-                        },
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:scidart/numdart.dart';
 import 'package:scidart/scidart.dart';
 
@@ -143,8 +144,16 @@ class PanTomkpins with ChangeNotifier {
     double thresholdValue = mean(integratedData);
     List peaks = findPeaks(integratedData, threshold: thresholdValue);
 
+/*
+  [0, 5, ]
+  5 - 0 = 5 samples
+  5 * (1/400) = 0.125 sec
+  return Array[length of peaks - 1]
+  heart rate = 60 / average of Array[length peaks - 1]
+  heart rate = (1 beat / (average of Array[length peaks - 1]))*(60s/ 1min) -> bpm
+  
+*/
     result = peaks[0];
-
     return result;
   }
 }
