@@ -2,9 +2,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
-// TODO: FIX switching leads notify null issue
 // TODO: Loading animation while saving data
-// TODO: Reseting the ekg batch index everytime
 
 class DeviceScanner with ChangeNotifier {
   // Arduino Nano 33 BLE details
@@ -51,6 +49,7 @@ class DeviceScanner with ChangeNotifier {
   int ekgDataBatchIndex = 0;
   int batches = 0;
   bool doneRecording = false;
+  bool isEkgDataFull = false;
 
   StreamSubscription<List<int>> subscription;
   StreamSubscription<List<int>> currentLeadSubscription;
@@ -277,8 +276,6 @@ class DeviceScanner with ChangeNotifier {
   void decodeAllLeadsData(List<int> data) {
     if (ekgDataBatchIndex >= batches) {
       print("At batch number $batches, already. Max reached");
-      print("Turning off notify on All leads");
-      turnOffNotifyAllLeads();
       return;
     }
 
@@ -290,21 +287,24 @@ class DeviceScanner with ChangeNotifier {
       print("Now filling Batch #$ekgDataBatchIndex");
     } else {
       try {
-        int nextDataToStoreIndex = ekgDataToStoreIndex + 1;
         int currLead = 0;
-        int currSample = 0;
-        for (int currByte = 0; currByte < 16; currByte += 2) {
-          currLead = (currByte / 4).floor();
-          if (currSample % 2 == 0) {
-            ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][currLead] =
-                (data[currByte] + 256 * data[currByte + 1]).toDouble();
-          } else {
-            ekgDataToStore[ekgDataBatchIndex][nextDataToStoreIndex][currLead] =
-                (data[currByte] + 256 * data[currByte + 1]).toDouble();
-          }
-          currSample++;
+
+        for (int currByte = 0; currByte < 8; currByte += 2) {
+          ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][currLead] =
+              (data[currByte] + 256 * data[currByte + 1]).toDouble();
+          currLead++;
         }
-        ekgDataToStoreIndex += 2;
+
+        ekgDataToStoreIndex++;
+        currLead = 0;
+
+        for (int currByte = 8; currByte < 16; currByte += 2) {
+          ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][currLead] =
+              (data[currByte] + 256 * data[currByte + 1]).toDouble();
+          currLead++;
+        }
+
+        ekgDataToStoreIndex++;
       } catch (error) {
         print("Error while decoding all lead data: ${error.toString()}");
       }
@@ -355,8 +355,8 @@ class DeviceScanner with ChangeNotifier {
         int dataToAdd = data[i] + 256 * data[i + 1];
         leadDataList[j] = dataToAdd;
         j++;
-        notifyListeners();
       }
+      notifyListeners();
     } catch (error) {
       print(leadDataList.toString());
       print("Error: ${error.toString()}");

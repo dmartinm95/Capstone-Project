@@ -44,6 +44,9 @@ class ShowEKGLeadData extends StatelessWidget {
               fit: FlexFit.loose,
               child: Consumer<DeviceScanner>(
                 builder: (context, device, child) {
+                  // panTompkinsProvider.addDataToBuffer(
+                  //     device.leadDataList, true); //////
+
                   // panTompkinsProvider.addDataToBuffer(value.leadDataList);
                   // if (deviceScannerProvider.activeLeadIndex == -1) {
                   //   ekgDataManager.fillInput(value.allLeadDataList);

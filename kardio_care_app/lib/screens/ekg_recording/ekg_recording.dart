@@ -65,8 +65,8 @@ class _EKGRecordingState extends State<EKGRecording> {
 
   void generateFakeData() {
     setState(() {
-      bloodOxData[DateTime.now()] = random(10, 80).toDouble();
-      heartRateData[DateTime.now()] = random(40, 100).toDouble();
+      bloodOxData[DateTime.now()] = random(95, 100).toDouble();
+      heartRateData[DateTime.now()] = random(50, 100).toDouble();
       heartRateVarData[DateTime.now()] = random(40, 90).toDouble();
     });
   }
