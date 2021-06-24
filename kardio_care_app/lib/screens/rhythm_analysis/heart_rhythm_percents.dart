@@ -26,7 +26,7 @@ class _HeartRhythmPercentsState extends State<HeartRhythmPercents> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.3,
+      height: MediaQuery.of(context).size.height * 0.2,
       child: PageView.builder(
         itemCount: 7,
         controller: _pageController,
@@ -41,7 +41,7 @@ class _HeartRhythmPercentsState extends State<HeartRhythmPercents> {
               child: Card(
                 elevation: 6,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
+                    borderRadius: BorderRadius.circular(15)),
                 child: Container(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -52,7 +52,7 @@ class _HeartRhythmPercentsState extends State<HeartRhythmPercents> {
                           child: Text(
                             'All Rhythms',
                             style: TextStyle(
-                                fontSize: 24,
+                                fontSize: 18,
                                 fontWeight: FontWeight.normal,
                                 color: KardioCareAppTheme.detailGray),
                           ),
@@ -106,7 +106,7 @@ class RhythmRow extends StatelessWidget {
                 child: Text(
                   name,
                   style: TextStyle(
-                      fontSize: 24,
+                      // fontSize: 24,
                       fontWeight: FontWeight.normal,
                       color: KardioCareAppTheme.detailGray),
                 ),
@@ -135,7 +135,7 @@ class RhythmRow extends StatelessWidget {
                 child: Text(
                   '$frequency%',
                   style: TextStyle(
-                      fontSize: 30,
+                      // fontSize: 30,
                       fontWeight: FontWeight.normal,
                       color: KardioCareAppTheme.detailGray),
                 ),

@@ -51,9 +51,10 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
     }
 
     double sum = rhythmFreq.reduce((value, element) => value + element);
-
-    for (var i = 0; i < rhythmFreq.length; i++) {
-      rhythmFreq[i] = rhythmFreq[i] / sum;
+    if (sum != 0) {
+      for (var i = 0; i < rhythmFreq.length; i++) {
+        rhythmFreq[i] = rhythmFreq[i] / sum;
+      }
     }
   }
 
@@ -100,11 +101,15 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
-            child: Text(
-              (currRhythmIndex == 0)
-                  ? 'All Rhythms'
-                  : 'Recordings With ' + rhythmLabels[currRhythmIndex - 1] + ' Detected',
-              style: KardioCareAppTheme.subTitle,
+            child: FittedBox(
+              child: Text(
+                (currRhythmIndex == 0)
+                    ? 'All Rhythms'
+                    : 'Recordings With ' +
+                        rhythmLabels[currRhythmIndex - 1] +
+                        ' Detected',
+                style: KardioCareAppTheme.subTitle,
+              ),
             ),
           ),
           SizedBox(
@@ -220,12 +225,13 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
                   ),
                 )
               : Container(
-                  height: MediaQuery.of(context).size.height * 0.3,
+                  height: MediaQuery.of(context).size.height * 0.1,
                   child: Center(
-                      child: Text(
-                    'No recordings with this rhythm.',
-                    style: TextStyle(fontSize: 24),
-                  )),
+                    child: Text(
+                      'No recordings with this rhythm.',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
                 ),
         ],
       ),
