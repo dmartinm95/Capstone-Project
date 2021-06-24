@@ -12,12 +12,31 @@ class EKGClassifier {
     'Sinus tachycardia'
   ];
 
-  EKGClassifier() {
-    _loadModel();
+  EKGClassifier({
+    Interpreter interpreter,
+  }) {
+    loadModel(interpreter: interpreter);
   }
 
-  void _loadModel() async {
-    _interpreter = await Interpreter.fromAsset('model.tflite');
+  void loadModel({Interpreter interpreter}) async {
+    try {
+      _interpreter = interpreter ??
+          await Interpreter.fromAsset(
+            'model.tflite',
+            // options: InterpreterOptions()..threads = 4,
+          );
+
+      // var outputTensors = _interpreter.getOutputTensors();
+      // _outputShapes = [];
+      // _outputTypes = [];
+      // outputTensors.forEach((tensor) {
+      //   _outputShapes.add(tensor.shape);
+      //   _outputTypes.add(tensor.type);
+      // });
+    } catch (e) {
+      print("Error while creating interpreter: $e");
+    }
+
     print('Loaded tensorflow model');
   }
 
@@ -40,8 +59,9 @@ class EKGClassifier {
     String currRhythm;
 
     for (List<double> batch in output) {
-      currRhythm = "No Abnormal Rhythm";
+      currRhythm = 'No Abnormal Rhythm';
       for (int i = 0; i < 6; i++) {
+        print(batch[i]);
         if (threshold[i] < batch[i]) {
           currRhythm = rhythmLabels[i];
         }
@@ -52,4 +72,7 @@ class EKGClassifier {
 
     return rhythms;
   }
+
+  /// Gets the interpreter instance
+  Interpreter get interpreter => _interpreter;
 }

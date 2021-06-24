@@ -58,12 +58,14 @@ class _ViewRhythmEventState extends State<ViewRhythmEvent> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
-              child: Text(
-                'Recording on ' +
-                    DateFormat.yMMMd().format(recordingData.startTime) +
-                    ' at ' +
-                    DateFormat.jm().format(recordingData.startTime),
-                style: KardioCareAppTheme.subTitle,
+              child: FittedBox(
+                child: Text(
+                  'Recording on ' +
+                      DateFormat.yMMMd().format(recordingData.startTime) +
+                      ' at ' +
+                      DateFormat.jm().format(recordingData.startTime),
+                  style: KardioCareAppTheme.subTitle,
+                ),
               ),
             ),
             const Divider(

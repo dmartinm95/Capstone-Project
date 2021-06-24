@@ -1,78 +1,84 @@
+import 'dart:math';
+import 'package:kardio_care_app/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:kardio_care_app/app_theme.dart';
 
 class HeartRhythmPercents extends StatefulWidget {
-  HeartRhythmPercents({Key key}) : super(key: key);
+  HeartRhythmPercents({Key key, this.changeRhythmCallback, this.rhythmFreq})
+      : super(key: key);
+
+  final Function(int) changeRhythmCallback;
+  final List<double> rhythmFreq;
 
   @override
   _HeartRhythmPercentsState createState() => _HeartRhythmPercentsState();
 }
 
 class _HeartRhythmPercentsState extends State<HeartRhythmPercents> {
+  int _index = 1;
+
+  PageController _pageController = PageController(
+    initialPage: 1,
+    viewportFraction: 0.3,
+  );
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 0, 10, 20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Padding(
-              //   padding: const EdgeInsets.all(4.0),
-              //   child: FittedBox(
-              //     fit: BoxFit.fitHeight,
-              //     child: Text(
-              //       'Detected Heartbeat Rhythms',
-              //       style: TextStyle(
-              //         fontWeight: FontWeight.bold,
-              //         fontSize: 19,
-              //         color: KardioCareAppTheme.detailGray,
-              //       ),
-              //     ),
-              //   ),
-              // ),
-              
+      height: MediaQuery.of(context).size.height * 0.3,
+      child: PageView.builder(
+        itemCount: 7,
+        controller: _pageController,
+        onPageChanged: (int index) {
+          setState(() => _index = index);
+          widget.changeRhythmCallback(index);
+        },
+        itemBuilder: (_, i) {
+          if (i == 0) {
+            return Transform.scale(
+              scale: i == _index ? 1 : 0.9,
+              child: Card(
+                elevation: 6,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+                child: Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                          child: Text(
+                            'All Rhythms',
+                            style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.normal,
+                                color: KardioCareAppTheme.detailGray),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }
 
-              RhythmRow(
-                name: 'No Detected Arrhythmia',
-                frequency: 0,
-                color: KardioCareAppTheme.detailPurple,
+          return Transform.scale(
+            scale: i == _index ? 1 : 0.9,
+            child: Card(
+              elevation: 6,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              child: RhythmRow(
+                name: rhythmLabels[i - 1],
+                frequency: (widget.rhythmFreq[i - 1] * 100).ceil(),
+                color: rhythmColors[i - 1],
               ),
-              RhythmRow(
-                name: '1st degree AV block',
-                frequency: 0,
-                color: KardioCareAppTheme.detailPurple,
-              ),
-              RhythmRow(
-                name: 'Bundle branch block',
-                frequency: 0,
-                color: KardioCareAppTheme.detailPurple,
-              ),
-              RhythmRow(
-                name: 'Tachycardia',
-                frequency: 0,
-                color: KardioCareAppTheme.detailGray,
-              ),
-              RhythmRow(
-                name: 'Bradycardia',
-                frequency: 0,
-                color: KardioCareAppTheme.detailRed,
-              ),
-              RhythmRow(
-                name: 'Atrial Fibrillation',
-                frequency: 0,
-                color: KardioCareAppTheme.detailGreen,
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -89,58 +95,65 @@ class RhythmRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Column(
-        children: [
-          SizedBox(
-            height: 15,
-          ),
-          Row(
-            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                margin: EdgeInsets.all(8.0),
-                height: 10.0,
-                width: 10.0,
-                decoration: BoxDecoration(shape: BoxShape.circle, color: color),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
+        child: Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                 child: Text(
                   name,
                   style: TextStyle(
+                      fontSize: 24,
                       fontWeight: FontWeight.normal,
                       color: KardioCareAppTheme.detailGray),
                 ),
               ),
-              // Spacer(),
-              Expanded(
-                child: SizedBox(
-                    // width: 100,
-                    ),
-              ),
-
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8, 8, 5, 8),
+            ),
+            Container(
+              margin: EdgeInsets.all(8.0),
+              height: 50.0,
+              width: 10.0,
+              // color: color,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  color: color),
+            ),
+          ],
+        ),
+        Expanded(
+          child: Container(),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
                 child: Text(
                   '$frequency%',
                   style: TextStyle(
+                      fontSize: 30,
                       fontWeight: FontWeight.normal,
                       color: KardioCareAppTheme.detailGray),
                 ),
               ),
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          LinearPercentIndicator(
+            ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(10, 10, 10, 20),
+          child: LinearPercentIndicator(
             // width: ,
-            lineHeight: 5.0,
+            // width: 50,
+            lineHeight: 10.0,
             percent: (frequency ?? 0.0).toDouble() / 100.0,
             progressColor: color,
           ),
-        ],
-      ),
-    );
+        )
+      ],
+    ));
   }
 }

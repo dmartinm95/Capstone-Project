@@ -126,7 +126,7 @@ class _EKGRecordingState extends State<EKGRecording> {
               'heartRateVarData': heartRateVarData,
               'ekgData': ekgDataCollected,
               'startTime': startTime,
-              'selectedMinutes': ModalRoute.of(context).settings.arguments
+              'selectedMinutes': _totalMinutes,
             });
           }
         }
