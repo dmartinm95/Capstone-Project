@@ -49,11 +49,11 @@ class _HeartRateAndOxygenSaturationState
           child: Row(
             children: [
               Expanded(
-                child: HeartRateTile(
-                  currHR: panTompkinsProvider.currentHeartRate == 0
-                      ? null
-                      : panTompkinsProvider.currentHeartRate,
-                ),
+                child: HeartRateTile(currHR: null
+                    // currHR: panTompkinsProvider.currentHeartRate == 0
+                    //     ? null
+                    //     : panTompkinsProvider.currentHeartRate,
+                    ),
               ),
               const VerticalDivider(
                 width: 25,
