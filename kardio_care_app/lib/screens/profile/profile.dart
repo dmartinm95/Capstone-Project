@@ -20,16 +20,8 @@ class _ProfileState extends State<Profile> {
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: MediaQuery.of(context).size.width * 0.4,
-            height: MediaQuery.of(context).size.width * 0.4,
-            decoration: BoxDecoration(
-                color: KardioCareAppTheme.detailGray,
-                borderRadius: BorderRadius.all(Radius.circular(200))),
-            child: Icon(Icons.add_a_photo, color: Colors.white),
-          ),
           Text(
             'First Last',
             style: TextStyle(

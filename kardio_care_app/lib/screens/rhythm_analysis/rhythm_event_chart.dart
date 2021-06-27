@@ -93,7 +93,7 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
 
     return Container(
       width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.width * 0.8,
+      height: MediaQuery.of(context).size.height * 0.5,
       child: Center(
         child: Column(
           children: [
@@ -170,20 +170,6 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     children: [
-                                      // Container(
-                                      //   width:
-                                      //       MediaQuery.of(context).size.width *
-                                      //           0.38,
-                                      //   height: 5,
-                                      //   decoration: BoxDecoration(
-                                      //       color:
-                                      //           KardioCareAppTheme.detailGreen,
-                                      //       borderRadius: BorderRadius.all(
-                                      //           Radius.circular(1000))),
-                                      // ),
-                                      // FittedBox(
-                                      // fit: BoxFit,
-
                                       Text(
                                         currRhythms[index],
                                         textAlign: TextAlign.center,

@@ -11,11 +11,11 @@ const int ekgLongLengthMin = 10;
 
 List<String> rhythmLabels = [
   'No Abnormal Rhythm',
-  'Sinus bradycardia',
-  'Atrial fibrillation',
-  'Sinus tachycardia',
-  '1st degree AV block',
-  'Bundle branch block',
+  'Sinus Bradycardia',
+  'Atrial Fibrillation',
+  'Sinus Tachycardia',
+  '1st Degree AV Block',
+  'Bundle Branch Block',
 ];
 
 List<Color> rhythmColors = [

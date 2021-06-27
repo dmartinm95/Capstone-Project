@@ -108,7 +108,6 @@ class _ResultsWidgetsState extends State<ResultsWidgets> {
   }
 
   void initStateAsync() async {
-
     // Spawn a new isolate
     ekgIsolate = EKGIsolate();
     await ekgIsolate.start();
