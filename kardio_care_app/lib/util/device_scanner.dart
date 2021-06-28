@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:kardio_care_app/util/pan_tompkins.dart';
+import 'package:scidart/numdart.dart';
 
 // TODO: Loading animation while saving data
 
@@ -50,6 +52,9 @@ class DeviceScanner with ChangeNotifier {
   int batches = 0;
   bool doneRecording = false;
   bool isEkgDataFull = false;
+
+  List<double> recordedHeartRateData = List.empty(growable: true);
+  PanTomkpins panTompkinsInstance;
 
   StreamSubscription<List<int>> subscription;
   StreamSubscription<List<int>> currentLeadSubscription;
@@ -268,6 +273,7 @@ class DeviceScanner with ChangeNotifier {
           "Characteristic with UUID: ${bleAllLeadsCharacteristic.uuid.toString()} is NULL");
       return;
     }
+
     subscription = bleAllLeadsCharacteristic.value.listen((data) {
       decodeAllLeadsData(data);
     });
@@ -290,8 +296,17 @@ class DeviceScanner with ChangeNotifier {
         int currLead = 0;
 
         for (int currByte = 0; currByte < 8; currByte += 2) {
+          double value = (data[currByte] + 256 * data[currByte + 1]).toDouble();
           ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][currLead] =
-              (data[currByte] + 256 * data[currByte + 1]).toDouble();
+              value;
+
+          if (currLead == 0) {
+            int result = panTompkinsInstance.addRecordedData(value);
+            if (result != 0) {
+              recordedHeartRateData.add(result.toDouble());
+            }
+          }
+
           currLead++;
         }
 
@@ -299,8 +314,17 @@ class DeviceScanner with ChangeNotifier {
         currLead = 0;
 
         for (int currByte = 8; currByte < 16; currByte += 2) {
+          double value = (data[currByte] + 256 * data[currByte + 1]).toDouble();
           ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][currLead] =
-              (data[currByte] + 256 * data[currByte + 1]).toDouble();
+              value;
+
+          if (currLead == 0) {
+            int result = panTompkinsInstance.addRecordedData(value);
+            if (result != 0) {
+              recordedHeartRateData.add(result.toDouble());
+            }
+          }
+
           currLead++;
         }
 
@@ -388,6 +412,10 @@ class DeviceScanner with ChangeNotifier {
 
     ekgDataBatchIndex = 0;
     ekgDataToStoreIndex = 0;
+
+    panTompkinsInstance = new PanTomkpins();
+    recordedHeartRateData = List.empty(growable: true);
+
     print(
         "Initial state: batchIndex = $ekgDataBatchIndex\t storeIndex = $ekgDataToStoreIndex");
 

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
+import 'package:kardio_care_app/util/device_scanner.dart';
 import 'package:kardio_care_app/util/pan_tompkins.dart';
 import 'package:kardio_care_app/widgets/blood_oxygen_tile.dart';
 import 'package:kardio_care_app/widgets/heart_rate_tile.dart';
@@ -49,11 +50,11 @@ class _HeartRateAndOxygenSaturationState
           child: Row(
             children: [
               Expanded(
-                child: HeartRateTile(currHR: null
-                    // currHR: panTompkinsProvider.currentHeartRate == 0
-                    //     ? null
-                    //     : panTompkinsProvider.currentHeartRate,
-                    ),
+                child: HeartRateTile(
+                  currHR: panTompkinsProvider.currentHeartRate == 0
+                      ? null
+                      : panTompkinsProvider.currentHeartRate,
+                ),
               ),
               const VerticalDivider(
                 width: 25,
