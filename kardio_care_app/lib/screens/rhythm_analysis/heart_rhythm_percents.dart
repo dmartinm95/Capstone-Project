@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:hive/hive.dart';
 import 'package:kardio_care_app/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
@@ -25,8 +26,9 @@ class _HeartRhythmPercentsState extends State<HeartRhythmPercents> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.2,
+    return SizedBox(
+      height: 120,
+      width: MediaQuery.of(context).size.width,
       child: PageView.builder(
         itemCount: 7,
         controller: _pageController,
@@ -45,18 +47,21 @@ class _HeartRhythmPercentsState extends State<HeartRhythmPercents> {
                 child: Container(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Flexible(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                          child: Text(
-                            'All Rhythms',
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.normal,
-                                color: KardioCareAppTheme.detailGray),
-                          ),
-                        ),
+                      Text(
+                        'All',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.normal,
+                            color: KardioCareAppTheme.detailGray),
+                      ),
+                      Text(
+                        'Rhythms',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.normal,
+                            color: KardioCareAppTheme.detailGray),
                       ),
                     ],
                   ),
@@ -94,66 +99,89 @@ class RhythmRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                child: Text(
-                  name,
-                  style: TextStyle(
-                      // fontSize: 24,
-                      fontWeight: FontWeight.normal,
-                      color: KardioCareAppTheme.detailGray),
-                ),
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.all(8.0),
-              height: 50.0,
-              width: 10.0,
-              // color: color,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  color: color),
-            ),
-          ],
-        ),
-        Expanded(
-          child: Container(),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Text(
-                  '$frequency%',
-                  style: TextStyle(
-                      // fontSize: 30,
-                      fontWeight: FontWeight.normal,
-                      color: KardioCareAppTheme.detailGray),
-                ),
-              ),
-            ),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(10, 10, 10, 20),
-          child: LinearPercentIndicator(
-            // width: ,
-            // width: 50,
-            lineHeight: 10.0,
-            percent: (frequency ?? 0.0).toDouble() / 100.0,
-            progressColor: color,
-          ),
+    List<String> nameSplit = name.split(" ");
+    List<Widget> nameTextWidgets = [
+      for (String word in nameSplit)
+        Text(
+          word,
+          style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+              color: KardioCareAppTheme.detailGray),
         )
-      ],
-    ));
+    ];
+
+    return Container(
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height,
+        child: Column(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(6, 10, 0, 0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Wrap(
+                        spacing: 4.0,
+                        children: nameTextWidgets,
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.fromLTRB(5, 5, 8, 0),
+                      height: 8.0,
+                      width: 8.0,
+                      // color: color,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        color: color,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Expanded(
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 8, 5),
+                        child: FittedBox(
+                          fit: BoxFit.cover,
+                          child: Text(
+                            '$frequency%',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.normal,
+                                color: KardioCareAppTheme.detailGray),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+                    child: LinearPercentIndicator(
+                      // width: ,
+                      // width: 50,
+                      lineHeight: 10.0,
+                      percent: (frequency ?? 0.0).toDouble() / 100.0,
+                      progressColor: color,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

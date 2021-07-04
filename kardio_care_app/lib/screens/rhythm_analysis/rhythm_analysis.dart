@@ -16,10 +16,9 @@ class RhythmAnalysis extends StatefulWidget {
 
 class _RhythmAnalysisState extends State<RhythmAnalysis> {
   Box<RecordingData> box;
-  ScrollController _scrollController =
-      ScrollController(initialScrollOffset: 10);
+  ScrollController _scrollController = ScrollController(initialScrollOffset: 0);
 
-  int currRhythmIndex = 0;
+  int currRhythmIndex = 1;
   bool anyRecordingsWithRhythm = true;
 
   List<double> rhythmFreq = [];
@@ -41,7 +40,7 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
     });
 
     for (var i = 0; i < rhythmLabels.length; i++) {
-      if (rhythmLabels[i] == 'Bundle branch block') {
+      if (rhythmLabels[i] == 'Bundle Branch Block') {
         rhythmFreq.add(countOccurrences(combined, 'Right bundle branch block')
                 .toDouble() +
             countOccurrences(combined, 'Left bundle branch block').toDouble());
@@ -55,6 +54,12 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
       for (var i = 0; i < rhythmFreq.length; i++) {
         rhythmFreq[i] = rhythmFreq[i] / sum;
       }
+    }
+
+    if (currRhythmIndex != 0) {
+      anyRecordingsWithRhythm = rhythmFreq[currRhythmIndex - 1].toInt() != 0;
+    } else {
+      anyRecordingsWithRhythm = box.keys.length != 0;
     }
   }
 
@@ -78,97 +83,62 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
         backgroundColor: Colors.white,
         centerTitle: true,
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
-            child: Text(
-              "Heartbeat Rhythm Breakdown",
-              style: KardioCareAppTheme.subTitle,
-            ),
-          ),
-          const Divider(
-            color: KardioCareAppTheme.dividerPurple,
-            height: 20,
-            thickness: 1,
-            indent: 19,
-            endIndent: 19,
-          ),
-          HeartRhythmPercents(
-            changeRhythmCallback: changeRhythmCallback,
-            rhythmFreq: rhythmFreq,
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
-            child: FittedBox(
+      body: SizedBox(
+        height: MediaQuery.of(context).size.height,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
               child: Text(
-                (currRhythmIndex == 0)
-                    ? 'All Rhythms'
-                    : 'Recordings With ' +
-                        rhythmLabels[currRhythmIndex - 1] +
-                        ' Detected',
+                "Heartbeat Rhythm Breakdown",
                 style: KardioCareAppTheme.subTitle,
               ),
             ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          const Divider(
-            color: KardioCareAppTheme.dividerPurple,
-            height: 0,
-            thickness: 1,
-            indent: 19,
-            endIndent: 19,
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          anyRecordingsWithRhythm
-              ? Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                  child: SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.4,
+            const Divider(
+              color: KardioCareAppTheme.dividerPurple,
+              height: 20,
+              thickness: 1,
+              indent: 19,
+              endIndent: 19,
+            ),
+            HeartRhythmPercents(
+              changeRhythmCallback: changeRhythmCallback,
+              rhythmFreq: rhythmFreq,
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
+              child: FittedBox(
+                child: Text(
+                  (currRhythmIndex == 0)
+                      ? 'All Rhythms'
+                      : 'Recordings With ' +
+                          rhythmLabels[currRhythmIndex - 1] +
+                          ' Detected',
+                  style: TextStyle(
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            const Divider(
+              color: KardioCareAppTheme.dividerPurple,
+              height: 0,
+              thickness: 1,
+              indent: 19,
+              endIndent: 19,
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            anyRecordingsWithRhythm
+                ? Expanded(
                     child: ValueListenableBuilder<Box<RecordingData>>(
                       valueListenable: box.listenable(),
                       builder: (context, box, _) {
-                        if (box.keys.length == 0) {
-                          return Padding(
-                            padding: const EdgeInsets.fromLTRB(20, 20, 20, 90),
-                            child: Container(
-                              height: MediaQuery.of(context).size.height * 0.12,
-                              color: Colors.transparent,
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(10.0))),
-                                  child: Center(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Text(
-                                          "No recordings, start one now",
-                                          style: TextStyle(
-                                              color:
-                                                  KardioCareAppTheme.detailGray,
-                                              fontSize: 19),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        Icon(
-                                          Icons.arrow_downward,
-                                          color: KardioCareAppTheme.detailGray,
-                                          size: 40,
-                                        ),
-                                      ],
-                                    ),
-                                  )),
-                            ),
-                          );
-                        }
-
                         // get all recordings
                         return Padding(
                           padding: const EdgeInsets.fromLTRB(10, 0, 3, 0),
@@ -183,12 +153,15 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
                                 // padding: EdgeInsets.zero,
                                 // shrinkWrap: true,
                                 primary: false,
-                                reverse: true,
+
                                 // physics: NeverScrollableScrollPhysics(),
                                 physics: BouncingScrollPhysics(),
 
                                 itemCount: box.keys.length,
                                 itemBuilder: (BuildContext context, int index) {
+                                  // reverse the index
+                                  index = box.keys.length - index - 1;
+
                                   if (currRhythmIndex != 0) {
                                     if (!box.values
                                         .elementAt(index)
@@ -222,18 +195,24 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
                         );
                       },
                     ),
-                  ),
-                )
-              : Container(
-                  height: MediaQuery.of(context).size.height * 0.1,
-                  child: Center(
-                    child: Text(
-                      'No recordings with this rhythm.',
-                      style: TextStyle(fontSize: 18),
+                  )
+                : Container(
+                    height: MediaQuery.of(context).size.height * 0.1,
+                    child: Center(
+                      child: Text(
+                        currRhythmIndex == 0
+                            ? 'No recordings saved.'
+                            : 'No recordings with this rhythm.',
+                        style: TextStyle(
+                            fontSize: 18, color: KardioCareAppTheme.detailGray),
+                      ),
                     ),
                   ),
-                ),
-        ],
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.10,
+            )
+          ],
+        ),
       ),
     );
   }

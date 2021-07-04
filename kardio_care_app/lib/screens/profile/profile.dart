@@ -20,22 +20,17 @@ class _ProfileState extends State<Profile> {
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: MediaQuery.of(context).size.width * 0.4,
-            height: MediaQuery.of(context).size.width * 0.4,
-            decoration: BoxDecoration(
+          Padding(
+            padding: const EdgeInsets.fromLTRB(19, 0, 19, 0),
+            child: Text(
+              'First Last',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
                 color: KardioCareAppTheme.detailGray,
-                borderRadius: BorderRadius.all(Radius.circular(200))),
-            child: Icon(Icons.add_a_photo, color: Colors.white),
-          ),
-          Text(
-            'First Last',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: KardioCareAppTheme.detailGray,
-              fontSize: 30,
+                fontSize: 30,
+              ),
             ),
           ),
           const Divider(
@@ -107,7 +102,7 @@ class _ProfileState extends State<Profile> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
-                  width: MediaQuery.of(context).size.width / 3 - 25,
+                  width: 20,
                   child: Row(
                     children: [
                       Text('Weight'),

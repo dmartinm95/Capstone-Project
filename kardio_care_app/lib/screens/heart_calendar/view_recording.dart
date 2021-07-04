@@ -27,7 +27,9 @@ class _ViewRecordingState extends State<ViewRecording> {
         selectedRecordingData['heartRateVarData'];
     Map<DateTime, double> bloodOxData = selectedRecordingData['bloodOxData'];
     DateTime timeTaken = selectedRecordingData['dateTimeOfRecording'];
-    String screenTitle = DateFormat.yMEd().add_jm().format(timeTaken);
+    String screenTitle = DateFormat.yMd().format(timeTaken) +
+        ' at ' +
+        DateFormat.jm().format(timeTaken);
 
     return Scaffold(
       appBar: AppBar(

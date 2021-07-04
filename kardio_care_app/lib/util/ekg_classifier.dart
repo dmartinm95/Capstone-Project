@@ -4,11 +4,11 @@ class EKGClassifier {
   Interpreter _interpreter;
   List<double> threshold = [0.124, 0.07, 0.05, 0.278, 0.390, 0.174];
   List<String> rhythmLabels = [
-    '1st degree AV block',
+    '1st Degree AV block',
     'Right bundle branch block',
     'Left bundle branch block',
-    'Sinus bradycardia',
-    'Atrial fibrillation',
+    'Sinus Bradycardia',
+    'Atrial Fibrillation',
     'Sinus tachycardia'
   ];
 

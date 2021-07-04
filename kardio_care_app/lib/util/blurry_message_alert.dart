@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:kardio_care_app/app_theme.dart';
 
 class BlurryMessageDialog extends StatelessWidget {
   final String title;
@@ -18,20 +19,28 @@ class BlurryMessageDialog extends StatelessWidget {
           title: FittedBox(
             child: Text(
               title,
-              style: textStyle,
+              style: KardioCareAppTheme.subTitle,
             ),
           ),
           content: FittedBox(
             fit: BoxFit.fill,
             child: Text(
               content,
-              style: textStyle,
+              style: TextStyle(
+                color: KardioCareAppTheme.detailGray,
+              ),
             ),
           ),
           actions: <Widget>[
             Center(
               child: TextButton(
-                child: Text("OK"),
+                child: Text(
+                  "OK",
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: KardioCareAppTheme.actionBlue,
+                  ),
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
