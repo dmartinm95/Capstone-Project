@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:scidart/numdart.dart';
 import 'package:scidart/scidart.dart';
@@ -10,24 +8,38 @@ class PanTomkpins with ChangeNotifier {
 
   Array bufferArray = Array.fixed(MAX_SIZE);
   int bufferArrayIndex = 0;
-  int sampleFrequency = 400;
+  int sampleFrequency = 500;
 
   int currentHeartRate = 0;
-  int previousHeartRate = 0;
 
   bool isProcessingArray = false;
-  File file;
-  var sink;
+
   PanTomkpins() {
     print("Pan Tompkins constructor");
-    // file = File("assets\test.txt");
-    // sink = file.openWrite();
-    // sink.write("Test");
-    // writeLinesCSV(data, fileName)
+  }
+
+  void resetCurrentHeartRate() {
+    currentHeartRate = 0;
   }
 
   void setSampleFrequency(int frequency) {
     sampleFrequency = frequency;
+  }
+
+  int addRecordedData(double data) {
+    bufferArray[bufferArrayIndex] = data;
+    bufferArrayIndex++;
+
+    if (bufferArrayIndex == MAX_SIZE) {
+      print("Pan Tompkins array is now full with $MAX_SIZE items");
+
+      bufferArrayIndex = 0;
+      Array result = performPanTompkins(bufferArray);
+      currentHeartRate = calculateHeartRate(result);
+      return currentHeartRate;
+    } else {
+      return 0;
+    }
   }
 
   void addDataToBuffer(List<int> data, bool isSingleLead) async {
@@ -43,10 +55,19 @@ class PanTomkpins with ChangeNotifier {
 
       if (bufferArrayIndex == MAX_SIZE) {
         print("Pan Tompkins array is now full with $MAX_SIZE items");
+
+        // printWrapped(bufferArray.toString());
+
+        // var fileName = "raw_data.csv";
+        // writeLinesCSV(
+        //   Array2d([bufferArray]),
+        //   fileName,
+        //   delimiter: ',',
+        // );
         isProcessingArray = true;
         bufferArrayIndex = 0;
-        // Array result = performPanTompkins(bufferArray);
-        // currentHeartRate = calculateHeartRate(result);
+        Array result = performPanTompkins(bufferArray);
+        currentHeartRate = calculateHeartRate(result);
         isProcessingArray = false;
 
         // notifyListeners();
@@ -55,7 +76,10 @@ class PanTomkpins with ChangeNotifier {
     }
   }
 
-  Future writeToFile(int data) async {}
+  void printWrapped(String text) {
+    final pattern = RegExp('.{1,800}'); // 800 is the size of each chunk
+    pattern.allMatches(text).forEach((match) => print(match.group(0)));
+  }
 
   double arrayAbsMax(Array data) {
     return max(arrayMax(data), (arrayMin(data)).abs());
@@ -158,8 +182,7 @@ class PanTomkpins with ChangeNotifier {
     Array integratedData = integration(squaringData, windowSize);
 
     double maxH = arrayAbsMax(integratedData);
-    double thresholdValue = 0.95 * maxH;
-    // double thresholdValue = mean(integratedData);
+    double thresholdValue = mean(integratedData);
     var peaks = findPeaks(integratedData, threshold: thresholdValue);
     print(peaks);
 
@@ -180,14 +203,24 @@ class PanTomkpins with ChangeNotifier {
   // At least 480 samples in between peaks ~ 50 bpm
   int calculateHeartRate(Array peaksIndex) {
     int heartRate = 0;
-    Array timeDiffBetweenPeaks = Array.fixed(peaksIndex.length - 1);
-    int index = 0;
-    for (int i = 1; i < peaksIndex.length; i++) {
-      double numSamplesBetweenPeaks = peaksIndex[i] - peaksIndex[i - 1];
-      double lengthInSec = numSamplesBetweenPeaks / sampleFrequency;
-      timeDiffBetweenPeaks[index] = lengthInSec;
-      print("Length in seconds $lengthInSec");
+    Array timeDiffBetweenPeaks = Array.empty();
+    int prevIndex = 0;
+    for (int currIndex = 0; currIndex < peaksIndex.length; currIndex++) {
+      int numSamplesBetweenPeaks =
+          peaksIndex[currIndex].toInt() - peaksIndex[prevIndex].toInt();
+
+      if (numSamplesBetweenPeaks < 250) {
+        continue;
+      } else {
+        double lengthInSec = numSamplesBetweenPeaks / sampleFrequency;
+        timeDiffBetweenPeaks.add(lengthInSec);
+        prevIndex = currIndex;
+        print("Number of samples in between: $numSamplesBetweenPeaks");
+        print("Length in seconds $lengthInSec");
+      }
     }
+
+    print(timeDiffBetweenPeaks);
 
     heartRate = 60 ~/ mean(timeDiffBetweenPeaks); // In bpm
 

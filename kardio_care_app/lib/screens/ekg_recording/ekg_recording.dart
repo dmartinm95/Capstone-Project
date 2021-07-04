@@ -9,6 +9,7 @@ import 'package:kardio_care_app/widgets/blood_oxygen_tile.dart';
 import 'package:kardio_care_app/widgets/heart_rate_tile.dart';
 import 'package:provider/provider.dart';
 import 'package:kardio_care_app/constants/app_constants.dart';
+import 'package:scidart/numdart.dart';
 
 class EKGRecording extends StatefulWidget {
   EKGRecording({Key key, this.deviceScannerProvider, this.totalMinutes})
@@ -118,6 +119,14 @@ class _EKGRecordingState extends State<EKGRecording> {
                 List.from(widget.deviceScannerProvider.ekgDataToStore);
             widget.deviceScannerProvider.doneRecording = true;
             widget.deviceScannerProvider.turnOffNotifyAllLeads();
+
+            print("Heart Rate Data Collected");
+            List<double> heartRateDataCollected =
+                widget.deviceScannerProvider.recordedHeartRateData;
+
+            print(heartRateDataCollected);
+
+            heartRateData[DateTime.now()] = mean(Array(heartRateDataCollected));
 
             print("Going to ekg_results screen");
             Navigator.pushReplacementNamed(context, '/ekg_results', arguments: {

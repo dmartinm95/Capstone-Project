@@ -6,6 +6,7 @@ import 'package:kardio_care_app/screens/home/heart_rate_and_oxygen_saturation.da
 import 'package:kardio_care_app/screens/home/search_connect_btn.dart';
 import 'package:kardio_care_app/screens/home/show_ekg_lead_data.dart';
 import 'package:kardio_care_app/screens/home/welcome_msg.dart';
+import 'package:kardio_care_app/util/pan_tompkins.dart';
 import 'package:provider/provider.dart';
 import 'package:kardio_care_app/util/device_scanner.dart';
 
@@ -55,8 +56,8 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
 
-    // final deviceScannerProvider =
-    //     Provider.of<DeviceScanner>(context, listen: false);
+    final panTompkinsProvider =
+        Provider.of<PanTomkpins>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
@@ -71,6 +72,7 @@ class _HomeState extends State<Home> {
             valueListenable: widget.deviceScannerProvider.bleConnectionNotifier,
             builder: (context, value, child) {
               if (value == null) {
+                panTompkinsProvider.resetCurrentHeartRate();
                 return Container();
               }
               return AppBarDisconnectBtn(
