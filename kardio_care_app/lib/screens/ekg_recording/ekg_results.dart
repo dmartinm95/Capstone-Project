@@ -210,10 +210,10 @@ class _ResultsWidgetsState extends State<ResultsWidgets> {
                   endIndent: 19,
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(19, 10, 19, 100),
+                    padding: const EdgeInsets.fromLTRB(19, 10, 19, 100),
                   child: Center(
                     child: Container(
-                      height: 100,
+                      height: 100, 
                       child: Wrap(
                         alignment: WrapAlignment.center,
                         spacing: 5.0,

@@ -118,7 +118,7 @@ class RhythmRow extends StatelessWidget {
           children: [
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(5, 10, 0, 0),
+                padding: const EdgeInsets.fromLTRB(6, 10, 0, 0),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -166,12 +166,15 @@ class RhythmRow extends StatelessWidget {
                       ),
                     ],
                   ),
-                  LinearPercentIndicator(
-                    // width: ,
-                    // width: 50,
-                    lineHeight: 10.0,
-                    percent: (frequency ?? 0.0).toDouble() / 100.0,
-                    progressColor: color,
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+                    child: LinearPercentIndicator(
+                      // width: ,
+                      // width: 50,
+                      lineHeight: 10.0,
+                      percent: (frequency ?? 0.0).toDouble() / 100.0,
+                      progressColor: color,
+                    ),
                   ),
                 ],
               ),

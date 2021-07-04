@@ -22,12 +22,15 @@ class _ProfileState extends State<Profile> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'First Last',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: KardioCareAppTheme.detailGray,
-              fontSize: 30,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(19, 0, 19, 0),
+            child: Text(
+              'First Last',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: KardioCareAppTheme.detailGray,
+                fontSize: 30,
+              ),
             ),
           ),
           const Divider(
@@ -99,7 +102,7 @@ class _ProfileState extends State<Profile> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
-                  width: MediaQuery.of(context).size.width / 3 - 25,
+                  width: 20,
                   child: Row(
                     children: [
                       Text('Weight'),

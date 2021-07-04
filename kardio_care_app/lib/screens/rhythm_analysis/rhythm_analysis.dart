@@ -201,7 +201,7 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
                     child: Center(
                       child: Text(
                         currRhythmIndex == 0
-                            ? 'No Recordings saved.'
+                            ? 'No recordings saved.'
                             : 'No recordings with this rhythm.',
                         style: TextStyle(
                             fontSize: 18, color: KardioCareAppTheme.detailGray),
