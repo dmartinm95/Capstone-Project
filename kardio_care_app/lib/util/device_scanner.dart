@@ -54,6 +54,11 @@ class DeviceScanner with ChangeNotifier {
   bool isEkgDataFull = false;
 
   List<double> recordedHeartRateData = List.empty(growable: true);
+  List<double> recordedHeartRateVarData = List.empty(growable: true);
+  Map<DateTime, double> recordedHeartRateMap = {};
+  Map<DateTime, double> recordedHeartRateVarMap = {};
+
+  int currentHeartRate = 0;
   PanTomkpins panTompkinsInstance;
 
   StreamSubscription<List<int>> subscription;
@@ -303,7 +308,14 @@ class DeviceScanner with ChangeNotifier {
           if (currLead == 0) {
             int result = panTompkinsInstance.addRecordedData(value);
             if (result != 0) {
+              currentHeartRate = result;
               recordedHeartRateData.add(result.toDouble());
+              recordedHeartRateMap[DateTime.now()] = result.toDouble();
+
+              recordedHeartRateVarData
+                  .add(panTompkinsInstance.currentHeartRateVar);
+              recordedHeartRateVarMap[DateTime.now()] =
+                  panTompkinsInstance.currentHeartRateVar;
             }
           }
 
@@ -321,7 +333,14 @@ class DeviceScanner with ChangeNotifier {
           if (currLead == 0) {
             int result = panTompkinsInstance.addRecordedData(value);
             if (result != 0) {
+              currentHeartRate = result;
               recordedHeartRateData.add(result.toDouble());
+              recordedHeartRateMap[DateTime.now()] = result.toDouble();
+
+              recordedHeartRateVarData
+                  .add(panTompkinsInstance.currentHeartRateVar * 1000);
+              recordedHeartRateVarMap[DateTime.now()] =
+                  panTompkinsInstance.currentHeartRateVar * 1000;
             }
           }
 
@@ -414,7 +433,18 @@ class DeviceScanner with ChangeNotifier {
     ekgDataToStoreIndex = 0;
 
     panTompkinsInstance = new PanTomkpins();
+
+    // Clear maps and list for both HR and HRV values for each recording instance
     recordedHeartRateData = List.empty(growable: true);
+    recordedHeartRateVarData = List.empty(growable: true);
+
+    if (recordedHeartRateMap.isNotEmpty) {
+      recordedHeartRateMap.clear();
+    }
+
+    if (recordedHeartRateVarData.isNotEmpty) {
+      recordedHeartRateVarData.clear();
+    }
 
     print(
         "Initial state: batchIndex = $ekgDataBatchIndex\t storeIndex = $ekgDataToStoreIndex");

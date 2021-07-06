@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:scidart/numdart.dart';
 import 'package:scidart/scidart.dart';
@@ -13,6 +15,8 @@ class PanTomkpins with ChangeNotifier {
   int currentHeartRate = 0;
 
   bool isProcessingArray = false;
+
+  double currentHeartRateVar = 0;
 
   PanTomkpins() {
     print("Pan Tompkins constructor");
@@ -222,7 +226,24 @@ class PanTomkpins with ChangeNotifier {
 
     print(timeDiffBetweenPeaks);
 
-    heartRate = 60 ~/ mean(timeDiffBetweenPeaks); // In bpm
+    // Calculating HRV: RMSSD = SQRT[ (1/N-1) * SUM(i=0 to N-1) of [RR_i+1 - RR_i]^2 ]
+    double heartRateVarInnerSum = 0;
+    for (int i = 0; i < timeDiffBetweenPeaks.length - 1; i++) {
+      heartRateVarInnerSum +=
+          pow(timeDiffBetweenPeaks[i + 1] - timeDiffBetweenPeaks[i], 2);
+    }
+
+    try {
+      currentHeartRateVar =
+          sqrt(heartRateVarInnerSum / (timeDiffBetweenPeaks.length - 1));
+      print("HRV: $currentHeartRateVar");
+
+      heartRate = 60 ~/ mean(timeDiffBetweenPeaks); // In bpm
+      print("HR: $heartRate");
+    } catch (e) {
+      heartRate = 0;
+      print("Error while calculating heart rate: ${e.toString()}");
+    }
 
     return heartRate;
   }

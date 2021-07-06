@@ -210,10 +210,10 @@ class _ResultsWidgetsState extends State<ResultsWidgets> {
                   endIndent: 19,
                 ),
                 Padding(
-                    padding: const EdgeInsets.fromLTRB(19, 10, 19, 100),
+                  padding: const EdgeInsets.fromLTRB(19, 10, 19, 100),
                   child: Center(
                     child: Container(
-                      height: 100, 
+                      height: 100,
                       child: Wrap(
                         alignment: WrapAlignment.center,
                         spacing: 5.0,
@@ -271,10 +271,6 @@ class _ResultsWidgetsState extends State<ResultsWidgets> {
                             onPressed: () async {
                               widget.loadingCallback(true);
 
-                              widget.deviceScannerProvider.doneRecording =
-                                  false;
-                              widget.deviceScannerProvider.switchToActiveLead();
-
                               dataResults.rhythms = [];
 
                               IsolateData isolateData = IsolateData(
@@ -288,6 +284,10 @@ class _ResultsWidgetsState extends State<ResultsWidgets> {
                               await box.put(
                                   dataResults.startTime.toIso8601String(),
                                   dataResults);
+
+                              widget.deviceScannerProvider.doneRecording =
+                                  false;
+                              widget.deviceScannerProvider.switchToActiveLead();
 
                               widget.popScreenCallback();
                             },

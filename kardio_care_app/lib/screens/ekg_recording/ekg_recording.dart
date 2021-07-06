@@ -67,8 +67,8 @@ class _EKGRecordingState extends State<EKGRecording> {
   void generateFakeData() {
     setState(() {
       bloodOxData[DateTime.now()] = random(95, 100).toDouble();
-      heartRateData[DateTime.now()] = random(50, 100).toDouble();
-      heartRateVarData[DateTime.now()] = random(40, 90).toDouble();
+      // heartRateData[DateTime.now()] = random(50, 100).toDouble();
+      // heartRateVarData[DateTime.now()] = random(40, 90).toDouble();
     });
   }
 
@@ -123,10 +123,19 @@ class _EKGRecordingState extends State<EKGRecording> {
             print("Heart Rate Data Collected");
             List<double> heartRateDataCollected =
                 widget.deviceScannerProvider.recordedHeartRateData;
-
             print(heartRateDataCollected);
 
-            heartRateData[DateTime.now()] = mean(Array(heartRateDataCollected));
+            print("Hear Rate Var Data Collected");
+            List<double> heartRateVarDataCollected =
+                widget.deviceScannerProvider.recordedHeartRateVarData;
+            print(heartRateVarDataCollected);
+
+            // heartRateData[DateTime.now()] = mean(Array(heartRateDataCollected));
+            heartRateData =
+                Map.from(widget.deviceScannerProvider.recordedHeartRateMap);
+
+            heartRateVarData =
+                Map.from(widget.deviceScannerProvider.recordedHeartRateVarMap);
 
             print("Going to ekg_results screen");
             Navigator.pushReplacementNamed(context, '/ekg_results', arguments: {
@@ -254,8 +263,10 @@ class _EKGRecordingState extends State<EKGRecording> {
                 children: [
                   Expanded(
                     child: HeartRateTile(
-                      currHR: heartRateData?.values?.last?.toInt(),
-                    ),
+                        currHR: widget.deviceScannerProvider.currentHeartRate ==
+                                0
+                            ? null
+                            : widget.deviceScannerProvider.currentHeartRate),
                   ),
                   const VerticalDivider(
                     width: 25,
