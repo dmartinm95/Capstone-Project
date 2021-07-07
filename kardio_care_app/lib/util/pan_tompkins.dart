@@ -46,10 +46,10 @@ class PanTomkpins with ChangeNotifier {
     }
   }
 
-  void addDataToBuffer(List<int> data, bool isSingleLead) async {
-    if (isProcessingArray) {
-      return;
-    }
+  void addDataToBuffer(List<int> data, bool isSingleLead) {
+    // if (isProcessingArray) {
+    //   return;
+    // }
 
     for (int i = 0; i < data.length; i++) {
       if (data[i] == 0) continue;
@@ -60,29 +60,16 @@ class PanTomkpins with ChangeNotifier {
       if (bufferArrayIndex == MAX_SIZE) {
         print("Pan Tompkins array is now full with $MAX_SIZE items");
 
-        // printWrapped(bufferArray.toString());
-
-        // var fileName = "raw_data.csv";
-        // writeLinesCSV(
-        //   Array2d([bufferArray]),
-        //   fileName,
-        //   delimiter: ',',
-        // );
-        isProcessingArray = true;
+        // isProcessingArray = true;
         bufferArrayIndex = 0;
         Array result = performPanTompkins(bufferArray);
         currentHeartRate = calculateHeartRate(result);
-        isProcessingArray = false;
+        // isProcessingArray = false;
 
         // notifyListeners();
         // Issue when trying to notifyListeners because widget tree is in the process of building it already due to DeviceScanner provider
       }
     }
-  }
-
-  void printWrapped(String text) {
-    final pattern = RegExp('.{1,800}'); // 800 is the size of each chunk
-    pattern.allMatches(text).forEach((match) => print(match.group(0)));
   }
 
   double arrayAbsMax(Array data) {
@@ -185,7 +172,6 @@ class PanTomkpins with ChangeNotifier {
     int windowSize = 22;
     Array integratedData = integration(squaringData, windowSize);
 
-    double maxH = arrayAbsMax(integratedData);
     double thresholdValue = mean(integratedData);
     var peaks = findPeaks(integratedData, threshold: thresholdValue);
     print(peaks);

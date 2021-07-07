@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:kardio_care_app/screens/home/build_ekg_plot.dart';
-import 'package:kardio_care_app/util/data_filter.dart';
 import 'package:kardio_care_app/util/device_scanner.dart';
 import 'package:kardio_care_app/util/pan_tompkins.dart';
 import 'package:kardio_care_app/widgets/block_radio_button.dart';
@@ -16,7 +15,6 @@ class ShowEKGLeadData extends StatelessWidget {
 
   final Size size;
   final DeviceScanner deviceScannerProvider;
-  // final dataFilterInstance = new DataFilter();
 
   @override
   Widget build(BuildContext context) {
@@ -45,14 +43,7 @@ class ShowEKGLeadData extends StatelessWidget {
               child: Consumer<DeviceScanner>(
                 builder: (context, device, child) {
                   panTompkinsProvider.addDataToBuffer(
-                      device.leadDataList, true); //////
-
-                  // panTompkinsProvider.addDataToBuffer(value.leadDataList);
-                  // if (deviceScannerProvider.activeLeadIndex == -1) {
-                  //   ekgDataManager.fillInput(value.allLeadDataList);
-                  // } else {
-                  //   panTompkinsProvider.addDataToBuffer(value.leadDataList);
-                  // }
+                      device.leadDataList, true);
                   return BuildEKGPlot(
                     dataValue: device.leadDataList,
                     dataFilter: null,
@@ -64,19 +55,12 @@ class ShowEKGLeadData extends StatelessWidget {
               flex: 0,
               fit: FlexFit.tight,
               child: BlockRadioButton(
-                buttonLabels: ['I', 'II', 'III', 'V1'],
+                buttonLabels: ['I', 'II', 'III'],
                 circleBorder: true,
                 backgroundColor: KardioCareAppTheme.background,
                 callback: callback,
                 currentSelection: deviceScannerProvider.activeLeadIndex,
               ),
-            ),
-            const Divider(
-              color: KardioCareAppTheme.dividerPurple,
-              height: 20,
-              thickness: 1,
-              indent: 19,
-              endIndent: 19,
             ),
           ],
         ),
@@ -88,7 +72,5 @@ class ShowEKGLeadData extends StatelessWidget {
     print("Switching stream to new index: $newIndex");
 
     deviceScannerProvider.switchToStreamIndex(newIndex);
-
-    // dataFilterInstance.resetBuffer();
   }
 }

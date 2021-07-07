@@ -4,8 +4,6 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:kardio_care_app/util/pan_tompkins.dart';
 import 'package:scidart/numdart.dart';
 
-// TODO: Loading animation while saving data
-
 class DeviceScanner with ChangeNotifier {
   // Arduino Nano 33 BLE details
   static const String SERVICE_UUID = "202d3e06-252d-40bd-8dc6-0b7bfe15b99f";
@@ -15,8 +13,8 @@ class DeviceScanner with ChangeNotifier {
       "7c90374c-9246-4fa2-b396-299d83992ac6";
   static const String LEAD_THREE_CHAR_UUID =
       "44ab8765-80b6-442f-8953-f18e3375549c";
-  static const String LEAD_V1_CHAR_UUID =
-      "f34748fb-c879-49f6-9719-aea577d5d182";
+  // static const String LEAD_V1_CHAR_UUID =
+  //     "f34748fb-c879-49f6-9719-aea577d5d182";
   static const String ALL_LEADS_CHAR_UUID =
       "a0855912-29ea-4b12-a704-c813bdeb351b";
 
@@ -35,23 +33,20 @@ class DeviceScanner with ChangeNotifier {
   BluetoothCharacteristic bleLeadOneCharacteristic;
   BluetoothCharacteristic bleLeadTwoCharacteristic;
   BluetoothCharacteristic bleLeadThreeCharacteristic;
-  BluetoothCharacteristic bleLeadV1Characteristic;
+  // BluetoothCharacteristic bleLeadV1Characteristic;
   BluetoothCharacteristic bleAllLeadsCharacteristic;
 
-  List<BluetoothCharacteristic> bleLeadCharacteristics = List.filled(4, null);
+  List<BluetoothCharacteristic> bleLeadCharacteristics = List.filled(3, null);
   int activeLeadIndex = 0;
 
   // Store real-time incoming data
-  int leadOneData = 0;
   List<int> leadDataList = List.filled(SAMPLES_LENGTH, 0);
-  List<int> allLeadDataList = List.filled(4, 0);
 
   List<List<List<double>>> ekgDataToStore;
   int ekgDataToStoreIndex = 0;
   int ekgDataBatchIndex = 0;
   int batches = 0;
   bool doneRecording = false;
-  bool isEkgDataFull = false;
 
   List<double> recordedHeartRateData = List.empty(growable: true);
   List<double> recordedHeartRateVarData = List.empty(growable: true);
@@ -59,6 +54,7 @@ class DeviceScanner with ChangeNotifier {
   Map<DateTime, double> recordedHeartRateVarMap = {};
 
   int currentHeartRate = 0;
+  int currentHeartRateVar = 0;
   PanTomkpins panTompkinsInstance;
 
   StreamSubscription<List<int>> subscription;
@@ -167,8 +163,8 @@ class DeviceScanner with ChangeNotifier {
         (characteristic) =>
             characteristic.uuid.toString() == LEAD_THREE_CHAR_UUID);
 
-    bleLeadV1Characteristic = bleCharacteristics.firstWhere((characteristic) =>
-        characteristic.uuid.toString() == LEAD_V1_CHAR_UUID);
+    // bleLeadV1Characteristic = bleCharacteristics.firstWhere((characteristic) =>
+    //     characteristic.uuid.toString() == LEAD_V1_CHAR_UUID);
 
     bleAllLeadsCharacteristic = bleCharacteristics.firstWhere(
         (characteristic) =>
@@ -189,11 +185,11 @@ class DeviceScanner with ChangeNotifier {
       print(
           "Found Characteristic! - uuid: ${bleLeadThreeCharacteristic.uuid.toString()}");
     }
-    if (bleLeadV1Characteristic != null) {
-      bleLeadCharacteristics[3] = bleLeadV1Characteristic;
-      print(
-          "Found Characteristic! - uuid: ${bleLeadV1Characteristic.uuid.toString()}");
-    }
+    // if (bleLeadV1Characteristic != null) {
+    //   bleLeadCharacteristics[3] = bleLeadV1Characteristic;
+    //   print(
+    //       "Found Characteristic! - uuid: ${bleLeadV1Characteristic.uuid.toString()}");
+    // }
     if (bleAllLeadsCharacteristic != null) {
       print(
           "Found Characteristic! - uuid: ${bleAllLeadsCharacteristic.uuid.toString()}");
@@ -220,11 +216,6 @@ class DeviceScanner with ChangeNotifier {
         _decodeData(data);
       });
     } else if (leadIndex == 2) {
-      currentLeadSubscription =
-          bleLeadCharacteristics[leadIndex].value.listen((data) {
-        _decodeData(data);
-      });
-    } else if (leadIndex == 3) {
       currentLeadSubscription =
           bleLeadCharacteristics[leadIndex].value.listen((data) {
         _decodeData(data);
@@ -300,7 +291,7 @@ class DeviceScanner with ChangeNotifier {
       try {
         int currLead = 0;
 
-        for (int currByte = 0; currByte < 8; currByte += 2) {
+        for (int currByte = 0; currByte < 6; currByte += 2) {
           double value = (data[currByte] + 256 * data[currByte + 1]).toDouble();
           ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][currLead] =
               value;
@@ -312,10 +303,12 @@ class DeviceScanner with ChangeNotifier {
               recordedHeartRateData.add(result.toDouble());
               recordedHeartRateMap[DateTime.now()] = result.toDouble();
 
+              currentHeartRateVar =
+                  panTompkinsInstance.currentHeartRateVar.toInt();
               recordedHeartRateVarData
-                  .add(panTompkinsInstance.currentHeartRateVar);
+                  .add(panTompkinsInstance.currentHeartRateVar * 1000);
               recordedHeartRateVarMap[DateTime.now()] =
-                  panTompkinsInstance.currentHeartRateVar;
+                  panTompkinsInstance.currentHeartRateVar * 1000;
             }
           }
 
@@ -325,7 +318,7 @@ class DeviceScanner with ChangeNotifier {
         ekgDataToStoreIndex++;
         currLead = 0;
 
-        for (int currByte = 8; currByte < 16; currByte += 2) {
+        for (int currByte = 6; currByte < 12; currByte += 2) {
           double value = (data[currByte] + 256 * data[currByte + 1]).toDouble();
           ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][currLead] =
               value;
@@ -337,6 +330,8 @@ class DeviceScanner with ChangeNotifier {
               recordedHeartRateData.add(result.toDouble());
               recordedHeartRateMap[DateTime.now()] = result.toDouble();
 
+              currentHeartRateVar =
+                  panTompkinsInstance.currentHeartRateVar.toInt() * 1000;
               recordedHeartRateVarData
                   .add(panTompkinsInstance.currentHeartRateVar * 1000);
               recordedHeartRateVarMap[DateTime.now()] =
@@ -442,8 +437,8 @@ class DeviceScanner with ChangeNotifier {
       recordedHeartRateMap.clear();
     }
 
-    if (recordedHeartRateVarData.isNotEmpty) {
-      recordedHeartRateVarData.clear();
+    if (recordedHeartRateVarMap.isNotEmpty) {
+      recordedHeartRateVarMap.clear();
     }
 
     print(
