@@ -13,8 +13,6 @@ class DeviceScanner with ChangeNotifier {
       "7c90374c-9246-4fa2-b396-299d83992ac6";
   static const String LEAD_THREE_CHAR_UUID =
       "44ab8765-80b6-442f-8953-f18e3375549c";
-  // static const String LEAD_V1_CHAR_UUID =
-  //     "f34748fb-c879-49f6-9719-aea577d5d182";
   static const String ALL_LEADS_CHAR_UUID =
       "a0855912-29ea-4b12-a704-c813bdeb351b";
 
@@ -33,7 +31,6 @@ class DeviceScanner with ChangeNotifier {
   BluetoothCharacteristic bleLeadOneCharacteristic;
   BluetoothCharacteristic bleLeadTwoCharacteristic;
   BluetoothCharacteristic bleLeadThreeCharacteristic;
-  // BluetoothCharacteristic bleLeadV1Characteristic;
   BluetoothCharacteristic bleAllLeadsCharacteristic;
 
   List<BluetoothCharacteristic> bleLeadCharacteristics = List.filled(3, null);
@@ -163,9 +160,6 @@ class DeviceScanner with ChangeNotifier {
         (characteristic) =>
             characteristic.uuid.toString() == LEAD_THREE_CHAR_UUID);
 
-    // bleLeadV1Characteristic = bleCharacteristics.firstWhere((characteristic) =>
-    //     characteristic.uuid.toString() == LEAD_V1_CHAR_UUID);
-
     bleAllLeadsCharacteristic = bleCharacteristics.firstWhere(
         (characteristic) =>
             characteristic.uuid.toString() == ALL_LEADS_CHAR_UUID);
@@ -185,11 +179,6 @@ class DeviceScanner with ChangeNotifier {
       print(
           "Found Characteristic! - uuid: ${bleLeadThreeCharacteristic.uuid.toString()}");
     }
-    // if (bleLeadV1Characteristic != null) {
-    //   bleLeadCharacteristics[3] = bleLeadV1Characteristic;
-    //   print(
-    //       "Found Characteristic! - uuid: ${bleLeadV1Characteristic.uuid.toString()}");
-    // }
     if (bleAllLeadsCharacteristic != null) {
       print(
           "Found Characteristic! - uuid: ${bleAllLeadsCharacteristic.uuid.toString()}");
