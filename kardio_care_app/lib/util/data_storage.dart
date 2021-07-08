@@ -10,27 +10,35 @@ class RecordingData extends HiveObject {
   int recordingLengthMin;
 
   @HiveField(2)
-  List<String> tags;
-
-  @HiveField(3)
   Map<DateTime, double> heartRateData;
 
-  @HiveField(4)
-  Map<DateTime, double> heartRateVarData;  
+  @HiveField(3)
+  Map<DateTime, double> heartRateVarData;
 
-  @HiveField(5)
+  @HiveField(4)
   Map<DateTime, double> bloodOxData;
 
-  @HiveField(6)
+  @HiveField(5)
   List<String> rhythms;
 
-  @HiveField(7)
+  @HiveField(6)
   List<List<List<double>>> ekgData;
 }
 
+@HiveType(typeId: 1)
+class UserInfo {
+  @HiveField(0)
+  String firstName;
 
-// class UserInfo {
-//   int age;
-//   double weight;
-//   List<String> name; 
-// }
+  @HiveField(1)
+  String lastName;
+
+  @HiveField(2)
+  int age;
+
+  @HiveField(3)
+  double weight;
+
+  @HiveField(4)
+  double height;
+}

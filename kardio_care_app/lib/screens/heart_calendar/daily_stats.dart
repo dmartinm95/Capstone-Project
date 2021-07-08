@@ -55,22 +55,6 @@ class DailyStats extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(
-                width: 12,
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width / 2 - 25,
-                child: Row(
-                  children: [
-                    Text('Avg O2 %'),
-                    Expanded(child: SizedBox()),
-                    Text(
-                      (avgBloodOx ?? "--").toString() + ' %',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
           const Divider(

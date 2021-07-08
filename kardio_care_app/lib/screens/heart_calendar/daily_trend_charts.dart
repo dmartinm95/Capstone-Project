@@ -53,7 +53,7 @@ class _DailyTrendChartsState extends State<DailyTrendCharts> {
                           ),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(30, 12, 30, 5),
-                            child: Text('0 - 100 score'),
+                            child: Text('Milliseconds'),
                           ), // ? will this be 0 - 100 ?
                           Container(
                             height: MediaQuery.of(context).size.height * 0.35,

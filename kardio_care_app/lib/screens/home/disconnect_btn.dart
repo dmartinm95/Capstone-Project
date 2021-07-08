@@ -14,15 +14,19 @@ class AppBarDisconnectBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(right: 20.0),
-      child: GestureDetector(
-        onTap: () {
-          showAlertDialog(context, deviceScannerProvider);
-        },
-        child: Icon(
-          Icons.bluetooth_connected,
-          size: 26.0,
-          color: KardioCareAppTheme.detailGray,
+      padding: const EdgeInsets.only(right: 20),
+      child: CircleAvatar(
+        backgroundColor: KardioCareAppTheme.actionBlue,
+        radius: 20,
+        child: GestureDetector(
+          onTap: () {
+            showAlertDialog(context, deviceScannerProvider);
+          },
+          child: Icon(
+            Icons.bluetooth_disabled,
+            size: 26.0,
+            color: KardioCareAppTheme.white,
+          ),
         ),
       ),
     );

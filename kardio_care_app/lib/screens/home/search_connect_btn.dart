@@ -57,10 +57,12 @@ class _SearchAndConnectBtnState extends State<SearchAndConnectBtn> {
                         ),
                       ),
                     ),
-                    Icon(
-                      Icons.bluetooth_audio,
-                      size: 100,
-                      color: Colors.white,
+                    Container(
+                      alignment: Alignment.center,
+                      child: Image.asset(
+                        "assets/disconnected.png",
+                        width: 280.0,
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),

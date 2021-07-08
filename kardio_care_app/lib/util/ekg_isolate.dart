@@ -1,7 +1,9 @@
 import 'dart:isolate';
 
+import 'package:kardio_care_app/constants/app_constants.dart';
 import 'package:kardio_care_app/util/ekg_classifier.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
+import "dart:math";
 
 /// Manages separate Isolate for EKG inference
 class EKGIsolate {
@@ -29,14 +31,32 @@ class EKGIsolate {
 
     await for (final IsolateData isolateData in port) {
       if (isolateData != null) {
-        EKGClassifier classifier = EKGClassifier(
-          interpreter: Interpreter.fromAddress(isolateData.interpreterAddress),
-        );
+        // EKGClassifier classifier = EKGClassifier(
+        //   interpreter: Interpreter.fromAddress(isolateData.interpreterAddress),
+        // );
 
         List<List<List<double>>> ekgData = isolateData.ekgData;
 
-        List<String> results = classifier.classify(ekgData);
-        isolateData.responsePort.send(results);
+        final _random = new Random();
+
+        List<String> rhythmClassifications = [
+          '1st Degree AV Block',
+          'Bundle Branch Block',
+          'Bundle Branch Block',
+          'Sinus Bradycardia',
+          'Atrial Fibrillation',
+          'Sinus Tachycardia'
+        ];
+
+        // List<String> results = classifier.classify(ekgData);
+        isolateData.responsePort.send([
+          rhythmClassifications[_random.nextInt(rhythmClassifications.length)],
+          rhythmClassifications[_random.nextInt(rhythmClassifications.length)],
+          rhythmClassifications[_random.nextInt(rhythmClassifications.length)],
+          rhythmClassifications[_random.nextInt(rhythmClassifications.length)],
+          rhythmClassifications[_random.nextInt(rhythmClassifications.length)],
+          rhythmClassifications[_random.nextInt(rhythmClassifications.length)],
+        ]);
       }
     }
   }
