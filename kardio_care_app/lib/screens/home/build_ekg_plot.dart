@@ -30,8 +30,8 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
       ),
       primaryYAxis: NumericAxis(
         isVisible: false,
-        minimum: 900,
-        maximum: 1500,
+        minimum: 0,
+        maximum: 4096,
       ),
       series: <ChartSeries>[
         FastLineSeries<LeadData, int>(
