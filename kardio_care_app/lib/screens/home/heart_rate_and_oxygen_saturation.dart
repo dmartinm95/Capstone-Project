@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:kardio_care_app/app_theme.dart';
+import 'package:kardio_care_app/util/data_storage.dart';
 import 'package:kardio_care_app/util/device_scanner.dart';
 import 'package:kardio_care_app/util/pan_tompkins.dart';
-import 'package:kardio_care_app/widgets/blood_oxygen_tile.dart';
+import 'package:kardio_care_app/widgets/recordings_today_tile.dart';
 import 'package:kardio_care_app/widgets/heart_rate_tile.dart';
 import 'package:provider/provider.dart';
 
@@ -21,10 +23,14 @@ class HeartRateAndOxygenSaturation extends StatefulWidget {
 class _HeartRateAndOxygenSaturationState
     extends State<HeartRateAndOxygenSaturation> {
   Timer _everySecond;
+  Box<RecordingData> _box; 
 
   @override
   void initState() {
     super.initState();
+
+    Hive.openBox<RecordingData>('recordingDataBox');
+    _box = Hive.box<RecordingData>('recordingDataBox');
 
     _everySecond = Timer.periodic(Duration(seconds: 1), (Timer t) {
       setState(() {});
@@ -63,7 +69,7 @@ class _HeartRateAndOxygenSaturationState
                 endIndent: 45,
                 color: KardioCareAppTheme.dividerPurple,
               ),
-              Expanded(child: BloodOxygenTile())
+              Expanded(child: RecordingsTile(recordingData: _box,))
             ],
           ),
         ),

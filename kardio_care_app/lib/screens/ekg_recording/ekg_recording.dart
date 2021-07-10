@@ -5,7 +5,7 @@ import 'package:kardio_care_app/util/device_scanner.dart';
 import 'dart:async';
 import 'dart:math';
 import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:kardio_care_app/widgets/blood_oxygen_tile.dart';
+import 'package:kardio_care_app/widgets/recordings_today_tile.dart';
 import 'package:kardio_care_app/widgets/heart_rate_tile.dart';
 import 'package:provider/provider.dart';
 import 'package:kardio_care_app/constants/app_constants.dart';
@@ -257,18 +257,6 @@ class _EKGRecordingState extends State<EKGRecording> {
                       currHR: heartRateData?.values?.last?.toInt(),
                     ),
                   ),
-                  const VerticalDivider(
-                    width: 25,
-                    thickness: 1,
-                    indent: 20,
-                    endIndent: 45,
-                    color: KardioCareAppTheme.dividerPurple,
-                  ),
-                  Expanded(
-                    child: BloodOxygenTile(
-                      bloodOx: bloodOxData?.values?.last?.toInt(),
-                    ),
-                  )
                 ],
               ),
             ),

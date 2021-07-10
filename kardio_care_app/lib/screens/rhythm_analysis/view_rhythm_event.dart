@@ -5,7 +5,6 @@ import 'package:kardio_care_app/screens/rhythm_analysis/rhythm_event_chart.dart'
 import 'package:kardio_care_app/util/data_storage.dart';
 import 'package:kardio_care_app/widgets/block_radio_button.dart';
 import 'package:kardio_care_app/widgets/recording_stats.dart';
-import 'package:kardio_care_app/widgets/chip_widget.dart';
 import 'package:intl/intl.dart';
 import 'dart:math';
 
@@ -198,40 +197,6 @@ class _ViewRhythmEventState extends State<ViewRhythmEvent> {
                     .toInt(),
                 minHR: recordingData.heartRateData.values.reduce(min).toInt(),
                 maxHR: recordingData.heartRateData.values.reduce(max).toInt(),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
-              child: Text(
-                "Tags",
-                style: KardioCareAppTheme.subTitle,
-              ),
-            ),
-            const Divider(
-              color: KardioCareAppTheme.dividerPurple,
-              height: 20,
-              thickness: 1,
-              indent: 19,
-              endIndent: 19,
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(19, 10, 19, 100),
-              child: Center(
-                child: Container(
-                  height: 100,
-                  child: Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: 5.0,
-                    runSpacing: 5.0,
-                    children: <Widget>[
-                      // TODO: fetch these from the database
-                      ChipWidget(chipName: 'Morning'),
-                      ChipWidget(chipName: 'Afternoon'),
-                      ChipWidget(chipName: 'Evening'),
-                      ChipWidget(chipName: 'Running'),
-                    ],
-                  ),
-                ),
               ),
             ),
           ],

@@ -8,6 +8,7 @@ import 'package:kardio_care_app/main_dashboard.dart';
 import 'package:kardio_care_app/screens/ekg_recording/ekg_results.dart';
 import 'package:kardio_care_app/screens/ekg_recording/ekg_recording.dart';
 import 'package:kardio_care_app/screens/ekg_recording/start_recording.dart';
+import 'package:kardio_care_app/screens/profile/edit_profile.dart';
 import 'package:kardio_care_app/screens/rhythm_analysis/view_rhythm_event.dart';
 import 'package:kardio_care_app/util/pan_tompkins.dart';
 import 'package:provider/provider.dart';
@@ -20,8 +21,10 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(RecordingDataAdapter());
-
+  Hive.registerAdapter(UserInfoAdapter());
+  await Hive.openBox<UserInfo>('userInfoBox');
   await Hive.openBox<RecordingData>('recordingDataBox');
+  
 
   runApp(MyApp());
 }
@@ -46,6 +49,7 @@ class MyApp extends StatelessWidget {
           '/ekg_results': (context) => EKGResults(),
           '/view_rhythm_event': (context) => ViewRhythmEvent(),
           '/view_recording': (context) => ViewRecording(),
+          '/edit_profile': (context) => EditProfile(),
         },
         theme: ThemeData(
           scaffoldBackgroundColor: KardioCareAppTheme.background,

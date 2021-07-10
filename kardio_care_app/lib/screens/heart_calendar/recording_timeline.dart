@@ -66,12 +66,15 @@ class RecordingTimeline extends StatelessWidget {
             context: context,
             index: index,
             numRecordings: todaysData.length,
-            time: todaysData[index].startTime,
-            lengthOfRecording: todaysData[index].recordingLengthMin,
-            avgHRV: averageHRVs[index].toInt(),
-            bloodOxData: todaysData[index].bloodOxData,
-            heartRateData: todaysData[index].heartRateData,
-            heartRateVarData: todaysData[index].heartRateVarData,
+            time: todaysData[todaysData.length - index - 1].startTime,
+            lengthOfRecording:
+                todaysData[todaysData.length - index - 1].recordingLengthMin,
+            avgHRV: averageHRVs[todaysData.length - index - 1].toInt(),
+            bloodOxData: todaysData[todaysData.length - index - 1].bloodOxData,
+            heartRateData:
+                todaysData[todaysData.length - index - 1].heartRateData,
+            heartRateVarData:
+                todaysData[todaysData.length - index - 1].heartRateVarData,
           );
         },
       ),

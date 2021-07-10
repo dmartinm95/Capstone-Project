@@ -3,13 +3,13 @@ import 'package:tflite_flutter/tflite_flutter.dart';
 class EKGClassifier {
   Interpreter _interpreter;
   List<double> threshold = [0.124, 0.07, 0.05, 0.278, 0.390, 0.174];
-  List<String> rhythmLabels = [
+  List<String> rhythmClassifications = [
     '1st Degree AV block',
-    'Right bundle branch block',
-    'Left bundle branch block',
+    'Bundle Branch Block', //'Right bundle branch block',
+    'Bundle Branch Block', //'Left bundle branch block',
     'Sinus Bradycardia',
     'Atrial Fibrillation',
-    'Sinus tachycardia'
+    'Sinus Tachycardia'
   ];
 
   EKGClassifier({
@@ -61,9 +61,9 @@ class EKGClassifier {
     for (List<double> batch in output) {
       currRhythm = 'No Abnormal Rhythm';
       for (int i = 0; i < 6; i++) {
-        print(batch[i]);
+        // print(batch[i]);
         if (threshold[i] < batch[i]) {
-          currRhythm = rhythmLabels[i];
+          currRhythm = rhythmClassifications[i];
         }
       }
       rhythms.add(currRhythm);

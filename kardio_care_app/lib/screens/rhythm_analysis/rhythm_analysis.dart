@@ -6,7 +6,7 @@ import 'package:kardio_care_app/screens/rhythm_analysis/heart_rhythm_percents.da
 import 'package:kardio_care_app/util/data_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:kardio_care_app/widgets/filter_chip_widget.dart';
+
 import 'package:kardio_care_app/constants/app_constants.dart';
 
 class RhythmAnalysis extends StatefulWidget {
@@ -31,36 +31,6 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
     Hive.openBox<RecordingData>('recordingDataBox');
     box = Hive.box<RecordingData>('recordingDataBox');
 
-    // calculate rhythm frequencies
-    // rhythmFreq =
-
-    List<String> combined = [];
-    box.values.forEach((element) {
-      combined.addAll(element.rhythms.toSet().toList());
-    });
-
-    for (var i = 0; i < rhythmLabels.length; i++) {
-      if (rhythmLabels[i] == 'Bundle Branch Block') {
-        rhythmFreq.add(countOccurrences(combined, 'Right bundle branch block')
-                .toDouble() +
-            countOccurrences(combined, 'Left bundle branch block').toDouble());
-      } else {
-        rhythmFreq.add(countOccurrences(combined, rhythmLabels[i]).toDouble());
-      }
-    }
-
-    double sum = rhythmFreq.reduce((value, element) => value + element);
-    if (sum != 0) {
-      for (var i = 0; i < rhythmFreq.length; i++) {
-        rhythmFreq[i] = rhythmFreq[i] / sum;
-      }
-    }
-
-    if (currRhythmIndex != 0) {
-      anyRecordingsWithRhythm = rhythmFreq[currRhythmIndex - 1].toInt() != 0;
-    } else {
-      anyRecordingsWithRhythm = box.keys.length != 0;
-    }
   }
 
   int countOccurrences(List<String> list, String element) {
@@ -74,6 +44,30 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
 
   @override
   Widget build(BuildContext context) {
+    List<String> combined = [];
+    box.values.forEach((element) {
+      combined.addAll(element.rhythms.toSet().toList());
+    });
+
+    rhythmFreq = [];
+    for (var i = 0; i < rhythmLabels.length; i++) {
+      rhythmFreq.add(countOccurrences(combined, rhythmLabels[i]).toDouble());
+    }
+
+    double sum = rhythmFreq.reduce((value, element) => value + element);
+    if (sum != 0) {
+      for (var i = 0; i < rhythmFreq.length; i++) {
+        rhythmFreq[i] = rhythmFreq[i] / sum;
+      }
+    }
+
+    if (currRhythmIndex != 0) {
+      anyRecordingsWithRhythm = rhythmFreq[currRhythmIndex - 1] > 0;
+    } else {
+      anyRecordingsWithRhythm = box.keys.length != 0;
+    }
+
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -136,64 +130,60 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
             ),
             anyRecordingsWithRhythm
                 ? Expanded(
-                    child: ValueListenableBuilder<Box<RecordingData>>(
-                      valueListenable: box.listenable(),
-                      builder: (context, box, _) {
+                    child:
                         // get all recordings
-                        return Padding(
-                          padding: const EdgeInsets.fromLTRB(10, 0, 3, 0),
-                          child: CupertinoScrollbar(
-                            isAlwaysShown: true,
-                            thickness: 7,
+                        Padding(
+                      padding: const EdgeInsets.fromLTRB(10, 0, 3, 0),
+                      child: CupertinoScrollbar(
+                        isAlwaysShown: true,
+                        thickness: 7,
+                        controller: _scrollController,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 7, 0),
+                          child: ListView.builder(
                             controller: _scrollController,
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 0, 7, 0),
-                              child: ListView.builder(
-                                controller: _scrollController,
-                                // padding: EdgeInsets.zero,
-                                // shrinkWrap: true,
-                                primary: false,
+                            // padding: EdgeInsets.zero,
+                            // shrinkWrap: true,
+                            primary: false,
 
-                                // physics: NeverScrollableScrollPhysics(),
-                                physics: BouncingScrollPhysics(),
+                            // physics: NeverScrollableScrollPhysics(),
+                            physics: BouncingScrollPhysics(),
 
-                                itemCount: box.keys.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  // reverse the index
-                                  index = box.keys.length - index - 1;
+                            itemCount: box.keys.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              // reverse the index
+                              index = box.keys.length - index - 1;
 
-                                  if (currRhythmIndex != 0) {
-                                    if (!box.values
-                                        .elementAt(index)
-                                        .rhythms
-                                        .toSet()
-                                        .contains(rhythmLabels[
-                                            currRhythmIndex - 1])) {
-                                      return null;
-                                    }
-                                  }
+                              if (currRhythmIndex != 0) {
+                                if (!box.values
+                                    .elementAt(index)
+                                    .rhythms
+                                    .toSet()
+                                    .contains(
+                                        rhythmLabels[currRhythmIndex - 1])) {
+                                  return Container();
+                                }
+                              }
 
-                                  return HeartEventCard(
-                                    context: context,
-                                    index: index,
-                                    rhythms: box.values
-                                        .elementAt(index)
-                                        .rhythms
-                                        .toSet()
-                                        .toList(),
-                                    rhythmColors: getRhythmColors(box.values
-                                        .elementAt(index)
-                                        .rhythms
-                                        .toSet()
-                                        .toList()),
-                                    recordingData: box.values.elementAt(index),
-                                  );
-                                },
-                              ),
-                            ),
+                              return HeartEventCard(
+                                context: context,
+                                index: index,
+                                rhythms: box.values
+                                    .elementAt(index)
+                                    .rhythms
+                                    .toSet()
+                                    .toList(),
+                                rhythmColors: getRhythmColors(box.values
+                                    .elementAt(index)
+                                    .rhythms
+                                    .toSet()
+                                    .toList()),
+                                recordingData: box.values.elementAt(index),
+                              );
+                            },
                           ),
-                        );
-                      },
+                        ),
+                      ),
                     ),
                   )
                 : Container(

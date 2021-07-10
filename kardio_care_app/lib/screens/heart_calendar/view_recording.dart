@@ -4,7 +4,6 @@ import 'package:kardio_care_app/screens/ekg_recording/recording_charts.dart';
 import 'package:kardio_care_app/widgets/recording_stats.dart';
 import 'dart:math';
 import 'package:intl/intl.dart';
-import 'package:kardio_care_app/widgets/chip_widget.dart';
 
 class ViewRecording extends StatefulWidget {
   ViewRecording({
@@ -83,40 +82,6 @@ class _ViewRecordingState extends State<ViewRecording> {
                     .toInt(),
                 minHR: heartRateData.values.reduce(min).toInt(),
                 maxHR: heartRateData.values.reduce(max).toInt(),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(19, 15, 19, 0),
-              child: Text(
-                "Tags",
-                style: KardioCareAppTheme.subTitle,
-              ),
-            ),
-            const Divider(
-              color: KardioCareAppTheme.dividerPurple,
-              height: 20,
-              thickness: 1,
-              indent: 19,
-              endIndent: 19,
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(19, 10, 19, 100),
-              child: Center(
-                child: Container(
-                  height: 100,
-                  child: Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: 5.0,
-                    runSpacing: 5.0,
-                    children: <Widget>[
-                      // TODO: fetch these from the database
-                      ChipWidget(chipName: 'Morning'),
-                      ChipWidget(chipName: 'Afternoon'),
-                      ChipWidget(chipName: 'Evening'),
-                      ChipWidget(chipName: 'Running'),
-                    ],
-                  ),
-                ),
               ),
             ),
           ],

@@ -9,7 +9,6 @@ import 'package:kardio_care_app/util/data_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'dart:math';
-import 'package:kardio_care_app/widgets/filter_chip_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:kardio_care_app/util/ekg_classifier.dart';
 import 'dart:ui';
@@ -92,7 +91,8 @@ class ResultsWidgets extends StatefulWidget {
   _ResultsWidgetsState createState() => _ResultsWidgetsState();
 }
 
-class _ResultsWidgetsState extends State<ResultsWidgets> {
+class _ResultsWidgetsState extends State<ResultsWidgets>
+    with WidgetsBindingObserver {
   var unsavedRecordingData;
   final box = Hive.box<RecordingData>('recordingDataBox');
 
@@ -108,6 +108,8 @@ class _ResultsWidgetsState extends State<ResultsWidgets> {
   }
 
   void initStateAsync() async {
+    WidgetsBinding.instance.addObserver(this);
+
     // Spawn a new isolate
     ekgIsolate = EKGIsolate();
     await ekgIsolate.start();
@@ -195,39 +197,6 @@ class _ResultsWidgetsState extends State<ResultsWidgets> {
                     maxHR: dataResults.heartRateData.values.reduce(max).toInt(),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(19, 15, 19, 0),
-                  child: Text(
-                    "Tap Relevant Tags",
-                    style: KardioCareAppTheme.subTitle,
-                  ),
-                ),
-                const Divider(
-                  color: KardioCareAppTheme.dividerPurple,
-                  height: 20,
-                  thickness: 1,
-                  indent: 19,
-                  endIndent: 19,
-                ),
-                Padding(
-                    padding: const EdgeInsets.fromLTRB(19, 10, 19, 100),
-                  child: Center(
-                    child: Container(
-                      height: 100, 
-                      child: Wrap(
-                        alignment: WrapAlignment.center,
-                        spacing: 5.0,
-                        runSpacing: 5.0,
-                        children: <Widget>[
-                          FilterChipWidget(chipName: 'Morning'),
-                          FilterChipWidget(chipName: 'Afternoon'),
-                          FilterChipWidget(chipName: 'Evening'),
-                          FilterChipWidget(chipName: 'Running'),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
@@ -271,11 +240,7 @@ class _ResultsWidgetsState extends State<ResultsWidgets> {
                             onPressed: () async {
                               widget.loadingCallback(true);
 
-                              widget.deviceScannerProvider.doneRecording =
-                                  false;
-                              widget.deviceScannerProvider.switchToActiveLead();
-
-                              dataResults.rhythms = [];
+                              dataResults.rhythms = ['Bundle Branch Block'];
 
                               IsolateData isolateData = IsolateData(
                                 ekgClassifier.interpreter.address,
@@ -288,6 +253,10 @@ class _ResultsWidgetsState extends State<ResultsWidgets> {
                               await box.put(
                                   dataResults.startTime.toIso8601String(),
                                   dataResults);
+
+                              widget.deviceScannerProvider.doneRecording =
+                                  false;
+                              widget.deviceScannerProvider.switchToActiveLead();
 
                               widget.popScreenCallback();
                             },
@@ -311,5 +280,11 @@ class _ResultsWidgetsState extends State<ResultsWidgets> {
     ekgIsolate.sendPort.send(isolateData..responsePort = responsePort.sendPort);
     List<String> results = await responsePort.first;
     return results;
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 }

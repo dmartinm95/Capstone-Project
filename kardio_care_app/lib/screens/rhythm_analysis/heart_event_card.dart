@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:intl/intl.dart';
 import 'package:kardio_care_app/util/data_storage.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class HeartEventCard extends StatelessWidget {
   const HeartEventCard({
@@ -21,6 +22,12 @@ class HeartEventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> rhythmsTags = [];
+    for (int i = 0; i < rhythms.length; i++) {
+      rhythmsTags
+          .add(RhythmTag(rhythmName: rhythms[i], rhythmColor: rhythmColors[i]));
+    }
+
     return Column(
       children: [
         TextButton(
@@ -36,7 +43,7 @@ class HeartEventCard extends StatelessWidget {
               SizedBox(
                 width: MediaQuery.of(context).size.width - 50,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 5, 0, 20),
+                  padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                   child: Row(
                     // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -45,7 +52,7 @@ class HeartEventCard extends StatelessWidget {
                             .add_jm()
                             .format(recordingData.startTime),
                         style: TextStyle(
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w900,
                           color: KardioCareAppTheme.detailGray,
                         ),
                       ),
@@ -62,20 +69,47 @@ class HeartEventCard extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width - 50,
-                child: Row(
+              Container(
+                width: MediaQuery.of(context).size.width * 0.8,
+                height: 50,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 10.0,
-                      // runSpacing: 5.0,
-                      children: <Widget>[
-                        for (int i = 0; i < rhythms.length; i++)
-                          RhythmTag(
-                            rhythmName: rhythms[i],
-                            rhythmColor: rhythmColors[i],
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          rhythmsTags.length >= 1
+                              ? rhythmsTags[0]
+                              : Container(),
+                          SizedBox(
+                            width: 10,
                           ),
+                          rhythmsTags.length >= 2
+                              ? rhythmsTags[1]
+                              : Container(),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          rhythmsTags.length >= 3
+                              ? rhythmsTags[2]
+                              : Container(),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        rhythmsTags.length >= 4 ? rhythmsTags[3] : Container(),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        rhythmsTags.length >= 5 ? rhythmsTags[4] : Container(),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        rhythmsTags.length >= 6 ? rhythmsTags[5] : Container(),
                       ],
                     ),
                   ],
@@ -100,7 +134,6 @@ class HeartEventCard extends StatelessWidget {
       ],
     );
   }
-
 }
 
 class RhythmTag extends StatelessWidget {
