@@ -141,48 +141,6 @@ class DailyStats extends StatelessWidget {
               ),
             ],
           ),
-          const Divider(
-            color: KardioCareAppTheme.dividerPurple,
-            height: 20,
-            thickness: 1,
-            indent: 0,
-            endIndent: 0,
-          ),
-          Row(
-            children: [
-              Container(
-                width: MediaQuery.of(context).size.width / 2 - 25,
-                child: Row(
-                  children: [
-                    Text('Min O2 %'),
-                    Expanded(child: SizedBox()),
-                    Text(
-                      (minBloodOx ?? "--").toString() + ' %',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                width: 12,
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width / 2 - 25,
-                child: Row(
-                  children: [
-                    Text('at'),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      (minBloodOxTime ?? "--").toString(),
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
         ],
       ),
     );

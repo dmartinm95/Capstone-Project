@@ -22,10 +22,20 @@ class HeartEventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> rhythmsTags = [];
+    List<Widget> rhythmsColorTags = [];
     for (int i = 0; i < rhythms.length; i++) {
-      rhythmsTags
-          .add(RhythmTag(rhythmName: rhythms[i], rhythmColor: rhythmColors[i]));
+      rhythmsColorTags.add(
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          child: Container(
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(
+                color: rhythmColors[i],
+                borderRadius: BorderRadius.all(Radius.circular(1000))),
+          ),
+        ),
+      );
     }
 
     return Column(
@@ -41,7 +51,7 @@ class HeartEventCard extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(
-                width: MediaQuery.of(context).size.width - 50,
+                // width: MediaQuery.of(context).size.width - 50,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                   child: Row(
@@ -69,52 +79,65 @@ class HeartEventCard extends StatelessWidget {
                   ),
                 ),
               ),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.8,
-                height: 50,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          rhythmsTags.length >= 1
-                              ? rhythmsTags[0]
-                              : Container(),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          rhythmsTags.length >= 2
-                              ? rhythmsTags[1]
-                              : Container(),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          rhythmsTags.length >= 3
-                              ? rhythmsTags[2]
-                              : Container(),
-                        ],
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        rhythmsTags.length >= 4 ? rhythmsTags[3] : Container(),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        rhythmsTags.length >= 5 ? rhythmsTags[4] : Container(),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        rhythmsTags.length >= 6 ? rhythmsTags[5] : Container(),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+              Row(
+                children: [
+                  ...rhythmsColorTags,
+                  Expanded(
+                    child: SizedBox(),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 30),
+                    child: Text("${rhythms.length} Rhythms",
+                        style: TextStyle(color: KardioCareAppTheme.detailGray)),
+                  ),
+                ],
+              )
+              // Container(
+              //   width: MediaQuery.of(context).size.width * 0.8,
+              //   height: 50,
+              //   child: Column(
+              //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //     children: [
+              //       Padding(
+              //         padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+              //         child: Row(
+              //           mainAxisAlignment: MainAxisAlignment.start,
+              //           children: [
+              //             rhythmsTags.length >= 1
+              //                 ? rhythmsTags[0]
+              //                 : Container(),
+              //             SizedBox(
+              //               width: 10,
+              //             ),
+              //             rhythmsTags.length >= 2
+              //                 ? rhythmsTags[1]
+              //                 : Container(),
+              //             SizedBox(
+              //               width: 10,
+              //             ),
+              //             rhythmsTags.length >= 3
+              //                 ? rhythmsTags[2]
+              //                 : Container(),
+              //           ],
+              //         ),
+              //       ),
+              //       Row(
+              //         mainAxisAlignment: MainAxisAlignment.start,
+              //         children: [
+              //           rhythmsTags.length >= 4 ? rhythmsTags[3] : Container(),
+              //           SizedBox(
+              //             width: 10,
+              //           ),
+              //           rhythmsTags.length >= 5 ? rhythmsTags[4] : Container(),
+              //           SizedBox(
+              //             width: 10,
+              //           ),
+              //           rhythmsTags.length >= 6 ? rhythmsTags[5] : Container(),
+              //         ],
+              //       ),
+              //     ],
+              //   ),
+              // ),
             ],
           ),
 
@@ -136,38 +159,38 @@ class HeartEventCard extends StatelessWidget {
   }
 }
 
-class RhythmTag extends StatelessWidget {
-  const RhythmTag({Key key, this.rhythmName, this.rhythmColor})
-      : super(key: key);
+// class RhythmTag extends StatelessWidget {
+//   const RhythmTag({Key key, this.rhythmName, this.rhythmColor})
+//       : super(key: key);
 
-  final String rhythmName;
+//   final String rhythmName;
 
-  final Color rhythmColor;
+//   final Color rhythmColor;
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        children: [
-          Container(
-            width: 8,
-            height: 10,
-            decoration: BoxDecoration(
-                color: rhythmColor,
-                borderRadius: BorderRadius.all(Radius.circular(1000))),
-          ),
-          SizedBox(
-            width: 5,
-          ),
-          Text(
-            rhythmName,
-            style: TextStyle(
-              fontWeight: FontWeight.normal,
-              color: KardioCareAppTheme.detailGray,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+// return Container(
+//   child: Row(
+//     children: [
+//       Container(
+//         width: 8,
+//         height: 10,
+//         decoration: BoxDecoration(
+//             color: rhythmColor,
+//             borderRadius: BorderRadius.all(Radius.circular(1000))),
+//       ),
+//       SizedBox(
+//         width: 5,
+//       ),
+//       Text(
+//         rhythmName,
+//         style: TextStyle(
+//           fontWeight: FontWeight.normal,
+//           color: KardioCareAppTheme.detailGray,
+//         ),
+//       ),
+//     ],
+//   ),
+// );
+//   }
+// }

@@ -78,7 +78,7 @@ class _HeartRhythmPercentsState extends State<HeartRhythmPercents> {
                   borderRadius: BorderRadius.circular(20)),
               child: RhythmRow(
                 name: rhythmLabels[i - 1],
-                frequency: (widget.rhythmFreq[i - 1] * 100).ceil(),
+                frequency: (widget.rhythmFreq[i - 1] * 100).floor(),
                 color: rhythmColors[i - 1],
               ),
             ),

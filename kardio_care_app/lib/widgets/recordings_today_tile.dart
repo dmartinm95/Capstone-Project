@@ -28,9 +28,11 @@ class _RecordingsTileState extends State<RecordingsTile> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                DateFormat("MMMMEEEEd").format(DateTime.now()),
-                style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20),
+              FittedBox(
+                child: Text(
+                  DateFormat("MMMMEEEEd").format(DateTime.now()),
+                  style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20),
+                ),
               ),
               SizedBox(
                 height: 8,
@@ -46,22 +48,26 @@ class _RecordingsTileState extends State<RecordingsTile> {
                     child: Text(
                       (numRecordToday ?? "--").toString(),
                       style:
-                          TextStyle(fontWeight: FontWeight.w700, fontSize: 30),
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 30),
                     ),
                   ),
                   numRecordToday == 1
-                      ? Text(
-                          ' Recording',
-                          style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 24,
+                      ? Expanded(
+                          child: Text(
+                            ' Recording',
+                            style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              // fontSize: 24,
+                            ),
                           ),
                         )
-                      : Text(
-                          ' Recordings',
-                          style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 24,
+                      : Expanded(
+                          child: Text(
+                            ' Recordings',
+                            style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              // fontSize: 24,
+                            ),
                           ),
                         ),
                 ],

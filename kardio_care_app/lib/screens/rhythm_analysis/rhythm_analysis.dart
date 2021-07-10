@@ -30,7 +30,6 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
     // open boxes
     Hive.openBox<RecordingData>('recordingDataBox');
     box = Hive.box<RecordingData>('recordingDataBox');
-
   }
 
   int countOccurrences(List<String> list, String element) {
@@ -46,7 +45,7 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
   Widget build(BuildContext context) {
     List<String> combined = [];
     box.values.forEach((element) {
-      combined.addAll(element.rhythms.toSet().toList());
+      combined.addAll(element.rhythms.toList());
     });
 
     rhythmFreq = [];
@@ -66,7 +65,6 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
     } else {
       anyRecordingsWithRhythm = box.keys.length != 0;
     }
-
 
     return Scaffold(
       appBar: AppBar(

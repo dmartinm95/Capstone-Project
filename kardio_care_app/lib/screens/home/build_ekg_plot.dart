@@ -25,7 +25,6 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
     return SfCartesianChart(
       enableAxisAnimation: false,
       plotAreaBorderWidth: 0,
-      legend: Legend(isVisible: true),
       primaryXAxis: NumericAxis(
         isVisible: false,
       ),
@@ -34,15 +33,8 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
         minimum: 0,
         maximum: 4096,
       ),
-      indicators: <TechnicalIndicators<dynamic, dynamic>>[
-        EmaIndicator<dynamic, dynamic>(
-          seriesName: 'HiloOpenClose',
-          valueField: 'high',
-        )
-      ],
       series: <ChartSeries>[
         FastLineSeries<LeadData, int>(
-          name: 'HiloOpenClose',
           onRendererCreated: (ChartSeriesController controller) {
             _chartSeriesController = controller;
           },

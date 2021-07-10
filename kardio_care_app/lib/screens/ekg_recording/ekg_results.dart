@@ -205,13 +205,6 @@ class _ResultsWidgetsState extends State<ResultsWidgets>
             height: 70.0,
             child: Column(
               children: [
-                const Divider(
-                  color: KardioCareAppTheme.dividerPurple,
-                  height: 1,
-                  thickness: 1,
-                  indent: 0,
-                  endIndent: 0,
-                ),
                 Expanded(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,

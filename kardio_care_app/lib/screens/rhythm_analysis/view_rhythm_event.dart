@@ -190,6 +190,9 @@ class _ViewRhythmEventState extends State<ViewRhythmEvent> {
                 maxHR: recordingData.heartRateData.values.reduce(max).toInt(),
               ),
             ),
+            SizedBox(
+              height: 100,
+            ),
           ],
         ),
       ),

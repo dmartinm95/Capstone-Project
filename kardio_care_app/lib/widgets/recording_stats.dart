@@ -54,42 +54,12 @@ class RecordingStats extends StatelessWidget {
               ),
               Container(
                 width: MediaQuery.of(context).size.width / 2 - 27,
-              ),
-            ],
-          ),
-          const Divider(
-            color: KardioCareAppTheme.dividerPurple,
-            height: 20,
-            thickness: 1,
-            indent: 0,
-            endIndent: 0,
-          ),
-          Row(
-            children: [
-              Container(
-                width: MediaQuery.of(context).size.width / 2 - 27,
                 child: Row(
                   children: [
                     Text('Avg HR'),
                     Expanded(child: SizedBox()),
                     Text(
                       (avgHR ?? "--").toString() + ' Bpm',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                width: 14,
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width / 2 - 27,
-                child: Row(
-                  children: [
-                    Text('Avg O2 %'),
-                    Expanded(child: SizedBox()),
-                    Text(
-                      (avgO2 ?? "--").toString() + ' %',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
