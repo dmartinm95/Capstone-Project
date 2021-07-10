@@ -295,9 +295,9 @@ class DeviceScanner with ChangeNotifier {
               currentHeartRateVar =
                   panTompkinsInstance.currentHeartRateVar.toInt();
               recordedHeartRateVarData
-                  .add(panTompkinsInstance.currentHeartRateVar * 1000);
+                  .add(panTompkinsInstance.currentHeartRateVar);
               recordedHeartRateVarMap[DateTime.now()] =
-                  panTompkinsInstance.currentHeartRateVar * 1000;
+                  panTompkinsInstance.currentHeartRateVar;
             }
           }
 
@@ -320,11 +320,11 @@ class DeviceScanner with ChangeNotifier {
               recordedHeartRateMap[DateTime.now()] = result.toDouble();
 
               currentHeartRateVar =
-                  panTompkinsInstance.currentHeartRateVar.toInt() * 1000;
+                  panTompkinsInstance.currentHeartRateVar.toInt();
               recordedHeartRateVarData
-                  .add(panTompkinsInstance.currentHeartRateVar * 1000);
+                  .add(panTompkinsInstance.currentHeartRateVar);
               recordedHeartRateVarMap[DateTime.now()] =
-                  panTompkinsInstance.currentHeartRateVar * 1000;
+                  panTompkinsInstance.currentHeartRateVar;
             }
           }
 
