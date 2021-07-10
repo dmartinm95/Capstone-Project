@@ -239,9 +239,7 @@ class _ResultsWidgetsState extends State<ResultsWidgets>
                             // ),
                             onPressed: () async {
                               widget.loadingCallback(true);
-
-                              dataResults.rhythms = ['Bundle Branch Block'];
-
+                              dataResults.rhythms = [];
                               IsolateData isolateData = IsolateData(
                                 ekgClassifier.interpreter.address,
                                 dataResults.ekgData,

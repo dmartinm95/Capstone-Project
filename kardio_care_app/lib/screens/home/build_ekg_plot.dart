@@ -3,11 +3,12 @@ import 'package:kardio_care_app/util/data_filter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class BuildEKGPlot extends StatefulWidget {
-  const BuildEKGPlot({Key key, this.dataValue, this.dataFilter})
-      : super(key: key);
+  const BuildEKGPlot({
+    Key key,
+    this.dataValue,
+  }) : super(key: key);
 
   final List<int> dataValue;
-  final DataFilter dataFilter;
 
   @override
   _BuildEKGPlotState createState() => _BuildEKGPlotState();
@@ -63,8 +64,6 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
 
     for (int i = 0; i < data.length; i++) {
       try {
-        // widget.dataFilter.addDataToBuffer(data[i]);
-
         dataList.add(LeadData(xIndex, data[i]));
         xIndex = xIndex + 1;
 

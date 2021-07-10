@@ -114,15 +114,6 @@ class _ViewRhythmEventState extends State<ViewRhythmEvent> {
                         ),
                         value: 2,
                       ),
-                      DropdownMenuItem(
-                        child: Text(
-                          "Lead IV",
-                          style: TextStyle(
-                            color: KardioCareAppTheme.detailGray,
-                          ),
-                        ),
-                        value: 3,
-                      ),
                     ],
                     onChanged: (value) {
                       setState(() {
