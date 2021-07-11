@@ -53,13 +53,14 @@ class _RecordingChartsState extends State<RecordingCharts> {
                           ),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(30, 12, 30, 5),
-                            child: Text('0 - 100 score'),
-                          ), // ? will this be 0 - 100 ?
+                            child: Text('Milliseconds'),
+                          ),
                           Container(
                             height: MediaQuery.of(context).size.height * 0.35,
                             width: MediaQuery.of(context).size.width * 0.9,
                             child: HRVChart(
                               heartRateVarData: widget.heartRateVarData,
+                              fromResultsScreen: true,
                             ),
                           ),
                         ],
@@ -94,6 +95,7 @@ class _RecordingChartsState extends State<RecordingCharts> {
                             width: MediaQuery.of(context).size.width * 0.9,
                             child: HeartRateChart(
                               heartRateData: widget.heartRateData,
+                              fromResultsScreen: true,
                             ),
                           ),
                         ],

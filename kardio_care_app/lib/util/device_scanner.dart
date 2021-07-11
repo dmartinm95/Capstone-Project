@@ -4,6 +4,8 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:kardio_care_app/util/pan_tompkins.dart';
 import 'package:scidart/numdart.dart';
 
+// TODO: Attempt to connect the first time it goes to home to automatically connect
+
 class DeviceScanner with ChangeNotifier {
   // Arduino Nano 33 BLE details
   static const String SERVICE_UUID = "202d3e06-252d-40bd-8dc6-0b7bfe15b99f";

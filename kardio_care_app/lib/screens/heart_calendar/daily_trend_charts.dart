@@ -54,12 +54,13 @@ class _DailyTrendChartsState extends State<DailyTrendCharts> {
                           Padding(
                             padding: const EdgeInsets.fromLTRB(30, 12, 30, 5),
                             child: Text('Milliseconds'),
-                          ), // ? will this be 0 - 100 ?
+                          ),
                           Container(
                             height: MediaQuery.of(context).size.height * 0.35,
                             width: MediaQuery.of(context).size.width * 0.9,
                             child: HRVChart(
                               heartRateVarData: widget.heartRateVarData,
+                              fromResultsScreen: false,
                             ),
                           ),
                         ],
@@ -94,6 +95,7 @@ class _DailyTrendChartsState extends State<DailyTrendCharts> {
                             width: MediaQuery.of(context).size.width * 0.9,
                             child: HeartRateChart(
                               heartRateData: widget.heartRateData,
+                              fromResultsScreen: false,
                             ),
                           ),
                         ],
