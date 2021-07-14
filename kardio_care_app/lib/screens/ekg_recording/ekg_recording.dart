@@ -5,11 +5,7 @@ import 'package:kardio_care_app/util/device_scanner.dart';
 import 'dart:async';
 import 'dart:math';
 import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:kardio_care_app/widgets/recordings_today_tile.dart';
 import 'package:kardio_care_app/widgets/heart_rate_tile.dart';
-import 'package:provider/provider.dart';
-import 'package:kardio_care_app/constants/app_constants.dart';
-import 'package:scidart/numdart.dart';
 
 class EKGRecording extends StatefulWidget {
   EKGRecording({Key key, this.deviceScannerProvider, this.totalMinutes})

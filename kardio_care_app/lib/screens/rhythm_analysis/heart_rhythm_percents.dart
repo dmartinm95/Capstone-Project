@@ -1,5 +1,3 @@
-import 'dart:math';
-import 'package:hive/hive.dart';
 import 'package:kardio_care_app/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';

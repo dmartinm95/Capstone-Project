@@ -3,7 +3,6 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:kardio_care_app/screens/heart_calendar/view_recording.dart';
 import 'package:kardio_care_app/screens/home/bluetooth_off_screen.dart';
-import 'package:kardio_care_app/screens/home/home.dart';
 import 'package:kardio_care_app/main_dashboard.dart';
 import 'package:kardio_care_app/screens/ekg_recording/ekg_results.dart';
 import 'package:kardio_care_app/screens/ekg_recording/ekg_recording.dart';
@@ -24,7 +23,6 @@ Future<void> main() async {
   Hive.registerAdapter(UserInfoAdapter());
   await Hive.openBox<UserInfo>('userInfoBox');
   await Hive.openBox<RecordingData>('recordingDataBox');
-  
 
   runApp(MyApp());
 }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:intl/intl.dart';
 import 'package:kardio_care_app/util/data_storage.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 
 class HeartEventCard extends StatelessWidget {
   const HeartEventCard({

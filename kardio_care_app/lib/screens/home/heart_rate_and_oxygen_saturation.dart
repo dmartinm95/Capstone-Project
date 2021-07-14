@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:kardio_care_app/util/data_storage.dart';
-import 'package:kardio_care_app/util/device_scanner.dart';
 import 'package:kardio_care_app/util/pan_tompkins.dart';
 import 'package:kardio_care_app/widgets/recordings_today_tile.dart';
 import 'package:kardio_care_app/widgets/heart_rate_tile.dart';

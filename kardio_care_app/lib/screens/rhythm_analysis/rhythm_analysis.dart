@@ -5,7 +5,6 @@ import 'package:kardio_care_app/screens/rhythm_analysis/heart_event_card.dart';
 import 'package:kardio_care_app/screens/rhythm_analysis/heart_rhythm_percents.dart';
 import 'package:kardio_care_app/util/data_storage.dart';
 import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:kardio_care_app/constants/app_constants.dart';
 

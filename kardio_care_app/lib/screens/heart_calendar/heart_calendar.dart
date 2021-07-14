@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:kardio_care_app/screens/heart_calendar/daily_stats_from_data.dart';
-import 'package:kardio_care_app/screens/heart_calendar/daily_stats.dart';
-import 'package:kardio_care_app/screens/heart_calendar/recording_card.dart';
 import 'package:kardio_care_app/screens/heart_calendar/daily_trend_charts.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:kardio_care_app/screens/heart_calendar/recording_timeline.dart';
 import 'package:kardio_care_app/util/data_storage.dart';
-import 'dart:math';
 
 class HeartCalendar extends StatefulWidget {
   @override

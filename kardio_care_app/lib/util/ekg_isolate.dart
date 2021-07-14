@@ -1,8 +1,5 @@
 import 'dart:isolate';
 
-import 'package:kardio_care_app/constants/app_constants.dart';
-import 'package:kardio_care_app/util/ekg_classifier.dart';
-import 'package:tflite_flutter/tflite_flutter.dart';
 import "dart:math";
 
 /// Manages separate Isolate for EKG inference

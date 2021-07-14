@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:kardio_care_app/util/pan_tompkins.dart';
-import 'package:scidart/numdart.dart';
 
 // TODO: Attempt to connect the first time it goes to home to automatically connect
 

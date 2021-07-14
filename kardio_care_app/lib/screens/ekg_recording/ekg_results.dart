@@ -2,18 +2,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:kardio_care_app/screens/ekg_recording/recording_charts.dart';
-import 'package:kardio_care_app/util/blurry_loading.dart';
 import 'package:kardio_care_app/util/device_scanner.dart';
 import 'package:kardio_care_app/widgets/recording_stats.dart';
 import 'package:kardio_care_app/util/data_storage.dart';
 import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'dart:math';
 import 'package:provider/provider.dart';
 import 'package:kardio_care_app/util/ekg_classifier.dart';
 import 'dart:ui';
 import 'dart:isolate';
-import 'package:kardio_care_app/util/ekg_classifier.dart';
 import 'package:kardio_care_app/util/ekg_isolate.dart';
 
 class EKGResults extends StatefulWidget {

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:scidart/numdart.dart';
@@ -402,6 +400,7 @@ class PanTomkpins with ChangeNotifier {
     Array timeDiffBetweenPeaks = Array.empty();
 
     Array indices = Array.fromArray(qrsPeaksIndices);
+    // TODO: Might need to remove later, check behaviour
     if (qrsPeaksIndices.length <= 1) {
       print("Only 1 QRS peak detected, using noise peaks instead");
       indices = Array.fromArray(noisePeaksIndices);

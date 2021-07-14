@@ -5,7 +5,6 @@ import 'package:kardio_care_app/screens/home/disconnect_btn.dart';
 import 'package:kardio_care_app/screens/home/heart_rate_and_oxygen_saturation.dart';
 import 'package:kardio_care_app/screens/home/search_connect_btn.dart';
 import 'package:kardio_care_app/screens/home/show_ekg_lead_data.dart';
-import 'package:kardio_care_app/screens/home/welcome_msg.dart';
 import 'package:kardio_care_app/util/pan_tompkins.dart';
 import 'package:provider/provider.dart';
 import 'package:kardio_care_app/util/device_scanner.dart';

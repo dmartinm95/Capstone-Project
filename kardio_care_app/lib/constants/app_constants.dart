@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:kardio_care_app/app_theme.dart';
 
 // const double kDefaultPadding = 20.0;
 const String kServiceUUID = "202d3e06-252d-40bd-8dc6-0b7bfe15b99f";

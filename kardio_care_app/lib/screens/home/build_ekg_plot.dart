@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:kardio_care_app/util/data_filter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class BuildEKGPlot extends StatefulWidget {

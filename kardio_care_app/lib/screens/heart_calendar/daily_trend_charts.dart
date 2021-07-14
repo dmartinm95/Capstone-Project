@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:kardio_care_app/app_theme.dart';
-import 'package:kardio_care_app/screens/heart_calendar/daily_stats.dart';
-import 'package:kardio_care_app/screens/heart_calendar/recording_card.dart';
 import 'package:kardio_care_app/widgets/block_radio_button.dart';
 import 'package:kardio_care_app/screens/heart_calendar/heart_rate_chart.dart';
 import 'package:kardio_care_app/screens/heart_calendar/hrv_chart.dart';

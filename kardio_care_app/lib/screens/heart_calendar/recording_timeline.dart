@@ -1,9 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:kardio_care_app/util/data_storage.dart';
-import 'package:kardio_care_app/screens/heart_calendar/daily_stats.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:kardio_care_app/screens/heart_calendar/recording_card.dart';
 

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:kardio_care_app/screens/rhythm_analysis/rhythm_event_chart.dart';
-import 'package:kardio_care_app/screens/rhythm_analysis/rhythm_event_chart.dart';
 import 'package:kardio_care_app/util/data_storage.dart';
-import 'package:kardio_care_app/widgets/block_radio_button.dart';
 import 'package:kardio_care_app/widgets/recording_stats.dart';
 import 'package:intl/intl.dart';
 import 'dart:math';

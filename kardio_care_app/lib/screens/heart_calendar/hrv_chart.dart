@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
-import 'package:kardio_care_app/screens/rhythm_analysis/rhythm_event_chart.dart';
 import 'package:scidart/numdart.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
@@ -64,7 +63,6 @@ class _HRVChartState extends State<HRVChart> {
     List<PlottingData> chartData = List.empty(growable: true);
     List<DateTime> dateTimeList = List.empty(growable: true);
     List<double> hrvList = List.empty(growable: true);
-    print(widget.heartRateVarData);
     if (widget.heartRateVarData != null) {
       if (widget.fromResultsScreen) {
         estimateYRangeFromResults();
