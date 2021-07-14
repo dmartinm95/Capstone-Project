@@ -21,7 +21,7 @@ class KardioCareAppTheme {
   static const Color darkerText = Color(0xFF434343);
   static const Color lightText = Color(0xFF4A6572);
 
-  static const Color dividerPurple =  Color(0x5E8472FB);
+  static const Color dividerPurple = Color(0x5E8472FB);
 
   static const String fontName = 'Encode Sans';
 
@@ -32,7 +32,7 @@ class KardioCareAppTheme {
     fontSize: 20,
   );
 
-   static const TextStyle subTitle = TextStyle(
+  static const TextStyle subTitle = TextStyle(
     color: detailGray,
     fontWeight: FontWeight.w600,
     fontFamily: 'Encode Sans',
