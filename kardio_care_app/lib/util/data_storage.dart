@@ -1,6 +1,8 @@
 import 'package:hive/hive.dart';
 part 'data_storage.g.dart';
 
+// Remember to delete data_storage.g.dart and run the following cmd:
+// flutter packages pub run build_runner build
 @HiveType(typeId: 0)
 class RecordingData extends HiveObject {
   @HiveField(0)
@@ -41,4 +43,7 @@ class UserInfo {
 
   @HiveField(4)
   double height;
+
+  @HiveField(5)
+  String gender;
 }

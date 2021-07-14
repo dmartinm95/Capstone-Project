@@ -76,13 +76,14 @@ class UserInfoAdapter extends TypeAdapter<UserInfo> {
       ..lastName = fields[1] as String
       ..age = fields[2] as int
       ..weight = fields[3] as double
-      ..height = fields[4] as double;
+      ..height = fields[4] as double
+      ..gender = fields[5] as String;
   }
 
   @override
   void write(BinaryWriter writer, UserInfo obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.firstName)
       ..writeByte(1)
@@ -92,7 +93,9 @@ class UserInfoAdapter extends TypeAdapter<UserInfo> {
       ..writeByte(3)
       ..write(obj.weight)
       ..writeByte(4)
-      ..write(obj.height);
+      ..write(obj.height)
+      ..writeByte(5)
+      ..write(obj.gender);
   }
 
   @override
