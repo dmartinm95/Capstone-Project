@@ -64,7 +64,7 @@ class _HRVChartState extends State<HRVChart> {
     List<PlottingData> chartData = List.empty(growable: true);
     List<DateTime> dateTimeList = List.empty(growable: true);
     List<double> hrvList = List.empty(growable: true);
-
+    print(widget.heartRateVarData);
     if (widget.heartRateVarData != null) {
       if (widget.fromResultsScreen) {
         estimateYRangeFromResults();
@@ -137,16 +137,20 @@ class _HRVChartState extends State<HRVChart> {
         dateFormat: DateFormat.jm(),
       ),
       primaryYAxis: NumericAxis(
-        minimum: roundNumb(minYRange - 5.0),
-        maximum: roundNumb(maxYRange + 5.0),
-        interval: calculateIntervalStepSize((maxYRange - minYRange + 10), 5),
+        minimum: widget.heartRateVarData.isNotEmpty ? (minYRange - 5.0) : 0,
+        maximum:
+            widget.heartRateVarData.isNotEmpty ? roundNumb(maxYRange + 5.0) : 1,
+        interval: widget.heartRateVarData.isNotEmpty
+            ? calculateIntervalStepSize((maxYRange - minYRange + 10), 5)
+            : 1,
       ),
       series: <ChartSeries>[
         // Renders line chart
         LineSeries<PlottingData, DateTime>(
+            animationDuration: 0,
             markerSettings: MarkerSettings(
                 shape: DataMarkerType.circle,
-                color: Colors.blue,
+                color: KardioCareAppTheme.actionBlue,
                 borderColor: Colors.blue.shade50,
                 isVisible: true),
             color: Colors.blue.shade100,

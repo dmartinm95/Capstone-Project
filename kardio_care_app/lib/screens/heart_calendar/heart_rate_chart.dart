@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:kardio_care_app/app_theme.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
 
@@ -135,16 +136,20 @@ class _HeartRateChartState extends State<HeartRateChart> {
         dateFormat: DateFormat.jm(),
       ),
       primaryYAxis: NumericAxis(
-        minimum: roundNumb(minYRange - 5.0),
-        maximum: roundNumb(maxYRange + 5.0),
-        interval: calculateIntervalStepSize((maxYRange - minYRange + 10), 5),
+        minimum: widget.heartRateData.isNotEmpty ? (minYRange - 5.0) : 0,
+        maximum:
+            widget.heartRateData.isNotEmpty ? roundNumb(maxYRange + 5.0) : 0,
+        interval: widget.heartRateData.isNotEmpty
+            ? calculateIntervalStepSize((maxYRange - minYRange + 10), 5)
+            : 1,
       ),
       series: <ChartSeries>[
         // Renders line chart
         LineSeries<PlottingData, DateTime>(
+            animationDuration: 0,
             markerSettings: MarkerSettings(
                 shape: DataMarkerType.circle,
-                color: Colors.blue,
+                color: KardioCareAppTheme.actionBlue,
                 borderColor: Colors.blue.shade50,
                 isVisible: true),
             color: Colors.blue.shade100,
