@@ -22,7 +22,7 @@ class RecordingTimeline extends StatelessWidget {
           color: Colors.transparent,
           child: Container(
               decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.all(Radius.circular(10.0))),
               child: Center(
                 child: Column(

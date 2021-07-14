@@ -42,8 +42,9 @@ class _HeartRhythmPercentsState extends State<HeartRhythmPercents> {
               scale: i == _index ? 1 : 0.9,
               child: Card(
                 elevation: 6,
+                shadowColor: Colors.black,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)),
+                    borderRadius: BorderRadius.circular(20)),
                 child: Container(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -74,6 +75,7 @@ class _HeartRhythmPercentsState extends State<HeartRhythmPercents> {
             scale: i == _index ? 1 : 0.9,
             child: Card(
               elevation: 6,
+              shadowColor: rhythmColors[i - 1].withOpacity(0.5),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20)),
               child: RhythmRow(
@@ -118,9 +120,9 @@ class RhythmRow extends StatelessWidget {
           children: [
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(6, 10, 0, 0),
+                padding: const EdgeInsets.fromLTRB(6, 10, 6, 0),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Expanded(
                       child: Wrap(
@@ -129,9 +131,9 @@ class RhythmRow extends StatelessWidget {
                       ),
                     ),
                     Container(
-                      margin: EdgeInsets.fromLTRB(5, 5, 8, 0),
-                      height: 8.0,
-                      width: 8.0,
+                      margin: EdgeInsets.fromLTRB(0, 5, 0, 30),
+                      height: 6.0,
+                      width: 6.0,
                       // color: color,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(10)),

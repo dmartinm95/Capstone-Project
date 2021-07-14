@@ -397,7 +397,7 @@ class DeviceScanner with ChangeNotifier {
     if (bleDevice == null) return;
 
     bleDevice.disconnect();
-
+    currentHeartRate = 0;
     bleConnectionNotifier.value = null;
     print("Disconnected");
   }

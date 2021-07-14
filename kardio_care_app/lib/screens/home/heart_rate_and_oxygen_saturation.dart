@@ -23,7 +23,7 @@ class HeartRateAndOxygenSaturation extends StatefulWidget {
 class _HeartRateAndOxygenSaturationState
     extends State<HeartRateAndOxygenSaturation> {
   Timer _everySecond;
-  Box<RecordingData> _box; 
+  Box<RecordingData> _box;
 
   @override
   void initState() {
@@ -54,22 +54,23 @@ class _HeartRateAndOxygenSaturationState
         color: KardioCareAppTheme.background, // Red
         child: Container(
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Expanded(
-                child: HeartRateTile(
-                  currHR: panTompkinsProvider.currentHeartRate == 0
-                      ? null
-                      : panTompkinsProvider.currentHeartRate,
-                ),
+              HeartRateTile(
+                currHR: panTompkinsProvider.currentHeartRate == 0
+                    ? null
+                    : panTompkinsProvider.currentHeartRate,
               ),
               const VerticalDivider(
-                width: 25,
+                width: 5,
                 thickness: 1,
                 indent: 20,
                 endIndent: 45,
                 color: KardioCareAppTheme.dividerPurple,
               ),
-              Expanded(child: RecordingsTile(recordingData: _box,))
+              RecordingsTile(
+                recordingData: _box,
+              )
             ],
           ),
         ),

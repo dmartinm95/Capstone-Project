@@ -63,7 +63,7 @@ class _BlockRadioButtonState extends State<BlockRadioButton> {
     return TextButton(
       style: TextButton.styleFrom(
         backgroundColor: selectedIndex == index
-            ? KardioCareAppTheme.detailGray
+            ? KardioCareAppTheme.actionBlue
             : widget.backgroundColor,
         shape: widget.circleBorder
             ? CircleBorder()

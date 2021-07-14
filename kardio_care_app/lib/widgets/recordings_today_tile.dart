@@ -3,7 +3,6 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:kardio_care_app/util/data_storage.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class RecordingsTile extends StatefulWidget {
@@ -18,6 +17,18 @@ class RecordingsTile extends StatefulWidget {
 class _RecordingsTileState extends State<RecordingsTile> {
   @override
   Widget build(BuildContext context) {
+    List<String> dateSplit =
+        DateFormat("MMMMEEEEd").format(DateTime.now()).split(",");
+    List<Text> dateTextWidgets = [
+      for (String word in dateSplit)
+        Text(
+          word,
+          style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.w400,
+              color: KardioCareAppTheme.detailGray),
+        )
+    ];
     return Container(
       child: ValueListenableBuilder<Box<RecordingData>>(
         valueListenable: widget.recordingData.listenable(),
@@ -28,52 +39,42 @@ class _RecordingsTileState extends State<RecordingsTile> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              FittedBox(
-                child: Text(
-                  DateFormat("MMMMEEEEd").format(DateTime.now()),
-                  style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20),
-                ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(dateTextWidgets[0].data,
+                  style:
+                      TextStyle(fontWeight: FontWeight.normal, fontSize: 20)),
+              Text(dateTextWidgets[1].data,
+                  style:
+                      TextStyle(fontWeight: FontWeight.normal, fontSize: 20)),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                (numRecordToday ?? "--").toString(),
+                style: TextStyle(fontWeight: FontWeight.w400, fontSize: 40),
               ),
               SizedBox(
-                height: 8,
+                height: 5,
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      (numRecordToday ?? "--").toString(),
-                      style:
-                          TextStyle(fontWeight: FontWeight.w600, fontSize: 30),
+              numRecordToday == 1
+                  ? Text(
+                      ' Recording',
+                      style: TextStyle(
+                        fontWeight: FontWeight.normal,
+                        fontSize: 16,
+                      ),
+                    )
+                  : Text(
+                      ' Recordings',
+                      style: TextStyle(
+                        fontWeight: FontWeight.normal,
+                        fontSize: 16,
+                      ),
                     ),
-                  ),
-                  numRecordToday == 1
-                      ? Expanded(
-                          child: Text(
-                            ' Recording',
-                            style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              // fontSize: 24,
-                            ),
-                          ),
-                        )
-                      : Expanded(
-                          child: Text(
-                            ' Recordings',
-                            style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              // fontSize: 24,
-                            ),
-                          ),
-                        ),
-                ],
-              ),
               SizedBox(
-                height: 25,
+                height: 50,
               ),
             ],
           );

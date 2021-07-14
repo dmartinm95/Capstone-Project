@@ -10,7 +10,7 @@ import 'package:iirjdart/butterworth.dart';
 
 // For example, to change signal sampling rate from 250 to 125 samples per second, divide all parameters by 2: set signal_frequency value to 125, integration_window to 8 samples, findpeaks_spacing to 25 samples and refractory_period to 60 samples.
 class PanTomkpins with ChangeNotifier {
-  static const MAX_SIZE = 1000;
+  static const MAX_SIZE = 750;
 
   Array bufferArray = Array.fixed(MAX_SIZE);
   int bufferArrayIndex = 0;
@@ -101,10 +101,10 @@ class PanTomkpins with ChangeNotifier {
         print("Max value in bufferArray: $maxValueInBufferArray");
         bufferArrayIndex = 0;
 
-        // if (!skipOdd) {
-        setDefaultValues();
-        performPanTompkins(bufferArray);
-        // }
+        if (!skipOdd) {
+          setDefaultValues();
+          performPanTompkins(bufferArray);
+        }
 
         skipOdd = !skipOdd;
       }
@@ -402,6 +402,10 @@ class PanTomkpins with ChangeNotifier {
     Array timeDiffBetweenPeaks = Array.empty();
 
     Array indices = Array.fromArray(qrsPeaksIndices);
+    if (qrsPeaksIndices.length <= 1) {
+      print("Only 1 QRS peak detected, using noise peaks instead");
+      indices = Array.fromArray(noisePeaksIndices);
+    }
 
     for (int i = 1; i < indices.length; i++) {
       double numberSamplesBetweenPeaks = indices[i] - indices[i - 1];

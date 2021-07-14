@@ -23,14 +23,25 @@ class HeartEventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Widget> rhythmsColorTags = [];
+    print(rhythms);
+    rhythms.sort((a, b) => a.toString().compareTo(b.toString()));
+    print(rhythms);
     for (int i = 0; i < rhythms.length; i++) {
       rhythmsColorTags.add(
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Container(
-            width: 10,
-            height: 10,
+            width: 6,
+            height: 6,
             decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: rhythmColors[i].withOpacity(0.5),
+                    spreadRadius: 0.50,
+                    blurRadius: 2,
+                    offset: Offset(0, 0),
+                  )
+                ],
                 color: rhythmColors[i],
                 borderRadius: BorderRadius.all(Radius.circular(1000))),
           ),
@@ -81,15 +92,15 @@ class HeartEventCard extends StatelessWidget {
               ),
               Row(
                 children: [
-                  ...rhythmsColorTags,
-                  Expanded(
-                    child: SizedBox(),
-                  ),
                   Padding(
                     padding: const EdgeInsets.only(right: 30),
                     child: Text("${rhythms.length} Rhythms",
                         style: TextStyle(color: KardioCareAppTheme.detailGray)),
                   ),
+                  Expanded(
+                    child: SizedBox(),
+                  ),
+                  ...rhythmsColorTags,
                 ],
               )
               // Container(

@@ -17,14 +17,14 @@ class AppBarDisconnectBtn extends StatelessWidget {
       padding: const EdgeInsets.only(right: 20),
       child: CircleAvatar(
         backgroundColor: KardioCareAppTheme.actionBlue,
-        radius: 20,
+        radius: 15,
         child: GestureDetector(
           onTap: () {
             showAlertDialog(context, deviceScannerProvider);
           },
           child: Icon(
-            Icons.bluetooth_disabled,
-            size: 26.0,
+            Icons.bluetooth_disabled_rounded,
+            size: 20.0,
             color: KardioCareAppTheme.white,
           ),
         ),

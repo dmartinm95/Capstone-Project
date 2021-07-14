@@ -40,39 +40,56 @@ class StartRecording extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
+          // Padding(
+          //   padding: const EdgeInsets.all(20.0),
+          //   child: Container(
+          //     height: MediaQuery.of(context).size.height * 0.12,
+          //     color: Colors.transparent,
+          //     child: Container(
+          //         decoration: BoxDecoration(
+          //             color: Colors.white,
+          //             borderRadius: BorderRadius.all(Radius.circular(10.0))),
+          //         child: Center(
+          //           child: Text(
+          //             "Select a length of time to record",
+          //             style: TextStyle(
+          //                 color: KardioCareAppTheme.detailGray, fontSize: 19),
+          //             textAlign: TextAlign.center,
+          //           ),
+          //         )),
+          //   ),
+          // ),
           Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.12,
-              color: Colors.transparent,
-              child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(10.0))),
-                  child: Center(
-                    child: Text(
-                      "Select a length of time to record",
-                      style: TextStyle(
-                          color: KardioCareAppTheme.detailGray, fontSize: 19),
-                      textAlign: TextAlign.center,
-                    ),
-                  )),
+            padding: const EdgeInsets.fromLTRB(19, 30, 19, 0),
+            child: Text(
+              "Select a length of time to record",
+              style: KardioCareAppTheme.subTitle,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4.0),
+            child: const Divider(
+              color: KardioCareAppTheme.dividerPurple,
+              height: 20,
+              thickness: 1,
+              indent: 19,
+              endIndent: 19,
             ),
           ),
           FullRectangleTextButton(
-            backgroundColor: Colors.blue,
+            backgroundColor: Color(0xFF3f37c9),
             label: 'Long',
             subLabel: '$ekgLongLengthMin Min',
             lengthMinutes: ekgLongLengthMin,
           ),
           FullRectangleTextButton(
-            backgroundColor: Colors.green,
+            backgroundColor: Color(0xFF4361ee),
             label: 'Medium',
             subLabel: '$ekgMediumLengthMin Min',
             lengthMinutes: ekgMediumLengthMin,
           ),
           FullRectangleTextButton(
-            backgroundColor: Colors.deepPurple,
+            backgroundColor: Color(0xFF4895ef),
             label: 'Short',
             subLabel: '$ekgShortLengthMin Min',
             lengthMinutes: ekgShortLengthMin,
@@ -118,7 +135,9 @@ class FullRectangleTextButton extends StatelessWidget {
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2,
                   color: Colors.white,
                 ),
               ),
@@ -129,7 +148,8 @@ class FullRectangleTextButton extends StatelessWidget {
                 subLabel,
                 style: TextStyle(
                   fontSize: 20,
-                  fontWeight: FontWeight.normal,
+                  fontWeight: FontWeight.w400,
+                  letterSpacing: 1.3,
                   color: Colors.white,
                 ),
               ),
@@ -138,6 +158,7 @@ class FullRectangleTextButton extends StatelessWidget {
           // ),
           onPressed: () {
             deviceScannerProvider.turnOffActiveLead();
+            deviceScannerProvider.currentHeartRate = 0;
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 settings: const RouteSettings(name: "\ekg_recording"),
