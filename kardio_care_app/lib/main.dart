@@ -8,6 +8,7 @@ import 'package:kardio_care_app/screens/ekg_recording/ekg_results.dart';
 import 'package:kardio_care_app/screens/ekg_recording/ekg_recording.dart';
 import 'package:kardio_care_app/screens/ekg_recording/start_recording.dart';
 import 'package:kardio_care_app/screens/profile/edit_profile.dart';
+import 'package:kardio_care_app/screens/rhythm_analysis/generate_pdf.dart';
 import 'package:kardio_care_app/screens/rhythm_analysis/view_rhythm_event.dart';
 import 'package:kardio_care_app/util/pan_tompkins.dart';
 import 'package:provider/provider.dart';
@@ -48,6 +49,7 @@ class MyApp extends StatelessWidget {
           '/view_rhythm_event': (context) => ViewRhythmEvent(),
           '/view_recording': (context) => ViewRecording(),
           '/edit_profile': (context) => EditProfile(),
+          '/preview_pdf': (context) => GeneratePDF(), 
         },
         theme: ThemeData(
           scaffoldBackgroundColor: KardioCareAppTheme.background,

@@ -5,6 +5,10 @@ import 'package:kardio_care_app/util/data_storage.dart';
 import 'package:kardio_care_app/widgets/recording_stats.dart';
 import 'package:intl/intl.dart';
 import 'dart:math';
+import 'dart:typed_data';
+import 'package:syncfusion_flutter_charts/charts.dart';
+import 'dart:ui' as dart_ui;
+import 'package:flutter/services.dart';
 
 class ViewRhythmEvent extends StatefulWidget {
   const ViewRhythmEvent({Key key}) : super(key: key);
@@ -16,6 +20,11 @@ class ViewRhythmEvent extends StatefulWidget {
 class _ViewRhythmEventState extends State<ViewRhythmEvent> {
   int selectedLead = 0;
   bool allRhythms = true;
+  final GlobalKey<SfCartesianChartState> _chartKey = GlobalKey();
+
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
+  Uint8List imageData = Uint8List(0);
 
   @override
   Widget build(BuildContext context) {
@@ -166,6 +175,7 @@ class _ViewRhythmEventState extends State<ViewRhythmEvent> {
                   (recordingData.recordingLengthMin * 60 * 400 / 4096).ceil(),
               allRhythms: allRhythms,
               rhythms: recordingData.rhythms,
+              chartKey: _chartKey,
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
@@ -240,7 +250,11 @@ class _ViewRhythmEventState extends State<ViewRhythmEvent> {
                     ],
                   ),
                   // ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    imageData = await _readImageData();
+                    Navigator.pushNamed(context, '/preview_pdf',
+                        arguments: imageData);
+                  },
                 ),
               ),
             ),
@@ -249,4 +263,23 @@ class _ViewRhythmEventState extends State<ViewRhythmEvent> {
       ),
     );
   }
+
+  Future<Uint8List> _readImageData() async {
+    if (_chartKey.currentState != null) {
+      final dart_ui.Image data =
+          await _chartKey.currentState.toImage(pixelRatio: 3.0);
+      final ByteData bytes =
+          await data.toByteData(format: dart_ui.ImageByteFormat.png);
+      if (bytes != null) {
+        return bytes.buffer
+            .asUint8List(bytes.offsetInBytes, bytes.lengthInBytes);
+      } else {
+        throw ('test');
+      }
+    } else {
+      throw ('test');
+    }
+  }
+
 }
+
