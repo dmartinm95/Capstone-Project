@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kardio_care_app/app_theme.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class BuildEKGPlot extends StatefulWidget {
@@ -39,7 +40,7 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
           },
           dataSource: updateDataList(widget.dataValue),
           width: 1,
-          color: Color(0xFFEA517F),
+          color: KardioCareAppTheme.detailRed,
           xValueMapper: (LeadData leadData, _) => leadData.index,
           yValueMapper: (LeadData leadData, _) => leadData.value,
           animationDuration: 0,

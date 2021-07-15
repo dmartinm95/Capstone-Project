@@ -49,7 +49,7 @@ class _SearchAndConnectBtnState extends State<SearchAndConnectBtn> {
                       child: FittedBox(
                         fit: BoxFit.fitHeight,
                         child: Text(
-                          "Kompression is not connected",
+                          "Tap here to connect",
                           style: TextStyle(
                             fontSize: 22,
                             color: Colors.white,
@@ -62,20 +62,6 @@ class _SearchAndConnectBtnState extends State<SearchAndConnectBtn> {
                         alignment: Alignment.center,
                         child: Image.asset(
                           "assets/disconnected.png",
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: FittedBox(
-                        fit: BoxFit.fitHeight,
-                        child: Text(
-                          "Click here to search and connect",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
                         ),
                       ),
                     ),

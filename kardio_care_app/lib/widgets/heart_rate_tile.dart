@@ -64,7 +64,7 @@ class _HeartRateTileState extends State<HeartRateTile> {
                       : 45 * math.pi / 180,
                   child: Icon(
                     Icons.arrow_upward_sharp,
-                    color: KardioCareAppTheme.actionBlue,
+                    color: KardioCareAppTheme.detailRed,
                     size: 35,
                   ),
                 )

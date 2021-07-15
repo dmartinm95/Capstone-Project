@@ -148,10 +148,10 @@ class _HRVChartState extends State<HRVChart> {
             animationDuration: 0,
             markerSettings: MarkerSettings(
                 shape: DataMarkerType.circle,
-                color: KardioCareAppTheme.actionBlue,
-                borderColor: Colors.blue.shade50,
+                color: KardioCareAppTheme.detailRed,
+                borderColor: Colors.red.shade100,
                 isVisible: true),
-            color: Colors.blue.shade100,
+            color: Colors.red.shade100,
             dataSource: chartData,
             dashArray: <double>[5, 5],
             xValueMapper: (PlottingData data, _) => data.sampleTime,

@@ -7,11 +7,6 @@ import 'package:kardio_care_app/app_theme.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
-// To do
-// add filter on abnormal normal
-// add time on x axis
-// format the cards nicer and based on the strings of rhythms passed in
-
 class RhythmEventChart extends StatefulWidget {
   RhythmEventChart(
       {Key key,
@@ -344,8 +339,9 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
           }
 
           return ((index + numSamplesToPlot * batchIndexAllRhythms) /
-                  (400 / downSampleAmount))
-              .toString();
+                      (400 / downSampleAmount))
+                  .toString() +
+              ' s';
         },
         yValueMapper: (double sales, _) => sales,
       ),

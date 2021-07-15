@@ -24,7 +24,6 @@ class AppBarDisconnectBtn extends StatelessWidget {
           },
           child: Icon(
             Icons.bluetooth_disabled_rounded,
-            size: 20.0,
             color: KardioCareAppTheme.white,
           ),
         ),

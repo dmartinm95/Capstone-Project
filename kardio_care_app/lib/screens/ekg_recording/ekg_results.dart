@@ -143,7 +143,7 @@ class _ResultsWidgetsState extends State<ResultsWidgets>
             actions: [
               CircleAvatar(
                 backgroundColor: KardioCareAppTheme.actionBlue,
-                radius: 16,
+                radius: 15,
                 child: IconButton(
                   padding: EdgeInsets.zero,
                   icon: Icon(Icons.close),

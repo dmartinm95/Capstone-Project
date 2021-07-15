@@ -55,10 +55,12 @@ class _HeartRateAndOxygenSaturationState
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              HeartRateTile(
-                currHR: panTompkinsProvider.currentHeartRate == 0
-                    ? null
-                    : panTompkinsProvider.currentHeartRate,
+              Expanded(
+                child: HeartRateTile(
+                  currHR: panTompkinsProvider.currentHeartRate == 0
+                      ? null
+                      : panTompkinsProvider.currentHeartRate,
+                ),
               ),
               const VerticalDivider(
                 width: 5,
@@ -67,9 +69,11 @@ class _HeartRateAndOxygenSaturationState
                 endIndent: 45,
                 color: KardioCareAppTheme.dividerPurple,
               ),
-              RecordingsTile(
-                recordingData: _box,
-              )
+              Expanded(
+                child: RecordingsTile(
+                  recordingData: _box,
+                ),
+              ),
             ],
           ),
         ),

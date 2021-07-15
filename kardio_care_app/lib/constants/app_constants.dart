@@ -20,8 +20,8 @@ List<String> rhythmLabels = [
 List<Color> rhythmColors = [
   Color(0xFFf72585),
   Color(0xFF7209b7),
-  Color(0xFF480ca8),
   Color(0xFF3f37c9),
-  Color(0xFF4895ef),
   Color(0xFF4cc9f0),
+  Color(0xFF480ca8),
+  Color(0xFF4895ef),
 ];
