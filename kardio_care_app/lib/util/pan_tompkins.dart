@@ -10,10 +10,17 @@ import 'package:iirjdart/butterworth.dart';
 
 // For example, to change signal sampling rate from 250 to 125 samples per second, divide all parameters by 2: set signal_frequency value to 125, integration_window to 8 samples, findpeaks_spacing to 25 samples and refractory_period to 60 samples.
 class PanTomkpins with ChangeNotifier {
-  static const MAX_SIZE = 750;
+  static const MAX_SIZE = 350;
+  static const RECORD_MAX_SIZE = 1000;
+
+  int downsampleFactor = 2;
+  int index = 0;
 
   Array bufferArray = Array.fixed(MAX_SIZE);
   int bufferArrayIndex = 0;
+
+  Array recordBufferArray = Array.fixed(RECORD_MAX_SIZE);
+  int recordBufferArrayIndex = 0;
 
   int currentHeartRate = 0;
   double currentHeartRateVar = 0;
@@ -48,6 +55,8 @@ class PanTomkpins with ChangeNotifier {
 
   bool skipOdd = false;
 
+  int previousLeadIndex = -1;
+
   PanTomkpins() {
     print("Pan Tompkins constructor");
   }
@@ -58,6 +67,12 @@ class PanTomkpins with ChangeNotifier {
 
   void setSampleFrequency(double frequency) {
     sampleFrequency = frequency;
+  }
+
+  void resetBufferArray() {
+    bufferArrayIndex = 0;
+    currentHeartRate = 0;
+    currentHeartRateVar = 0;
   }
 
   void setDefaultValues() {
@@ -72,15 +87,15 @@ class PanTomkpins with ChangeNotifier {
 
   // Method used when recording from all 4 leads
   int addRecordedData(double data) {
-    bufferArray[bufferArrayIndex] = data;
-    bufferArrayIndex++;
+    recordBufferArray[recordBufferArrayIndex] = data;
+    recordBufferArrayIndex++;
 
-    if (bufferArrayIndex == MAX_SIZE) {
-      print("Pan Tompkins array is now full with $MAX_SIZE items");
+    if (recordBufferArrayIndex == RECORD_MAX_SIZE) {
+      print("Pan Tompkins array is now full with $RECORD_MAX_SIZE items");
 
-      bufferArrayIndex = 0;
+      recordBufferArrayIndex = 0;
       setDefaultValues();
-      performPanTompkins(bufferArray);
+      performPanTompkins(recordBufferArray);
       return currentHeartRate;
     } else {
       return 0;
@@ -88,25 +103,36 @@ class PanTomkpins with ChangeNotifier {
   }
 
   // Method used when getting real-time data from a single lead
-  void addDataToBuffer(List<int> data) {
+  void addDataToBuffer(List<int> data, int currentLeadIndex) {
+    if (previousLeadIndex != currentLeadIndex) {
+      print("Switched stream index");
+      previousLeadIndex = currentLeadIndex;
+      resetBufferArray();
+    }
+
     for (int i = 0; i < data.length; i++) {
       if (data[i] == 0) continue;
 
-      bufferArray[bufferArrayIndex] = data[i].toDouble();
-      bufferArrayIndex++;
+      // Apply downsampling when storing data to capture more qrs peaks
+      if (index % downsampleFactor == 0) {
+        bufferArray[bufferArrayIndex] = data[i].toDouble();
+        bufferArrayIndex++;
 
-      if (bufferArrayIndex == MAX_SIZE) {
-        print("Pan Tompkins array is now full with $MAX_SIZE items");
-        double maxValueInBufferArray = arrayMax(bufferArray);
-        print("Max value in bufferArray: $maxValueInBufferArray");
-        bufferArrayIndex = 0;
+        if (bufferArrayIndex == MAX_SIZE) {
+          print("Pan Tompkins array is now full with $MAX_SIZE items");
+          bufferArrayIndex = 0;
 
-        if (!skipOdd) {
+          // if (!skipOdd) {
           setDefaultValues();
           performPanTompkins(bufferArray);
-        }
+          // }
 
-        skipOdd = !skipOdd;
+          skipOdd = !skipOdd;
+        }
+      }
+      index++;
+      if (index == 100) {
+        index = 0;
       }
     }
   }
@@ -404,8 +430,10 @@ class PanTomkpins with ChangeNotifier {
     Array indices = Array.fromArray(qrsPeaksIndices);
     // TODO: Might need to remove later, check behaviour
     if (qrsPeaksIndices.length <= 1) {
-      print("Only 1 QRS peak detected, using noise peaks instead");
+      print("Only 1 QRS peak detected, using qrs + noise peaks instead");
       indices = Array.fromArray(noisePeaksIndices);
+      indices = Array.fromArray(qrsPeaksIndices)..addAll(noisePeaksIndices);
+      print("New indices list becomes: $indices");
     }
 
     for (int i = 1; i < indices.length; i++) {
@@ -415,7 +443,7 @@ class PanTomkpins with ChangeNotifier {
       double lengthInSeconds = numberSamplesBetweenPeaks / sampleFrequency;
       // print("Length in seconds: $lengthInSeconds");
 
-      if (lengthInSeconds > 0.5 && lengthInSeconds < 1.3) {
+      if (lengthInSeconds > 0.5 && lengthInSeconds < 1.2) {
         timeDiffBetweenPeaks.add(lengthInSeconds);
       }
     }
@@ -433,12 +461,16 @@ class PanTomkpins with ChangeNotifier {
 
     try {
       // In milliseconds (ms)
-      currentHeartRateVar = sqrt(mean(heartRateVarInnerSum)) * 1000;
-      print("HRV: $currentHeartRateVar (ms).");
+      if (timeDiffBetweenPeaks.length > 1) {
+        currentHeartRateVar = sqrt(mean(heartRateVarInnerSum)) * 1000;
+        print("HRV: $currentHeartRateVar (ms).");
+      }
 
       // In beats per minute (bpm)
-      currentHeartRate = 60 ~/ mean(timeDiffBetweenPeaks);
-      print("HR: $currentHeartRate (bpm). ");
+      if (timeDiffBetweenPeaks.isNotEmpty) {
+        currentHeartRate = 60 ~/ mean(timeDiffBetweenPeaks);
+        print("HR: $currentHeartRate (bpm). ");
+      }
     } catch (e) {
       currentHeartRate = 0;
       currentHeartRateVar = 0;
