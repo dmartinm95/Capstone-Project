@@ -20,16 +20,24 @@ class ViewRhythmEvent extends StatefulWidget {
 class _ViewRhythmEventState extends State<ViewRhythmEvent> {
   int selectedLead = 0;
   bool allRhythms = true;
-  final GlobalKey<SfCartesianChartState> _chartKey = GlobalKey();
-
-  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
-  Uint8List imageData = Uint8List(0);
+  int currBatch = 0;
 
   @override
   Widget build(BuildContext context) {
     final RecordingData recordingData =
         ModalRoute.of(context).settings.arguments;
+
+    int avgHRV = (recordingData.heartRateVarData.values
+                .toList()
+                .reduce((a, b) => a + b) ~/
+            recordingData.heartRateVarData.values.length)
+        .toInt();
+    int avgHR =
+        (recordingData.heartRateData.values.toList().reduce((a, b) => a + b) ~/
+            recordingData.heartRateData.values.length);
+
+    int minHR = recordingData.heartRateData.values.reduce(min).toInt();
+    int maxHR = recordingData.heartRateData.values.reduce(max).toInt();
 
     return Scaffold(
       appBar: AppBar(
@@ -175,27 +183,16 @@ class _ViewRhythmEventState extends State<ViewRhythmEvent> {
                   (recordingData.recordingLengthMin * 60 * 400 / 4096).ceil(),
               allRhythms: allRhythms,
               rhythms: recordingData.rhythms,
-              chartKey: _chartKey,
+              changeBatchCallback: changeBatchCallback,
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
               child: RecordingStats(
-                avgHRV: (recordingData.heartRateVarData.values
-                            .toList()
-                            .reduce((a, b) => a + b) ~/
-                        recordingData.heartRateVarData.values.length)
-                    .toInt(),
-                avgHR: (recordingData.heartRateData.values
-                        .toList()
-                        .reduce((a, b) => a + b) ~/
-                    recordingData.heartRateData.values.length),
-                avgO2: (recordingData.bloodOxData.values
-                            .toList()
-                            .reduce((a, b) => a + b) ~/
-                        recordingData.bloodOxData.values.length)
-                    .toInt(),
-                minHR: recordingData.heartRateData.values.reduce(min).toInt(),
-                maxHR: recordingData.heartRateData.values.reduce(max).toInt(),
+                avgHRV: avgHRV,
+                avgHR: avgHR,
+                avgO2: 0,
+                minHR: minHR,
+                maxHR: maxHR,
               ),
             ),
             SizedBox(
@@ -251,9 +248,14 @@ class _ViewRhythmEventState extends State<ViewRhythmEvent> {
                   ),
                   // ),
                   onPressed: () async {
-                    imageData = await _readImageData();
-                    Navigator.pushNamed(context, '/preview_pdf',
-                        arguments: imageData);
+                    Navigator.pushNamed(context, '/preview_pdf', arguments: {
+                      'recordingData': recordingData,
+                      'currBatch': currBatch,
+                      'avgHRV': avgHRV,
+                      'avgHR': avgHR,
+                      'minHR': minHR,
+                      'maxHR': maxHR,
+                    });
                   },
                 ),
               ),
@@ -264,22 +266,7 @@ class _ViewRhythmEventState extends State<ViewRhythmEvent> {
     );
   }
 
-  Future<Uint8List> _readImageData() async {
-    if (_chartKey.currentState != null) {
-      final dart_ui.Image data =
-          await _chartKey.currentState.toImage(pixelRatio: 3.0);
-      final ByteData bytes =
-          await data.toByteData(format: dart_ui.ImageByteFormat.png);
-      if (bytes != null) {
-        return bytes.buffer
-            .asUint8List(bytes.offsetInBytes, bytes.lengthInBytes);
-      } else {
-        throw ('test');
-      }
-    } else {
-      throw ('test');
-    }
+  void changeBatchCallback(int index) {
+    currBatch = index;
   }
-
 }
-

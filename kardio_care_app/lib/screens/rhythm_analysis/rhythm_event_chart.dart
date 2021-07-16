@@ -16,7 +16,7 @@ class RhythmEventChart extends StatefulWidget {
       this.numBatches,
       this.allRhythms,
       this.rhythms,
-      this.chartKey,})
+      this.changeBatchCallback})
       : super(key: key);
 
   final List<List<List<double>>> ekgData;
@@ -25,7 +25,7 @@ class RhythmEventChart extends StatefulWidget {
   final int selectedLead;
   final int numBatches;
   final bool allRhythms;
-  final GlobalKey<SfCartesianChartState> chartKey;
+  final Function(int) changeBatchCallback;
 
   @override
   _RhythmEventChartState createState() => _RhythmEventChartState();
@@ -289,6 +289,8 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
       batchIndex = index;
     });
 
+    widget.changeBatchCallback(index);
+
     double _position = index * (MediaQuery.of(context).size.width * 0.5) -
         ((MediaQuery.of(context).size.width * 0.5) - 100) / 2;
 
@@ -299,7 +301,6 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
   /// Returns the cartesian chart
   SfCartesianChart _buildCartesianChart() {
     return SfCartesianChart(
-      key: widget.chartKey,
       primaryYAxis: NumericAxis(
         interval: 2,
         minimum: 0,
