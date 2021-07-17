@@ -15,7 +15,8 @@ class RhythmEventChart extends StatefulWidget {
       this.selectedLead,
       this.numBatches,
       this.allRhythms,
-      this.rhythms})
+      this.rhythms,
+      this.changeBatchCallback})
       : super(key: key);
 
   final List<List<List<double>>> ekgData;
@@ -24,6 +25,7 @@ class RhythmEventChart extends StatefulWidget {
   final int selectedLead;
   final int numBatches;
   final bool allRhythms;
+  final Function(int) changeBatchCallback;
 
   @override
   _RhythmEventChartState createState() => _RhythmEventChartState();
@@ -286,6 +288,8 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
     setState(() {
       batchIndex = index;
     });
+
+    widget.changeBatchCallback(index);
 
     double _position = index * (MediaQuery.of(context).size.width * 0.5) -
         ((MediaQuery.of(context).size.width * 0.5) - 100) / 2;

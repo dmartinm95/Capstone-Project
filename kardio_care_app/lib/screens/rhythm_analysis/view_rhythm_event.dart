@@ -5,6 +5,10 @@ import 'package:kardio_care_app/util/data_storage.dart';
 import 'package:kardio_care_app/widgets/recording_stats.dart';
 import 'package:intl/intl.dart';
 import 'dart:math';
+import 'dart:typed_data';
+import 'package:syncfusion_flutter_charts/charts.dart';
+import 'dart:ui' as dart_ui;
+import 'package:flutter/services.dart';
 
 class ViewRhythmEvent extends StatefulWidget {
   const ViewRhythmEvent({Key key}) : super(key: key);
@@ -16,11 +20,24 @@ class ViewRhythmEvent extends StatefulWidget {
 class _ViewRhythmEventState extends State<ViewRhythmEvent> {
   int selectedLead = 0;
   bool allRhythms = true;
+  int currBatch = 0;
 
   @override
   Widget build(BuildContext context) {
     final RecordingData recordingData =
         ModalRoute.of(context).settings.arguments;
+
+    int avgHRV = (recordingData.heartRateVarData.values
+                .toList()
+                .reduce((a, b) => a + b) ~/
+            recordingData.heartRateVarData.values.length)
+        .toInt();
+    int avgHR =
+        (recordingData.heartRateData.values.toList().reduce((a, b) => a + b) ~/
+            recordingData.heartRateData.values.length);
+
+    int minHR = recordingData.heartRateData.values.reduce(min).toInt();
+    int maxHR = recordingData.heartRateData.values.reduce(max).toInt();
 
     return Scaffold(
       appBar: AppBar(
@@ -166,26 +183,16 @@ class _ViewRhythmEventState extends State<ViewRhythmEvent> {
                   (recordingData.recordingLengthMin * 60 * 400 / 4096).ceil(),
               allRhythms: allRhythms,
               rhythms: recordingData.rhythms,
+              changeBatchCallback: changeBatchCallback,
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
               child: RecordingStats(
-                avgHRV: (recordingData.heartRateVarData.values
-                            .toList()
-                            .reduce((a, b) => a + b) ~/
-                        recordingData.heartRateVarData.values.length)
-                    .toInt(),
-                avgHR: (recordingData.heartRateData.values
-                        .toList()
-                        .reduce((a, b) => a + b) ~/
-                    recordingData.heartRateData.values.length),
-                avgO2: (recordingData.bloodOxData.values
-                            .toList()
-                            .reduce((a, b) => a + b) ~/
-                        recordingData.bloodOxData.values.length)
-                    .toInt(),
-                minHR: recordingData.heartRateData.values.reduce(min).toInt(),
-                maxHR: recordingData.heartRateData.values.reduce(max).toInt(),
+                avgHRV: avgHRV,
+                avgHR: avgHR,
+                avgO2: 0,
+                minHR: minHR,
+                maxHR: maxHR,
               ),
             ),
             SizedBox(
@@ -240,7 +247,16 @@ class _ViewRhythmEventState extends State<ViewRhythmEvent> {
                     ],
                   ),
                   // ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    Navigator.pushNamed(context, '/preview_pdf', arguments: {
+                      'recordingData': recordingData,
+                      'currBatch': currBatch,
+                      'avgHRV': avgHRV,
+                      'avgHR': avgHR,
+                      'minHR': minHR,
+                      'maxHR': maxHR,
+                    });
+                  },
                 ),
               ),
             ),
@@ -248,5 +264,9 @@ class _ViewRhythmEventState extends State<ViewRhythmEvent> {
         ),
       ),
     );
+  }
+
+  void changeBatchCallback(int index) {
+    currBatch = index;
   }
 }
