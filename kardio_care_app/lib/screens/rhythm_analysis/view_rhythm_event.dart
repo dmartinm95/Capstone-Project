@@ -43,7 +43,7 @@ class _ViewRhythmEventState extends State<ViewRhythmEvent> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          "Recording Rhythms",
+          "View Rhythms",
           style: KardioCareAppTheme.screenTitleText,
         ),
         centerTitle: true,

@@ -43,7 +43,7 @@ class RecordingStats extends StatelessWidget {
                     Text('Avg HRV'),
                     Expanded(child: SizedBox()),
                     Text(
-                      (avgHRV ?? "--").toString() + ' Milliseconds',
+                      (avgHRV ?? "--").toString() + ' ms',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],

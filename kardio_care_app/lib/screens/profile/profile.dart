@@ -150,26 +150,26 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
               ),
-              Positioned(
-                top: MediaQuery.of(context).size.height * 0.68,
-                right: MediaQuery.of(context).size.width * 0.80,
-                child: ElevatedButton(
-                  onPressed: () {
-                    print('About button clicked');
-                    // Navigator.pushNamed(context, '/edit_profile',
-                    //     arguments: userInfoBox);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(),
-                    padding: EdgeInsets.all(4),
-                    primary: Colors.white,
-                  ),
-                  child: Icon(
-                    Icons.info,
-                    color: Colors.black87,
-                  ),
-                ),
-              ),
+              // Positioned(
+              //   top: MediaQuery.of(context).size.height * 0.68,
+              //   right: MediaQuery.of(context).size.width * 0.80,
+              //   child: ElevatedButton(
+              //     onPressed: () {
+              //       print('About button clicked');
+              //       // Navigator.pushNamed(context, '/edit_profile',
+              //       //     arguments: userInfoBox);
+              //     },
+              //     style: ElevatedButton.styleFrom(
+              //       shape: CircleBorder(),
+              //       padding: EdgeInsets.all(4),
+              //       primary: Colors.white,
+              //     ),
+              //     child: Icon(
+              //       Icons.info,
+              //       color: Colors.black87,
+              //     ),
+              //   ),
+              // ),
               Positioned(
                 top: MediaQuery.of(context).size.height * 0.68,
                 right: MediaQuery.of(context).size.width * 0.0,

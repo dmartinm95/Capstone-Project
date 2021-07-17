@@ -83,9 +83,10 @@ class _GeneratePDFState extends State<GeneratePDF> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Rhythm Event PDF",
+          "EKG Report",
           style: KardioCareAppTheme.screenTitleText,
         ),
+        centerTitle: true,
         backgroundColor: Colors.white,
         actions: [
           CircleAvatar(
@@ -111,7 +112,7 @@ class _GeneratePDFState extends State<GeneratePDF> {
           children: [
             SizedBox(
               width: 800,
-              height: 200,
+              height: 100,
               child: _buildCartesianChart(
                   chartKeys[0],
                   List.generate(
@@ -122,7 +123,7 @@ class _GeneratePDFState extends State<GeneratePDF> {
             ),
             SizedBox(
               width: 800,
-              height: 200,
+              height: 100,
               child: _buildCartesianChart(
                   chartKeys[1],
                   List.generate(
@@ -133,7 +134,7 @@ class _GeneratePDFState extends State<GeneratePDF> {
             ),
             SizedBox(
               width: 800,
-              height: 200,
+              height: 100,
               child: _buildCartesianChart(
                   chartKeys[2],
                   List.generate(

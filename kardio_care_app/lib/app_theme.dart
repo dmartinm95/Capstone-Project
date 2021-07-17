@@ -30,9 +30,9 @@ class KardioCareAppTheme {
     fontWeight: FontWeight.w700,
 
     // fontFamily: 'Encode Sans',
-    letterSpacing: 1.5,
-    wordSpacing: 2,
-    fontSize: 22,
+    letterSpacing: 1.25,
+    wordSpacing: 1.75,
+    fontSize: 20,
   );
 
   static const TextStyle subTitle = TextStyle(
