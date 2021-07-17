@@ -236,7 +236,7 @@ class _EKGRecordingState extends State<EKGRecording> {
                   ? FittedBox(
                       fit: BoxFit.fitHeight,
                       child: Text(
-                        'Recording EKG stay calm and stationary.',
+                        'Recording EKG. Stay calm and stationary.',
                         style: TextStyle(
                             color: KardioCareAppTheme.detailGray, fontSize: 19),
                         textAlign: TextAlign.center,

@@ -15,6 +15,8 @@ class ShowEKGLeadData extends StatelessWidget {
 
   final Size size;
   final DeviceScanner deviceScannerProvider;
+  bool switchedStream = false;
+  int currentLeadIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -42,9 +44,11 @@ class ShowEKGLeadData extends StatelessWidget {
               fit: FlexFit.loose,
               child: Consumer<DeviceScanner>(
                 builder: (context, device, child) {
-                  panTompkinsProvider.addDataToBuffer(device.leadDataList);
+                  panTompkinsProvider.addDataToBuffer(
+                      device.leadDataList, currentLeadIndex);
                   return BuildEKGPlot(
                     dataValue: device.leadDataList,
+                    currentLeadIndex: currentLeadIndex,
                   );
                 },
               ),
@@ -68,6 +72,7 @@ class ShowEKGLeadData extends StatelessWidget {
 
   callback(int newIndex) {
     print("Switching stream to new index: $newIndex");
+    currentLeadIndex = newIndex;
 
     deviceScannerProvider.switchToStreamIndex(newIndex);
   }

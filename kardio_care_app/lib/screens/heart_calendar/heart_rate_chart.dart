@@ -102,12 +102,12 @@ class _HeartRateChartState extends State<HeartRateChart> {
 
           // Whenever the difference between DateTime entries is greater than 30 sec we know it will be from a different recording
           if (duration.inSeconds > 30) {
-            // Choose the median as the x value and the average of HRV values for the y value when plotting
+            // Choose the median as the x value and the average of HR values for the y value when plotting
             dateTimeList.add(widget.heartRateData.entries
                 .elementAt(prevIndex + (index ~/ 2))
                 .key);
             double hrAverage = sumHR / index;
-            hrList.add(hrAverage);
+            hrList.add(hrAverage.floorToDouble());
             if (hrAverage > maxYRange) {
               maxYRange = hrAverage;
             }
@@ -119,6 +119,7 @@ class _HeartRateChartState extends State<HeartRateChart> {
             index = 0;
           }
         }
+
         for (int i = 0; i < dateTimeList.length; i++) {
           chartData.add(PlottingData(dateTimeList[i], hrList[i]));
         }
@@ -128,6 +129,20 @@ class _HeartRateChartState extends State<HeartRateChart> {
     }
 
     return SfCartesianChart(
+      tooltipBehavior: TooltipBehavior(
+        // borderColor: KardioCareAppTheme.detailRed,
+        // borderWidth: 2,
+        textStyle: TextStyle(
+          fontSize: 12,
+        ),
+        canShowMarker: false,
+        decimalPlaces: 1,
+        duration: 3500,
+        enable: true,
+        color: KardioCareAppTheme.detailGray,
+        header: "",
+        format: "point.x\npoint.y bpm",
+      ),
       primaryXAxis: DateTimeAxis(
         // minimum: dayStart,
         // maximum: dayEnd,
@@ -136,9 +151,11 @@ class _HeartRateChartState extends State<HeartRateChart> {
         dateFormat: DateFormat.jm(),
       ),
       primaryYAxis: NumericAxis(
-        minimum: widget.heartRateData.isNotEmpty ? (minYRange - 5.0) : 0,
-        maximum:
-            widget.heartRateData.isNotEmpty ? roundNumb(maxYRange + 5.0) : 0,
+        minimum:
+            widget.heartRateData.isNotEmpty ? (minYRange.floor() - 5.0) : 0,
+        maximum: widget.heartRateData.isNotEmpty
+            ? roundNumb(maxYRange.ceil() + 5.0)
+            : 0,
         interval: widget.heartRateData.isNotEmpty
             ? calculateIntervalStepSize((maxYRange - minYRange + 10), 5)
             : 1,

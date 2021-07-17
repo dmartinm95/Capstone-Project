@@ -15,7 +15,7 @@ class RecordingTimeline extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 90),
         child: Container(
-          height: MediaQuery.of(context).size.height * 0.12,
+          // height: MediaQuery.of(context).size.height * 0.15,
           color: Colors.transparent,
           child: Container(
               decoration: BoxDecoration(
@@ -26,7 +26,7 @@ class RecordingTimeline extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
-                      "No recordings, start one now",
+                      "No recordings today.\nStart one now",
                       style: TextStyle(
                           color: KardioCareAppTheme.detailGray, fontSize: 19),
                       textAlign: TextAlign.center,
@@ -44,11 +44,15 @@ class RecordingTimeline extends StatelessWidget {
     }
 
     List<double> averageHRVs = [];
+    List<double> averageHRs = [];
 
     for (var item in todaysData) {
       averageHRVs.add(
           item.heartRateVarData.values.toList().reduce((a, b) => a + b) /
               item.heartRateVarData.values.length);
+      averageHRs.add(
+          item.heartRateData.values.toList().reduce((a, b) => a + b) /
+              item.heartRateData.values.length);
     }
 
     return Padding(
@@ -67,6 +71,7 @@ class RecordingTimeline extends StatelessWidget {
             lengthOfRecording:
                 todaysData[todaysData.length - index - 1].recordingLengthMin,
             avgHRV: averageHRVs[todaysData.length - index - 1].toInt(),
+            // avgHR: averageHRs[todaysData.length - index - 1].toInt(),
             bloodOxData: todaysData[todaysData.length - index - 1].bloodOxData,
             heartRateData:
                 todaysData[todaysData.length - index - 1].heartRateData,

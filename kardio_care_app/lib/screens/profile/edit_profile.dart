@@ -326,7 +326,7 @@ class _EditProfileState extends State<EditProfile> {
                     name: "height",
                     scrollPadding: const EdgeInsets.fromLTRB(19, 0, 19, 400),
                     // style: Theme.of(context).textTheme.body1,
-                    decoration: getInputDecoration("Height", "m"),
+                    decoration: getInputDecoration("Height", "cm"),
                     textCapitalization: TextCapitalization.words,
                     style: TextStyle(
                       letterSpacing: 1.5,

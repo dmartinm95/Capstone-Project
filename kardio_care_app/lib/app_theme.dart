@@ -27,9 +27,12 @@ class KardioCareAppTheme {
 
   static const TextStyle screenTitleText = TextStyle(
     color: detailGray,
-    fontWeight: FontWeight.bold,
-    fontFamily: 'Encode Sans',
-    fontSize: 20,
+    fontWeight: FontWeight.w700,
+
+    // fontFamily: 'Encode Sans',
+    letterSpacing: 1.5,
+    wordSpacing: 2,
+    fontSize: 22,
   );
 
   static const TextStyle subTitle = TextStyle(
