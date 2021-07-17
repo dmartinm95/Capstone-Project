@@ -461,13 +461,10 @@ class PanTomkpins with ChangeNotifier {
 
     try {
       // In milliseconds (ms)
-      if (timeDiffBetweenPeaks.length > 1) {
+      if (timeDiffBetweenPeaks.isNotEmpty) {
         currentHeartRateVar = sqrt(mean(heartRateVarInnerSum)) * 1000;
         print("HRV: $currentHeartRateVar (ms).");
-      }
-
-      // In beats per minute (bpm)
-      if (timeDiffBetweenPeaks.isNotEmpty) {
+        // In beats per minute (bpm)
         currentHeartRate = 60 ~/ mean(timeDiffBetweenPeaks);
         print("HR: $currentHeartRate (bpm). ");
       }

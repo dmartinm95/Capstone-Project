@@ -26,15 +26,14 @@ class _ViewRecordingState extends State<ViewRecording> {
         selectedRecordingData['heartRateVarData'];
     Map<DateTime, double> bloodOxData = selectedRecordingData['bloodOxData'];
     DateTime timeTaken = selectedRecordingData['dateTimeOfRecording'];
-    String screenTitle = DateFormat.yMd().format(timeTaken) +
-        ' at ' +
-        DateFormat.jm().format(timeTaken);
+    String screenTitle =
+        "Started on ${DateFormat.yMd().format(timeTaken)} at ${DateFormat.jm().format(timeTaken)}";
 
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          screenTitle,
+          "Recording",
           style: KardioCareAppTheme.screenTitleText,
         ),
         centerTitle: true,
@@ -59,8 +58,23 @@ class _ViewRecordingState extends State<ViewRecording> {
       ),
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+              child: Text(
+                screenTitle,
+                style: KardioCareAppTheme.subTitle,
+              ),
+            ),
+            const Divider(
+              color: KardioCareAppTheme.dividerPurple,
+              height: 20,
+              thickness: 1,
+              indent: 19,
+              endIndent: 19,
+            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(19, 10, 19, 0),
               child: RecordingCharts(

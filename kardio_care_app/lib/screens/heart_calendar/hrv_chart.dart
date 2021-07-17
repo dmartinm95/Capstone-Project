@@ -125,6 +125,20 @@ class _HRVChartState extends State<HRVChart> {
     }
 
     return SfCartesianChart(
+      tooltipBehavior: TooltipBehavior(
+        // borderColor: KardioCareAppTheme.detailRed,
+        // borderWidth: 2,
+        textStyle: TextStyle(
+          fontSize: 12,
+        ),
+        canShowMarker: false,
+        decimalPlaces: 1,
+        duration: 3500,
+        enable: true,
+        color: KardioCareAppTheme.detailGray,
+        header: "",
+        format: "point.x\npoint.y ms",
+      ),
       primaryXAxis: DateTimeAxis(
         // minimum: dayStart,
         // visibleMinimum: dayStart,
@@ -135,9 +149,11 @@ class _HRVChartState extends State<HRVChart> {
         dateFormat: DateFormat.jm(),
       ),
       primaryYAxis: NumericAxis(
-        minimum: widget.heartRateVarData.isNotEmpty ? (minYRange - 5.0) : 0,
-        maximum:
-            widget.heartRateVarData.isNotEmpty ? roundNumb(maxYRange + 5.0) : 1,
+        minimum:
+            widget.heartRateVarData.isNotEmpty ? (minYRange.floor() - 5.0) : 0,
+        maximum: widget.heartRateVarData.isNotEmpty
+            ? roundNumb(maxYRange.ceil() + 5.0)
+            : 1,
         interval: widget.heartRateVarData.isNotEmpty
             ? calculateIntervalStepSize((maxYRange - minYRange + 10), 5)
             : 1,
@@ -155,7 +171,7 @@ class _HRVChartState extends State<HRVChart> {
             dataSource: chartData,
             dashArray: <double>[5, 5],
             xValueMapper: (PlottingData data, _) => data.sampleTime,
-            yValueMapper: (PlottingData data, _) => data.hrv)
+            yValueMapper: (PlottingData data, _) => data.hrv),
       ],
     );
   }
