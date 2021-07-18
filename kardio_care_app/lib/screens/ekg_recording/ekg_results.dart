@@ -5,13 +5,9 @@ import 'package:kardio_care_app/screens/ekg_recording/recording_charts.dart';
 import 'package:kardio_care_app/util/device_scanner.dart';
 import 'package:kardio_care_app/widgets/recording_stats.dart';
 import 'package:kardio_care_app/util/data_storage.dart';
-import 'package:hive/hive.dart';
 import 'dart:math';
 import 'package:provider/provider.dart';
-import 'package:kardio_care_app/util/ekg_classifier.dart';
 import 'dart:ui';
-import 'dart:isolate';
-import 'package:kardio_care_app/util/ekg_isolate.dart';
 
 class EKGResults extends StatefulWidget {
   EKGResults({Key key}) : super(key: key);
@@ -21,102 +17,13 @@ class EKGResults extends StatefulWidget {
 }
 
 class _EKGResultsState extends State<EKGResults> {
-  bool showLoading = false;
+  var unsavedRecordingData;
 
   @override
   Widget build(BuildContext context) {
     final deviceScannerProvider =
         Provider.of<DeviceScanner>(context, listen: false);
 
-    if (showLoading) {
-      return Stack(children: <Widget>[
-        ResultsWidgets(
-          deviceScannerProvider: deviceScannerProvider,
-          loadingCallback: loadingCallback,
-          popScreenCallback: popScreenCallback,
-        ),
-        AbsorbPointer(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-            child: Center(
-              child: SizedBox(
-                width: 200,
-                height: 200,
-                child: CircularProgressIndicator(
-                  strokeWidth: 10,
-                  backgroundColor: Colors.transparent,
-                  color: KardioCareAppTheme.detailGreen,
-                ),
-              ),
-            ),
-          ),
-        )
-      ]);
-    } else {
-      return ResultsWidgets(
-        deviceScannerProvider: deviceScannerProvider,
-        loadingCallback: loadingCallback,
-        popScreenCallback: popScreenCallback,
-      );
-    }
-  }
-
-  void loadingCallback(bool loading) {
-    setState(() {
-      showLoading = loading;
-    });
-  }
-
-  void popScreenCallback() {
-    Navigator.of(context).pop();
-  }
-}
-
-class ResultsWidgets extends StatefulWidget {
-  ResultsWidgets({
-    Key key,
-    this.deviceScannerProvider,
-    this.loadingCallback,
-    this.popScreenCallback,
-  }) : super(key: key);
-
-  final DeviceScanner deviceScannerProvider;
-  final Function(bool) loadingCallback;
-  final Function() popScreenCallback;
-
-  @override
-  _ResultsWidgetsState createState() => _ResultsWidgetsState();
-}
-
-class _ResultsWidgetsState extends State<ResultsWidgets>
-    with WidgetsBindingObserver {
-  var unsavedRecordingData;
-  final box = Hive.box<RecordingData>('recordingDataBox');
-
-  EKGClassifier ekgClassifier;
-
-  EKGIsolate ekgIsolate;
-
-  @override
-  void initState() {
-    super.initState();
-
-    initStateAsync();
-  }
-
-  void initStateAsync() async {
-    WidgetsBinding.instance.addObserver(this);
-
-    // Spawn a new isolate
-    ekgIsolate = EKGIsolate();
-    await ekgIsolate.start();
-
-    // Create an instance of classifier to load model
-    ekgClassifier = EKGClassifier();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     unsavedRecordingData = ModalRoute.of(context).settings.arguments;
     RecordingData dataResults = RecordingData();
     dataResults.bloodOxData = unsavedRecordingData['bloodOxData'];
@@ -143,14 +50,14 @@ class _ResultsWidgetsState extends State<ResultsWidgets>
             actions: [
               CircleAvatar(
                 backgroundColor: KardioCareAppTheme.actionBlue,
-                radius: 15,
+                radius: 16,
                 child: IconButton(
                   padding: EdgeInsets.zero,
                   icon: Icon(Icons.close),
                   color: KardioCareAppTheme.background,
                   onPressed: () {
-                    widget.deviceScannerProvider.doneRecording = false;
-                    widget.deviceScannerProvider.switchToActiveLead();
+                    deviceScannerProvider.doneRecording = false;
+                    deviceScannerProvider.switchToActiveLead();
                     print("Pressed X");
                     Navigator.maybePop(context);
                   },
@@ -202,6 +109,13 @@ class _ResultsWidgetsState extends State<ResultsWidgets>
             height: 70.0,
             child: Column(
               children: [
+                const Divider(
+                  color: KardioCareAppTheme.dividerPurple,
+                  height: 1,
+                  thickness: 1,
+                  indent: 0,
+                  endIndent: 0,
+                ),
                 Expanded(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -227,26 +141,10 @@ class _ResultsWidgetsState extends State<ResultsWidgets>
                               ),
                             ),
                             // ),
-                            onPressed: () async {
-                              widget.loadingCallback(true);
-                              dataResults.rhythms = [];
-                              IsolateData isolateData = IsolateData(
-                                ekgClassifier.interpreter.address,
-                                dataResults.ekgData,
-                              );
-
-                              dataResults.rhythms =
-                                  await classifyEKG(isolateData);
-
-                              await box.put(
-                                  dataResults.startTime.toIso8601String(),
-                                  dataResults);
-
-                              widget.deviceScannerProvider.doneRecording =
-                                  false;
-                              widget.deviceScannerProvider.switchToActiveLead();
-
-                              widget.popScreenCallback();
+                            onPressed: () {
+                              Navigator.pushReplacementNamed(
+                                  context, '/detect_rhythms',
+                                  arguments: dataResults);
                             },
                           ),
                         ),
@@ -260,19 +158,5 @@ class _ResultsWidgetsState extends State<ResultsWidgets>
         ),
       ),
     );
-  }
-
-  /// Runs inference in another isolate
-  Future<List<String>> classifyEKG(IsolateData isolateData) async {
-    ReceivePort responsePort = ReceivePort();
-    ekgIsolate.sendPort.send(isolateData..responsePort = responsePort.sendPort);
-    List<String> results = await responsePort.first;
-    return results;
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
   }
 }
