@@ -174,7 +174,7 @@ class _GeneratePDFState extends State<GeneratePDF> {
       await _readImageData(chartKeys[2])
     ];
 
-    const PdfColor green = PdfColor.fromInt(0xff9ce5d0);
+    // const PdfColor green = PdfColor.fromInt(0xff9ce5d0);
 
     // final appLogo = pw.MemoryImage(
     //   File('../../assets/disconnected.png').readAsBytesSync(),

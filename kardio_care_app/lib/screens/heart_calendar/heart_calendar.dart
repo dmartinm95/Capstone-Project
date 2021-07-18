@@ -168,12 +168,10 @@ class _HeartCalendarState extends State<HeartCalendar> {
 
             Map<DateTime, double> combinedHRData = {};
             Map<DateTime, double> combinedHRVData = {};
-            Map<DateTime, double> combinedBloodOxData = {};
 
             for (RecordingData item in todaysData) {
               combinedHRData.addAll(item.heartRateData);
               combinedHRVData.addAll(item.heartRateVarData);
-              combinedBloodOxData.addAll(item.bloodOxData);
             }
 
             return Column(
@@ -202,7 +200,6 @@ class _HeartCalendarState extends State<HeartCalendar> {
                 ),
                 DailyStatsFromData(
                   combinedHRData: combinedHRData,
-                  combinedBloodOxData: combinedBloodOxData,
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(19, 15, 19, 0),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:kardio_care_app/app_theme.dart';
 import 'package:kardio_care_app/screens/home/disconnect_btn.dart';
-import 'package:kardio_care_app/screens/home/heart_rate_and_oxygen_saturation.dart';
+import 'package:kardio_care_app/screens/home/heart_rate_and_recordings_today.dart';
 import 'package:kardio_care_app/screens/home/search_connect_btn.dart';
 import 'package:kardio_care_app/screens/home/show_ekg_lead_data.dart';
 import 'package:kardio_care_app/util/pan_tompkins.dart';
@@ -101,7 +101,7 @@ class _HomeState extends State<Home> {
                 );
               },
             ),
-            HeartRateAndOxygenSaturation(),
+            HeartRateAndRecordingsToday(),
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.10,
             )

@@ -26,7 +26,6 @@ class _EKGResultsState extends State<EKGResults> {
 
     unsavedRecordingData = ModalRoute.of(context).settings.arguments;
     RecordingData dataResults = RecordingData();
-    dataResults.bloodOxData = unsavedRecordingData['bloodOxData'];
     dataResults.heartRateData = unsavedRecordingData['heartRateData'];
     dataResults.heartRateVarData = unsavedRecordingData['heartRateVarData'];
     dataResults.ekgData = unsavedRecordingData['ekgData'];
@@ -92,11 +91,6 @@ class _EKGResultsState extends State<EKGResults> {
                             .toList()
                             .reduce((a, b) => a + b) ~/
                         dataResults.heartRateData.values.length),
-                    avgO2: (dataResults.bloodOxData.values
-                                .toList()
-                                .reduce((a, b) => a + b) ~/
-                            dataResults.bloodOxData.values.length)
-                        .toInt(),
                     minHR: dataResults.heartRateData.values.reduce(min).toInt(),
                     maxHR: dataResults.heartRateData.values.reduce(max).toInt(),
                   ),

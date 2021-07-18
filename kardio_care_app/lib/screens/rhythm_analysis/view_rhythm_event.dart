@@ -5,10 +5,6 @@ import 'package:kardio_care_app/util/data_storage.dart';
 import 'package:kardio_care_app/widgets/recording_stats.dart';
 import 'package:intl/intl.dart';
 import 'dart:math';
-import 'dart:typed_data';
-import 'package:syncfusion_flutter_charts/charts.dart';
-import 'dart:ui' as dart_ui;
-import 'package:flutter/services.dart';
 
 class ViewRhythmEvent extends StatefulWidget {
   const ViewRhythmEvent({Key key}) : super(key: key);
@@ -190,7 +186,6 @@ class _ViewRhythmEventState extends State<ViewRhythmEvent> {
               child: RecordingStats(
                 avgHRV: avgHRV,
                 avgHR: avgHR,
-                avgO2: 0,
                 minHR: minHR,
                 maxHR: maxHR,
               ),

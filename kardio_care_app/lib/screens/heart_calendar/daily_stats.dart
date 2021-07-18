@@ -5,23 +5,17 @@ class DailyStats extends StatelessWidget {
   const DailyStats({
     Key key,
     this.avgHR,
-    this.avgBloodOx,
     this.minHR,
     this.minHRTime,
     this.maxHR,
     this.maxHRTime,
-    this.minBloodOx,
-    this.minBloodOxTime,
   }) : super(key: key);
 
   final int avgHR;
-  final int avgBloodOx;
   final int minHR;
   final String minHRTime;
   final int maxHR;
   final String maxHRTime;
-  final int minBloodOx;
-  final String minBloodOxTime;
 
   @override
   Widget build(BuildContext context) {

@@ -9,18 +9,18 @@ import 'package:kardio_care_app/widgets/recordings_today_tile.dart';
 import 'package:kardio_care_app/widgets/heart_rate_tile.dart';
 import 'package:provider/provider.dart';
 
-class HeartRateAndOxygenSaturation extends StatefulWidget {
-  const HeartRateAndOxygenSaturation({
+class HeartRateAndRecordingsToday extends StatefulWidget {
+  const HeartRateAndRecordingsToday({
     Key key,
   }) : super(key: key);
 
   @override
-  _HeartRateAndOxygenSaturationState createState() =>
-      _HeartRateAndOxygenSaturationState();
+  _HeartRateAndRecordingsTodayState createState() =>
+      _HeartRateAndRecordingsTodayState();
 }
 
-class _HeartRateAndOxygenSaturationState
-    extends State<HeartRateAndOxygenSaturation> {
+class _HeartRateAndRecordingsTodayState
+    extends State<HeartRateAndRecordingsToday> {
   Timer _everySecond;
   Box<RecordingData> _box;
 

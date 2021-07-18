@@ -6,14 +6,12 @@ class RecordingStats extends StatelessWidget {
     Key key,
     this.avgHRV,
     this.avgHR,
-    this.avgO2,
     this.minHR,
     this.maxHR,
   }) : super(key: key);
 
   final int avgHRV;
   final int avgHR;
-  final int avgO2;
   final int minHR;
   final int maxHR;
 
