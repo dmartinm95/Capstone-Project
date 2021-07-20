@@ -2,6 +2,7 @@
 
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -17,6 +18,7 @@ import 'package:kardio_care_app/screens/rhythm_analysis/rhythm_event_chart.dart'
 import 'package:kardio_care_app/util/data_storage.dart';
 import 'package:kardio_care_app/widgets/recording_stats.dart';
 import 'package:intl/intl.dart';
+import 'package:scidart/numdart.dart';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -71,6 +73,7 @@ class _GeneratePDFState extends State<GeneratePDF> {
   @override
   Widget build(BuildContext context) {
     // final Uint8List imageData = ModalRoute.of(context).settings.arguments;
+    Size size = MediaQuery.of(context).size;
 
     dataForPDF = ModalRoute.of(context).settings.arguments;
     recordingData = dataForPDF['recordingData'];
@@ -81,6 +84,29 @@ class _GeneratePDFState extends State<GeneratePDF> {
     maxHR = dataForPDF['maxHR'];
 
     return Scaffold(
+      // bottomNavigationBar: BottomAppBar(
+      //   color: KardioCareAppTheme.actionBlue,
+      //   child: Row(
+      //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //     children: [
+      //       TextButton(
+      //         child: Text("Share"),
+      //         style: ButtonStyle(),
+      //         onPressed: () {
+      //           print("Pressed share");
+      //         },
+      //       ),
+      //       TextButton(
+      //         child: Text("Save"),
+      //         onPressed: () {
+      //           print("Pressed save");
+      //           _saveAsFile(context, PdfPageFormat.a4 );
+      //         },
+      //       ),
+      //     ],
+      //   ),
+      // ),
+
       appBar: AppBar(
         title: Text(
           "EKG Report",
@@ -107,69 +133,81 @@ class _GeneratePDFState extends State<GeneratePDF> {
           ),
         ],
       ),
-      body: Stack(children: [
-        Column(
-          children: [
-            SizedBox(
-              width: 800,
-              height: 100,
-              child: _buildCartesianChart(
-                  chartKeys[0],
-                  List.generate(
-                      numSamplesToPlot,
-                      (index) => recordingData.ekgData[currBatch]
-                          [index + downSampleAmount - 1][0]),
-                  currBatch),
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              SizedBox(
+                width: 1000,
+                height: 110,
+                child: _buildCartesianChart(
+                    chartKeys[0],
+                    List.generate(
+                        numSamplesToPlot,
+                        (index) => recordingData.ekgData[currBatch]
+                            [index + downSampleAmount - 1][0]),
+                    currBatch),
+              ),
+              SizedBox(
+                width: 1000,
+                height: 110,
+                child: _buildCartesianChart(
+                    chartKeys[1],
+                    List.generate(
+                        numSamplesToPlot,
+                        (index) => recordingData.ekgData[currBatch]
+                            [index + downSampleAmount - 1][1]),
+                    currBatch),
+              ),
+              SizedBox(
+                width: 1000,
+                height: 110,
+                child: _buildCartesianChart(
+                    chartKeys[2],
+                    List.generate(
+                        numSamplesToPlot,
+                        (index) => recordingData.ekgData[currBatch]
+                            [index + downSampleAmount - 1][2]),
+                    currBatch),
+              ),
+            ],
+          ),
+          PdfPreview(
+            padding: EdgeInsets.only(
+              top: 25,
             ),
-            SizedBox(
-              width: 800,
-              height: 100,
-              child: _buildCartesianChart(
-                  chartKeys[1],
-                  List.generate(
-                      numSamplesToPlot,
-                      (index) => recordingData.ekgData[currBatch]
-                          [index + downSampleAmount - 1][1]),
-                  currBatch),
+            scrollViewDecoration: BoxDecoration(
+              color: KardioCareAppTheme.background,
             ),
-            SizedBox(
-              width: 800,
-              height: 100,
-              child: _buildCartesianChart(
-                  chartKeys[2],
-                  List.generate(
-                      numSamplesToPlot,
-                      (index) => recordingData.ekgData[currBatch]
-                          [index + downSampleAmount - 1][2]),
-                  currBatch),
-            ),
-          ],
-        ),
-        PdfPreview(
-          actions: [
-            PdfPreviewAction(
-              icon: const Icon(Icons.save),
-              onPressed: _saveAsFile,
-            )
-          ],
-          pdfFileName: DateFormat.MMMMEEEEd().format(recordingData.startTime) +
-              '-EKG-Recording-' +
-              (userInfoBox.keys.length != 0
-                  ? "${userInfoBox.getAt(0).firstName} ${userInfoBox.getAt(0).lastName}"
-                  : ""),
-          canChangeOrientation: true,
-          canChangePageFormat: false,
-          allowPrinting: false,
-          canDebug: false,
-          initialPageFormat: PdfPageFormat.a4,
-          build: (format) => _generatePdf(format),
-        ),
-      ]),
+            actions: [
+              PdfPreviewAction(
+                icon: const Icon(Icons.save),
+                onPressed: _saveAsFile,
+              )
+            ],
+            pdfFileName: DateFormat.MMMMEEEEd()
+                    .format(recordingData.startTime) +
+                '-EKG-Recording-' +
+                (userInfoBox.keys.length != 0
+                    ? "${userInfoBox.getAt(0).firstName} ${userInfoBox.getAt(0).lastName}"
+                    : ""),
+            allowSharing: true,
+            canChangePageFormat: false,
+            allowPrinting: false,
+            canDebug: false,
+            initialPageFormat: PdfPageFormat.a4,
+            build: (format) => _generatePdf(format),
+          ),
+        ],
+      ),
     );
   }
 
   Future<Uint8List> _generatePdf(PdfPageFormat format) async {
-    final pdf = pw.Document(version: PdfVersion.pdf_1_5, compress: true);
+    final pdf = pw.Document(
+      version: PdfVersion.pdf_1_5,
+      compress: true,
+    );
     // Uint8List imageData = await chartImageData;
     // final ByteData bytes = await rootBundle.load(imageFile);
     // final Uint8List byteList = bytes.buffer.asUint8List();
@@ -213,7 +251,7 @@ class _GeneratePDFState extends State<GeneratePDF> {
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
                       pw.Text(
-                        "Patient:",
+                        "Patient Information:",
                         style: pw.TextStyle(
                           color: PdfColors.black,
                           fontSize: 15,
@@ -248,6 +286,7 @@ class _GeneratePDFState extends State<GeneratePDF> {
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
                       pw.Row(children: [
+                        pw.Text("Name: "),
                         pw.Text(
                           userInfoBox.keys.length != 0
                               ? "${userInfoBox.getAt(0).firstName} ${userInfoBox.getAt(0).lastName}"
@@ -352,7 +391,7 @@ class _GeneratePDFState extends State<GeneratePDF> {
                           child: pw.SizedBox(),
                         ),
                         pw.Text(
-                          "$avgHRV milliseconds",
+                          "$avgHRV ms",
                           style: pw.TextStyle(
                             color: PdfColors.black,
                             fontSize: 12,
@@ -605,34 +644,82 @@ class _GeneratePDFState extends State<GeneratePDF> {
   }
 
   SfCartesianChart _buildCartesianChart(chartKey, plottingData, currBatch) {
+    double minYRange = 10000;
+    double maxYRange = -1;
+    for (int i = 0; i < plottingData.length; i++) {
+      double value = plottingData[i];
+      if (value > maxYRange) {
+        maxYRange = value;
+      }
+      if (value < minYRange) {
+        minYRange = value;
+      }
+    }
+    print("min: $minYRange, max: $maxYRange");
+
     return SfCartesianChart(
-      key: chartKey,
-      primaryYAxis: NumericAxis(
-        interval: 2,
-        minimum: 0,
-        maximum: 4096,
-        isVisible: false,
-        anchorRangeToVisiblePoints: true,
-        axisLine: AxisLine(width: 0),
-        majorTickLines: MajorTickLines(color: Colors.black),
-      ),
-      primaryXAxis: CategoryAxis(
-          // visibleMaximum: _visibleMax,
-          // visibleMinimum: _visibleMin,
-          // labelPlacement: LabelPlacement.onTicks,
-          interval: numSamplesToPlot / 4,
-          axisLine: AxisLine(width: 0, color: Colors.black),
-          edgeLabelPlacement: EdgeLabelPlacement.shift,
-          majorGridLines: MajorGridLines(width: 1)),
+      borderWidth: 0,
       plotAreaBorderWidth: 0,
+      key: chartKey,
+      // title: ChartTitle(
+      //   text: "Lead #",
+      //   alignment: ChartAlignment.center,
+      //   textStyle: TextStyle(
+      //     fontSize: 8,
+      //   ),
+      // ),
+      primaryYAxis: NumericAxis(
+        tickPosition: TickPosition.outside,
+        labelStyle: TextStyle(
+          fontSize: 4,
+          color: Colors.purple,
+        ),
+        minimum: minYRange.floor().toDouble(),
+        maximum: maxYRange.floor().toDouble(),
+        // interval: 100,
+        majorGridLines: MajorGridLines(
+          width: 0.2,
+          color: Colors.black,
+        ),
+        minorGridLines: MinorGridLines(
+          width: 0.1,
+          color: Colors.black,
+        ),
+        minorTicksPerInterval: 4,
+        // minorGridLines: MinorGridLines(
+        //   width: 0.1,
+        //   color: Colors.black,
+        // ),
+        // minorTicksPerInterval: 4,
+      ),
+      primaryXAxis: NumericAxis(
+        tickPosition: TickPosition.outside,
+        labelStyle: TextStyle(
+          fontSize: 4,
+          color: Colors.purple,
+        ),
+        minimum: 0.0,
+        maximum: 5.0,
+        interval: 0.2,
+        majorGridLines: MajorGridLines(
+          width: 0.2,
+          color: Colors.black,
+        ),
+        minorGridLines: MinorGridLines(
+          width: 0.1,
+          color: Colors.black,
+        ),
+        minorTicksPerInterval: 4,
+      ),
       series: getSeries(plottingData, currBatch),
     );
   }
 
   // Returns the chart series
-  List<ChartSeries<double, String>> getSeries(plottingData, currBatch) {
-    return <ChartSeries<double, String>>[
-      FastLineSeries<double, String>(
+  List<ChartSeries<double, double>> getSeries(plottingData, currBatch) {
+    return <ChartSeries<double, double>>[
+      FastLineSeries<double, double>(
+        width: 0.5,
         dataSource: plottingData,
         animationDuration: 0,
         // borderColor: KardioCareAppTheme.detailRed,
@@ -643,10 +730,8 @@ class _GeneratePDFState extends State<GeneratePDF> {
         //   labelAlignment: ChartDataLabelAlignment.outer,
         // ),
         xValueMapper: (double sales, int index) {
-          return ((index + numSamplesToPlot * currBatch) /
-                      (400 / downSampleAmount))
-                  .toString() +
-              ' s';
+          return (index + numSamplesToPlot * currBatch) /
+              (400 / downSampleAmount);
         },
         yValueMapper: (double sales, _) => sales,
       ),

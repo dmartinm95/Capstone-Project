@@ -49,10 +49,12 @@ class MyApp extends StatelessWidget {
           '/view_rhythm_event': (context) => ViewRhythmEvent(),
           '/view_recording': (context) => ViewRecording(),
           '/edit_profile': (context) => EditProfile(),
-          '/preview_pdf': (context) => GeneratePDF(), 
+          '/preview_pdf': (context) => GeneratePDF(),
         },
         theme: ThemeData(
           scaffoldBackgroundColor: KardioCareAppTheme.background,
+          backgroundColor: KardioCareAppTheme.background,
+          primaryColor: KardioCareAppTheme.actionBlue,
           primarySwatch: Colors.blue,
           // scaffoldBackgroundColor: kBackgroundColor,
           //   primaryColor: kPrimaryColor,
