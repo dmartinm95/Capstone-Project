@@ -11,14 +11,8 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter/material.dart';
 import 'package:kardio_care_app/app_theme.dart';
-import 'package:kardio_care_app/screens/rhythm_analysis/rhythm_event_chart.dart';
-import 'package:kardio_care_app/util/data_storage.dart';
-import 'package:kardio_care_app/widgets/recording_stats.dart';
 import 'package:intl/intl.dart';
-import 'dart:math';
-import 'dart:typed_data';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'dart:ui' as dart_ui;
 import 'package:flutter/services.dart';
@@ -180,7 +174,7 @@ class _GeneratePDFState extends State<GeneratePDF> {
       await _readImageData(chartKeys[2])
     ];
 
-    const PdfColor green = PdfColor.fromInt(0xff9ce5d0);
+    // const PdfColor green = PdfColor.fromInt(0xff9ce5d0);
 
     // final appLogo = pw.MemoryImage(
     //   File('../../assets/disconnected.png').readAsBytesSync(),
@@ -437,7 +431,7 @@ class _GeneratePDFState extends State<GeneratePDF> {
                 recordingData.rhythms[currBatch] != 'No Abnormal Rhythm'
                     ? "Detected Heart Rhythm: " +
                         recordingData.rhythms[currBatch]
-                    : recordingData.rhythms[currBatch],
+                    : recordingData.rhythms[currBatch] + ' Detected',
                 style: pw.TextStyle(
                   color: PdfColors.black,
                   fontSize: 15,

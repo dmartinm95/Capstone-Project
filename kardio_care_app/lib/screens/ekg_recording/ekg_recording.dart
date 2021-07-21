@@ -20,7 +20,6 @@ class EKGRecording extends StatefulWidget {
 
 class _EKGRecordingState extends State<EKGRecording> {
   DateTime startTime;
-  Map<DateTime, double> bloodOxData;
   Map<DateTime, double> heartRateData;
   Map<DateTime, double> heartRateVarData;
   List<List<List<double>>> ekgData = <List<List<double>>>[];
@@ -33,7 +32,6 @@ class _EKGRecordingState extends State<EKGRecording> {
   bool recording = false;
 
   Timer _countdownTimer;
-  Timer fakeDataTimer;
 
   var f = NumberFormat("00");
 
@@ -60,25 +58,15 @@ class _EKGRecordingState extends State<EKGRecording> {
     return (min + rn.nextInt(max - min));
   }
 
-  void generateFakeData() {
-    setState(() {
-      bloodOxData[DateTime.now()] = random(95, 100).toDouble();
-      // heartRateData[DateTime.now()] = random(50, 100).toDouble();
-      // heartRateVarData[DateTime.now()] = random(40, 90).toDouble();
-    });
-  }
-
   void _stopTimer() {
     if (_countdownTimer != null) {
       _countdownTimer.cancel();
-      fakeDataTimer.cancel();
       _currSeconds = 0;
       _currMinutes = 0;
     }
   }
 
   void _startTimer(DeviceScanner deviceScanner) {
-    bloodOxData = {};
     heartRateData = {};
     heartRateVarData = {};
 
@@ -89,11 +77,6 @@ class _EKGRecordingState extends State<EKGRecording> {
     startTime = DateTime.now();
 
     widget.deviceScannerProvider.connectToAllLeads(_totalMinutes);
-
-    generateFakeData();
-    fakeDataTimer = Timer.periodic(Duration(seconds: 5), (timer) {
-      generateFakeData();
-    });
 
     _currMinutes = _totalMinutes;
 
@@ -107,7 +90,7 @@ class _EKGRecordingState extends State<EKGRecording> {
             _currMinutes--;
           } else {
             _countdownTimer.cancel();
-            fakeDataTimer.cancel();
+
             print("Timer Complete");
 
             print("EKG DATA COLLECTED");
@@ -135,7 +118,6 @@ class _EKGRecordingState extends State<EKGRecording> {
 
             print("Going to ekg_results screen");
             Navigator.pushReplacementNamed(context, '/ekg_results', arguments: {
-              'bloodOxData': bloodOxData,
               'heartRateData': heartRateData,
               'heartRateVarData': heartRateVarData,
               'ekgData': ekgDataCollected,

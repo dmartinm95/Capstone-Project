@@ -24,7 +24,6 @@ class _ViewRecordingState extends State<ViewRecording> {
         selectedRecordingData['heartRateData'];
     Map<DateTime, double> heartRateVarData =
         selectedRecordingData['heartRateVarData'];
-    Map<DateTime, double> bloodOxData = selectedRecordingData['bloodOxData'];
     DateTime timeTaken = selectedRecordingData['dateTimeOfRecording'];
     String screenTitle =
         "Started on ${DateFormat.yMd().format(timeTaken)} at ${DateFormat.jm().format(timeTaken)}";
@@ -91,9 +90,6 @@ class _ViewRecordingState extends State<ViewRecording> {
                         .toInt(),
                 avgHR: (heartRateData.values.toList().reduce((a, b) => a + b) ~/
                     heartRateData.values.length),
-                avgO2: (bloodOxData.values.toList().reduce((a, b) => a + b) ~/
-                        bloodOxData.values.length)
-                    .toInt(),
                 minHR: heartRateData.values.reduce(min).toInt(),
                 maxHR: heartRateData.values.reduce(max).toInt(),
               ),
