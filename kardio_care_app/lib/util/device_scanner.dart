@@ -21,6 +21,9 @@ class DeviceScanner with ChangeNotifier {
   static const int SAMPLES_LENGTH = 10;
   static const int BYTES_TO_RECEIVE = 20;
 
+  // Analog-Digital-Unit to mV
+  static const int aduGainFactor = 200;
+
   ValueNotifier<BluetoothDevice> bleConnectionNotifier =
       ValueNotifier<BluetoothDevice>(null);
 
@@ -284,7 +287,7 @@ class DeviceScanner with ChangeNotifier {
         for (int currByte = 0; currByte < 6; currByte += 2) {
           double value = (data[currByte] + 256 * data[currByte + 1]).toDouble();
           ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][currLead] =
-              value;
+              value / aduGainFactor;
 
           if (currLead == 0) {
             int result = panTompkinsInstance.addRecordedData(value);
@@ -311,7 +314,7 @@ class DeviceScanner with ChangeNotifier {
         for (int currByte = 6; currByte < 12; currByte += 2) {
           double value = (data[currByte] + 256 * data[currByte + 1]).toDouble();
           ekgDataToStore[ekgDataBatchIndex][ekgDataToStoreIndex][currLead] =
-              value;
+              value / aduGainFactor;
 
           if (currLead == 0) {
             int result = panTompkinsInstance.addRecordedData(value);

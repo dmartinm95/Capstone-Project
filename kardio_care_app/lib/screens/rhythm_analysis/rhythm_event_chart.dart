@@ -302,9 +302,9 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
   SfCartesianChart _buildCartesianChart() {
     return SfCartesianChart(
       primaryYAxis: NumericAxis(
-        interval: 2,
-        minimum: 0,
-        maximum: 4096,
+        // interval: 2,
+        minimum: 4,
+        maximum: 7,
         isVisible: false,
         anchorRangeToVisiblePoints: true,
         axisLine: AxisLine(width: 0),

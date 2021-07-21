@@ -138,8 +138,8 @@ class _GeneratePDFState extends State<GeneratePDF> {
           Column(
             children: [
               SizedBox(
-                width: 1000,
-                height: 110,
+                width: 1100,
+                height: 100,
                 child: _buildCartesianChart(
                     chartKeys[0],
                     List.generate(
@@ -150,7 +150,7 @@ class _GeneratePDFState extends State<GeneratePDF> {
               ),
               SizedBox(
                 width: 1000,
-                height: 110,
+                height: 100,
                 child: _buildCartesianChart(
                     chartKeys[1],
                     List.generate(
@@ -161,7 +161,7 @@ class _GeneratePDFState extends State<GeneratePDF> {
               ),
               SizedBox(
                 width: 1000,
-                height: 110,
+                height: 100,
                 child: _buildCartesianChart(
                     chartKeys[2],
                     List.generate(
@@ -485,23 +485,23 @@ class _GeneratePDFState extends State<GeneratePDF> {
               ),
               pw.Divider(thickness: 2),
               pw.Row(children: [
-                pw.ClipOval(
-                  child: pw.Container(
-                    width: 25,
-                    height: 25,
-                    color: PdfColors.black,
-                    child: pw.Center(
-                      child: pw.Text(
-                        "I",
-                        style: pw.TextStyle(
-                          color: PdfColors.white,
-                          fontSize: 12,
-                          fontWeight: pw.FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                // pw.ClipOval(
+                //   child: pw.Container(
+                //     width: 25,
+                //     height: 25,
+                //     color: PdfColors.black,
+                //     child: pw.Center(
+                //       child: pw.Text(
+                //         "I",
+                //         style: pw.TextStyle(
+                //           color: PdfColors.white,
+                //           fontSize: 12,
+                //           fontWeight: pw.FontWeight.bold,
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 pw.Expanded(
                   child: pw.SizedBox(
                     child: pw.Image(
@@ -514,23 +514,23 @@ class _GeneratePDFState extends State<GeneratePDF> {
                 ),
               ]),
               pw.Row(children: [
-                pw.ClipOval(
-                  child: pw.Container(
-                    width: 25,
-                    height: 25,
-                    color: PdfColors.black,
-                    child: pw.Center(
-                      child: pw.Text(
-                        "II",
-                        style: pw.TextStyle(
-                          color: PdfColors.white,
-                          fontSize: 12,
-                          fontWeight: pw.FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                // pw.ClipOval(
+                //   child: pw.Container(
+                //     width: 25,
+                //     height: 25,
+                //     color: PdfColors.black,
+                //     child: pw.Center(
+                //       child: pw.Text(
+                //         "II",
+                //         style: pw.TextStyle(
+                //           color: PdfColors.white,
+                //           fontSize: 12,
+                //           fontWeight: pw.FontWeight.bold,
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 pw.Expanded(
                   child: pw.SizedBox(
                     child: pw.Image(
@@ -543,23 +543,23 @@ class _GeneratePDFState extends State<GeneratePDF> {
                 ),
               ]),
               pw.Row(children: [
-                pw.ClipOval(
-                  child: pw.Container(
-                    width: 25,
-                    height: 25,
-                    color: PdfColors.black,
-                    child: pw.Center(
-                      child: pw.Text(
-                        "III",
-                        style: pw.TextStyle(
-                          color: PdfColors.white,
-                          fontSize: 12,
-                          fontWeight: pw.FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                // pw.ClipOval(
+                //   child: pw.Container(
+                //     width: 25,
+                //     height: 25,
+                //     color: PdfColors.black,
+                //     child: pw.Center(
+                //       child: pw.Text(
+                //         "III",
+                //         style: pw.TextStyle(
+                //           color: PdfColors.white,
+                //           fontSize: 12,
+                //           fontWeight: pw.FontWeight.bold,
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 pw.Expanded(
                   child: pw.SizedBox(
                     child: pw.Image(
@@ -665,18 +665,27 @@ class _GeneratePDFState extends State<GeneratePDF> {
       //   text: "Lead #",
       //   alignment: ChartAlignment.center,
       //   textStyle: TextStyle(
-      //     fontSize: 8,
+      //     fontSize: 6,
       //   ),
       // ),
+
       primaryYAxis: NumericAxis(
+        // title: AxisTitle(
+        //   alignment: ChartAlignment.center,
+        //   text: "Millivolts (mV)",
+        //   textStyle: TextStyle(
+        //     fontSize: 6,
+        //   ),
+        // ),
+
         tickPosition: TickPosition.outside,
         labelStyle: TextStyle(
           fontSize: 4,
-          color: Colors.purple,
+          color: Colors.black,
         ),
-        minimum: minYRange.floor().toDouble(),
-        maximum: maxYRange.floor().toDouble(),
-        // interval: 100,
+        minimum: 4, //minYRange.floor().toDouble(),
+        maximum: 7, //maxYRange.ceil().toDouble(),
+        interval: 1,
         majorGridLines: MajorGridLines(
           width: 0.2,
           color: Colors.black,
@@ -686,6 +695,7 @@ class _GeneratePDFState extends State<GeneratePDF> {
           color: Colors.black,
         ),
         minorTicksPerInterval: 4,
+        placeLabelsNearAxisLine: true,
         // minorGridLines: MinorGridLines(
         //   width: 0.1,
         //   color: Colors.black,
@@ -693,14 +703,23 @@ class _GeneratePDFState extends State<GeneratePDF> {
         // minorTicksPerInterval: 4,
       ),
       primaryXAxis: NumericAxis(
+        // title: AxisTitle(
+        //   alignment: ChartAlignment.center,
+        //   text: "Seconds (s)",
+        //   textStyle: TextStyle(
+        //     fontSize: 6,
+        //   ),
+        // ),
+
         tickPosition: TickPosition.outside,
         labelStyle: TextStyle(
           fontSize: 4,
-          color: Colors.purple,
+          color: Colors.black,
         ),
-        minimum: 0.0,
-        maximum: 5.0,
-        interval: 0.2,
+        minimum: (numSamplesToPlot * currBatch) / (400 / downSampleAmount),
+        maximum: (4096 / downSampleAmount + numSamplesToPlot * currBatch) /
+            (400 / downSampleAmount),
+        interval: 0.8,
         majorGridLines: MajorGridLines(
           width: 0.2,
           color: Colors.black,
