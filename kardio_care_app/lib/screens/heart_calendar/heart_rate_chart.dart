@@ -67,6 +67,18 @@ class _HeartRateChartState extends State<HeartRateChart> {
     List<DateTime> dateTimeList = List.empty(growable: true);
     List<double> hrList = List.empty(growable: true);
 
+    DateTime today = DateTime.now();
+    String todayMonth = today.month.toString();
+    if (today.month < 10) {
+      todayMonth = "0$todayMonth";
+    }
+    String todayString = "${today.year}-$todayMonth-${today.day}";
+    today = DateTime.parse(todayString);
+
+    DateTime startDay = today;
+    DateTime endDay =
+        today.add(Duration(days: 1)).subtract(Duration(milliseconds: 3));
+
     if (widget.heartRateData != null) {
       if (widget.fromResultsScreen) {
         estimateYRangeFromResults();
@@ -144,9 +156,8 @@ class _HeartRateChartState extends State<HeartRateChart> {
         format: "point.x\npoint.y bpm",
       ),
       primaryXAxis: DateTimeAxis(
-        // minimum: dayStart,
-        // maximum: dayEnd,
-        // intervalType: DateTimeIntervalType.hours,
+        minimum: hrList.length == 1 ? startDay : null,
+        maximum: hrList.length == 1 ? endDay : null,
         rangePadding: ChartRangePadding.additional,
         dateFormat: DateFormat.jm(),
       ),

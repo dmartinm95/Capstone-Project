@@ -63,6 +63,19 @@ class _HRVChartState extends State<HRVChart> {
     List<PlottingData> chartData = List.empty(growable: true);
     List<DateTime> dateTimeList = List.empty(growable: true);
     List<double> hrvList = List.empty(growable: true);
+
+    DateTime today = DateTime.now();
+    String todayMonth = today.month.toString();
+    if (today.month < 10) {
+      todayMonth = "0$todayMonth";
+    }
+    String todayString = "${today.year}-$todayMonth-${today.day}";
+    today = DateTime.parse(todayString);
+
+    DateTime startDay = today;
+    DateTime endDay =
+        today.add(Duration(days: 1)).subtract(Duration(milliseconds: 3));
+
     if (widget.heartRateVarData != null) {
       if (widget.fromResultsScreen) {
         estimateYRangeFromResults();
@@ -126,8 +139,6 @@ class _HRVChartState extends State<HRVChart> {
 
     return SfCartesianChart(
       tooltipBehavior: TooltipBehavior(
-        // borderColor: KardioCareAppTheme.detailRed,
-        // borderWidth: 2,
         textStyle: TextStyle(
           fontSize: 12,
         ),
@@ -140,11 +151,8 @@ class _HRVChartState extends State<HRVChart> {
         format: "point.x\npoint.y ms",
       ),
       primaryXAxis: DateTimeAxis(
-        // minimum: dayStart,
-        // visibleMinimum: dayStart,
-        // maximum: dayEnd,
-        // visibleMaximum: dayEnd,
-        // intervalType: DateTimeIntervalType.hours,
+        minimum: hrvList.length == 1 ? startDay : null,
+        maximum: hrvList.length == 1 ? endDay : null,
         rangePadding: ChartRangePadding.additional,
         dateFormat: DateFormat.jm(),
       ),
