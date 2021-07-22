@@ -113,7 +113,7 @@ class _HeartRateChartState extends State<HeartRateChart> {
           }
 
           // Whenever the difference between DateTime entries is greater than 5 sec we know it will be from a different recording
-          if (duration.inSeconds > 5) {
+          if (duration.inSeconds > 10) {
             // Choose the median as the x value and the average of HR values for the y value when plotting
             // dateTimeList.add(widget.heartRateData.entries
             //     .elementAt(prevIndex + (index ~/ 2))

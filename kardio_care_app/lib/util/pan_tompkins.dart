@@ -9,7 +9,7 @@ import 'package:iirjdart/butterworth.dart';
 // For example, to change signal sampling rate from 250 to 125 samples per second, divide all parameters by 2: set signal_frequency value to 125, integration_window to 8 samples, findpeaks_spacing to 25 samples and refractory_period to 60 samples.
 class PanTomkpins with ChangeNotifier {
   static const MAX_SIZE = 350;
-  static const RECORD_MAX_SIZE = 1200;
+  static const RECORD_MAX_SIZE = 1000;
 
   int downsampleFactor = 2;
   int index = 0;
@@ -57,6 +57,9 @@ class PanTomkpins with ChangeNotifier {
 
   PanTomkpins() {
     print("Pan Tompkins constructor");
+    resetCurrentHeartRate();
+    resetBufferArray();
+    setDefaultValues();
   }
 
   void resetCurrentHeartRate() {
@@ -69,6 +72,7 @@ class PanTomkpins with ChangeNotifier {
 
   void resetBufferArray() {
     bufferArrayIndex = 0;
+    recordBufferArrayIndex = 0;
     currentHeartRate = 0;
     currentHeartRateVar = 0;
   }

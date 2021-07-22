@@ -64,6 +64,7 @@ class DeviceScanner with ChangeNotifier {
   DeviceScanner() {
     activeLeadIndex = 0;
     bleConnectionNotifier.value = null;
+    panTompkinsInstance = new PanTomkpins();
   }
 
   void dispose() {
@@ -397,10 +398,15 @@ class DeviceScanner with ChangeNotifier {
   // Disconnect from module
   void disconnectFromModule() {
     if (bleDevice == null) return;
-
-    bleDevice.disconnect();
     currentHeartRate = 0;
     bleConnectionNotifier.value = null;
+    turnOffActiveLead();
+    turnOffNotifyAllLeads();
+
+    subscription.cancel();
+    currentLeadSubscription.cancel();
+
+    bleDevice.disconnect();
     print("Disconnected");
   }
 
@@ -420,11 +426,10 @@ class DeviceScanner with ChangeNotifier {
     ekgDataBatchIndex = 0;
     ekgDataToStoreIndex = 0;
 
-    panTompkinsInstance = new PanTomkpins();
-
     // Clear maps and list for both HR and HRV values for each recording instance
     recordedHeartRateData = List.empty(growable: true);
     recordedHeartRateVarData = List.empty(growable: true);
+    panTompkinsInstance.resetBufferArray();
 
     if (recordedHeartRateMap.isNotEmpty) {
       recordedHeartRateMap.clear();
