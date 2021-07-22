@@ -6,12 +6,10 @@ import 'package:iirjdart/butterworth.dart';
 
 // QRSDetectorOffline is by default tuned for a sampling rate of 250 samples per second
 
-// TODO: Downsample by 2, collect 1000 samples but only take every 2nd sample
-
 // For example, to change signal sampling rate from 250 to 125 samples per second, divide all parameters by 2: set signal_frequency value to 125, integration_window to 8 samples, findpeaks_spacing to 25 samples and refractory_period to 60 samples.
 class PanTomkpins with ChangeNotifier {
   static const MAX_SIZE = 350;
-  static const RECORD_MAX_SIZE = 750;
+  static const RECORD_MAX_SIZE = 1200;
 
   int downsampleFactor = 2;
   int index = 0;
@@ -94,9 +92,14 @@ class PanTomkpins with ChangeNotifier {
       print("Pan Tompkins array is now full with $RECORD_MAX_SIZE items");
 
       recordBufferArrayIndex = 0;
+      skipOdd = !skipOdd;
+      // if (!skipOdd) {
       setDefaultValues();
       performPanTompkins(recordBufferArray);
       return currentHeartRate;
+      // } else {
+      //   return 0;
+      // }
     } else {
       return 0;
     }
