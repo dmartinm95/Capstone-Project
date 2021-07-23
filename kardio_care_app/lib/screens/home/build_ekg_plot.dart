@@ -20,7 +20,7 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
   List<LeadData> dataList = <LeadData>[LeadData(0, 0)];
   ChartSeriesController _chartSeriesController;
   int xIndex = 0;
-  int defaultNumberPoints = 250;
+  int defaultNumberPoints = 200;
 
   int index = 0;
   int downsampleFactor = 2;
