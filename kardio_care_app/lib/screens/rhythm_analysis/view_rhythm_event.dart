@@ -15,7 +15,6 @@ class ViewRhythmEvent extends StatefulWidget {
 
 class _ViewRhythmEventState extends State<ViewRhythmEvent> {
   int selectedLead = 0;
-  bool allRhythms = true;
   int currBatch = 0;
 
   @override
@@ -132,42 +131,6 @@ class _ViewRhythmEventState extends State<ViewRhythmEvent> {
                       });
                     },
                   ),
-                  Expanded(child: SizedBox()),
-                  if (recordingData.rhythms.toSet().toList().length != 1)
-                    DropdownButton(
-                      // hint: Text(
-                      //   'Rhythms',
-                      //   style: TextStyle(
-                      //     color: KardioCareAppTheme.detailGray,
-                      //   ),
-                      // ),
-                      value: allRhythms,
-                      items: [
-                        DropdownMenuItem(
-                          child: Text(
-                            "All Rhythms",
-                            style: TextStyle(
-                              color: KardioCareAppTheme.detailGray,
-                            ),
-                          ),
-                          value: true,
-                        ),
-                        DropdownMenuItem(
-                          child: Text(
-                            "Abnormal Rhythms",
-                            style: TextStyle(
-                              color: KardioCareAppTheme.detailGray,
-                            ),
-                          ),
-                          value: false,
-                        ),
-                      ],
-                      onChanged: (value) {
-                        setState(() {
-                          allRhythms = value;
-                        });
-                      },
-                    ),
                 ],
               ),
             ),
@@ -177,7 +140,6 @@ class _ViewRhythmEventState extends State<ViewRhythmEvent> {
               selectedLead: selectedLead,
               numBatches:
                   (recordingData.recordingLengthMin * 60 * 400 / 4096).ceil(),
-              allRhythms: allRhythms,
               rhythms: recordingData.rhythms,
               changeBatchCallback: changeBatchCallback,
             ),
