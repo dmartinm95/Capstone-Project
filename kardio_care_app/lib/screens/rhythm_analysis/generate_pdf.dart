@@ -53,6 +53,8 @@ class _GeneratePDFState extends State<GeneratePDF> {
   int maxHR;
   RecordingData recordingData;
   int currBatch;
+  double minYValue = 10000;
+  double maxYValue = -1;
 
   @override
   void initState() {
@@ -78,6 +80,36 @@ class _GeneratePDFState extends State<GeneratePDF> {
     avgHR = dataForPDF['avgHR'];
     minHR = dataForPDF['minHR'];
     maxHR = dataForPDF['maxHR'];
+
+    List<double> allLeads = List.generate(
+        numSamplesToPlot,
+        (index) =>
+            recordingData.ekgData[currBatch][index + downSampleAmount - 1][0]);
+
+    allLeads.addAll(List.generate(
+        numSamplesToPlot,
+        (index) =>
+            recordingData.ekgData[currBatch][index + downSampleAmount - 1][1]));
+
+    allLeads.addAll(List.generate(
+        numSamplesToPlot,
+        (index) =>
+            recordingData.ekgData[currBatch][index + downSampleAmount - 1][2]));
+
+    for (int i = 0; i < allLeads.length; i++) {
+      double value = allLeads[i];
+      if (value > maxYValue) {
+        maxYValue = value;
+      }
+      if (value < minYValue) {
+        minYValue = value;
+      }
+    }
+
+    maxYValue = maxYValue + 1;
+    minYValue = minYValue - 1;
+
+    print("min: $minYValue, max: $maxYValue");
 
     return Scaffold(
       // bottomNavigationBar: BottomAppBar(
@@ -640,19 +672,6 @@ class _GeneratePDFState extends State<GeneratePDF> {
   }
 
   SfCartesianChart _buildCartesianChart(chartKey, plottingData, currBatch) {
-    double minYRange = 10000;
-    double maxYRange = -1;
-    for (int i = 0; i < plottingData.length; i++) {
-      double value = plottingData[i];
-      if (value > maxYRange) {
-        maxYRange = value;
-      }
-      if (value < minYRange) {
-        minYRange = value;
-      }
-    }
-    print("min: $minYRange, max: $maxYRange");
-
     return SfCartesianChart(
       borderWidth: 0,
       plotAreaBorderWidth: 0,
@@ -679,8 +698,8 @@ class _GeneratePDFState extends State<GeneratePDF> {
           fontSize: 4,
           color: Colors.black,
         ),
-        minimum: 4, //minYRange.floor().toDouble(),
-        maximum: 7, //maxYRange.ceil().toDouble(),
+        minimum: minYValue, //minYRange.floor().toDouble(),
+        maximum: maxYValue, //maxYRange.ceil().toDouble(),
         interval: 1,
         majorGridLines: MajorGridLines(
           width: 0.2,
