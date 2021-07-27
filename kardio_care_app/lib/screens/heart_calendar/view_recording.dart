@@ -58,10 +58,10 @@ class _ViewRecordingState extends State<ViewRecording> {
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          // crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+              padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
               child: Text(
                 screenTitle,
                 style: KardioCareAppTheme.subTitle,
