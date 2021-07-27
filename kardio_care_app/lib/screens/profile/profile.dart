@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:kardio_care_app/app_theme.dart';
+import 'package:kardio_care_app/util/blurry_dialog_alert.dart';
 import 'package:kardio_care_app/util/data_storage.dart';
 
 class Profile extends StatefulWidget {
@@ -150,32 +151,14 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
               ),
-              // Positioned(
-              //   top: MediaQuery.of(context).size.height * 0.68,
-              //   right: MediaQuery.of(context).size.width * 0.80,
-              //   child: ElevatedButton(
-              //     onPressed: () {
-              //       print('About button clicked');
-              //       // Navigator.pushNamed(context, '/edit_profile',
-              //       //     arguments: userInfoBox);
-              //     },
-              //     style: ElevatedButton.styleFrom(
-              //       shape: CircleBorder(),
-              //       padding: EdgeInsets.all(4),
-              //       primary: Colors.white,
-              //     ),
-              //     child: Icon(
-              //       Icons.info,
-              //       color: Colors.black87,
-              //     ),
-              //   ),
-              // ),
               Positioned(
                 top: MediaQuery.of(context).size.height * 0.68,
                 right: MediaQuery.of(context).size.width * 0.0,
                 child: ElevatedButton(
                   onPressed: () {
                     print('Delete button clicked');
+                    showDeleteDialog(context);
+
                     // Navigator.pushNamed(context, '/edit_profile',
                     //     arguments: userInfoBox);
                   },
@@ -196,6 +179,8 @@ class _ProfileState extends State<Profile> {
       ),
     );
   }
+
+  void showAlertDialog(BuildContext context, deviceScannerProvider) {}
 }
 
 class _NoProfilePrompt extends StatelessWidget {
@@ -254,4 +239,26 @@ class HeaderCurvedContainer extends CustomPainter {
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
+}
+
+showDeleteDialog(BuildContext context) {
+  VoidCallback continueCallBack = () {
+    Hive.openBox<RecordingData>('recordingDataBox');
+    Box<RecordingData> box = Hive.box<RecordingData>('recordingDataBox');
+
+    box.deleteAll(box.keys); // Code on continue comes here
+    Navigator.of(context).pop();
+  };
+  BlurryDialog alert = BlurryDialog(
+    "Delete Recording Data",
+    "Are you sure you want to remove all recording data?",
+    continueCallBack,
+  );
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }

@@ -337,7 +337,7 @@ class _EditProfileState extends State<EditProfile> {
                     validator: FormBuilderValidators.compose([
                       FormBuilderValidators.numeric(context),
                       FormBuilderValidators.min(context, 0),
-                      FormBuilderValidators.max(context, 120),
+                      FormBuilderValidators.max(context, 300),
                       FormBuilderValidators.required(context),
                     ]),
                   ),

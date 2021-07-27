@@ -62,7 +62,7 @@ class _DetectRhythmsState extends State<DetectRhythms> {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
                   child: Text(
-                    "Analyzing Batch: ${currentBatch.toString()}",
+                    "Analyzing: ${((currentBatch / dataResults.ekgData.length.toDouble()) * 100).truncate()}%",
                     style: TextStyle(color: KardioCareAppTheme.detailGray),
                   ),
                 ),

@@ -14,7 +14,6 @@ class RhythmEventChart extends StatefulWidget {
       this.ekgData,
       this.selectedLead,
       this.numBatches,
-      this.allRhythms,
       this.rhythms,
       this.changeBatchCallback})
       : super(key: key);
@@ -24,7 +23,6 @@ class RhythmEventChart extends StatefulWidget {
   final int lengthRecordingMin;
   final int selectedLead;
   final int numBatches;
-  final bool allRhythms;
   final Function(int) changeBatchCallback;
 
   @override
@@ -37,7 +35,6 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
   List<List<List<double>>> ekgData;
   int downSampleAmount;
   int numSamplesToPlot;
-  List<int> abnormalRhythmBatchNumbers;
   List<String> currRhythms;
 
   ScrollController _scrollController = ScrollController();
@@ -49,38 +46,15 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
     batchIndex = 0;
     downSampleAmount = 8;
     numSamplesToPlot = (4096 / downSampleAmount).ceil();
-
-    abnormalRhythmBatchNumbers = [];
-    for (int i = 0; i < widget.rhythms.length; i++) {
-      if (widget.rhythms[i] != 'No Abnormal Rhythm') {
-        abnormalRhythmBatchNumbers.add(i);
-      }
-    }
   }
 
   var currentPlottingData;
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.allRhythms) {
-      numBatches = 2;
-      if (batchIndex > numBatches - 1) {
-        batchIndex = 0;
-
-        _scrollController.animateTo(0,
-            duration: new Duration(milliseconds: 700), curve: Curves.ease);
-      }
-
-      ekgData = List.generate(abnormalRhythmBatchNumbers.length,
-          (index) => widget.ekgData[abnormalRhythmBatchNumbers[index]]);
-
-      currRhythms = List.generate(abnormalRhythmBatchNumbers.length,
-          (index) => widget.rhythms[abnormalRhythmBatchNumbers[index]]);
-    } else {
-      currRhythms = widget.rhythms;
-      numBatches = widget.numBatches;
-      ekgData = widget.ekgData;
-    }
+    currRhythms = widget.rhythms;
+    numBatches = widget.numBatches;
+    ekgData = widget.ekgData;
 
     currentPlottingData = List.generate(
         numSamplesToPlot,
@@ -240,15 +214,9 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
                 alignment: MainAxisAlignment.center,
                 width: MediaQuery.of(context).size.width * 0.9,
                 lineHeight: 5.0,
-                percent: (((widget.allRhythms
-                                        ? batchIndex
-                                        : abnormalRhythmBatchNumbers[
-                                            batchIndex]) +
-                                    1) *
-                                numSamplesToPlot ??
-                            0.0)
-                        .toDouble() /
-                    (widget.numBatches.toDouble() * numSamplesToPlot),
+                percent:
+                    ((batchIndex + 1) * numSamplesToPlot ?? 0.0).toDouble() /
+                        (widget.numBatches.toDouble() * numSamplesToPlot),
                 progressColor: KardioCareAppTheme.dividerPurple,
               ),
             ),
@@ -337,12 +305,7 @@ class _RhythmEventChartState extends State<RhythmEventChart> {
         //   labelAlignment: ChartDataLabelAlignment.outer,
         // ),
         xValueMapper: (double sales, int index) {
-          int batchIndexAllRhythms = batchIndex;
-          if (!widget.allRhythms) {
-            batchIndexAllRhythms = abnormalRhythmBatchNumbers[batchIndex];
-          }
-
-          return ((index + numSamplesToPlot * batchIndexAllRhythms) /
+          return ((index + numSamplesToPlot * batchIndex) /
                       (400 / downSampleAmount))
                   .toString() +
               ' s';

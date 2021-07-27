@@ -157,15 +157,15 @@ class _HRVChartState extends State<HRVChart> {
         dateFormat: DateFormat.jm(),
       ),
       primaryYAxis: NumericAxis(
-        minimum:
-            widget.heartRateVarData.isNotEmpty ? (minYRange.floor() - 5.0) : 0,
-        maximum: widget.heartRateVarData.isNotEmpty
-            ? roundNumb(maxYRange.ceil() + 5.0)
-            : 1,
-        interval: widget.heartRateVarData.isNotEmpty
-            ? calculateIntervalStepSize((maxYRange - minYRange + 10), 5)
-            : 1,
-      ),
+          // minimum:
+          //     widget.heartRateVarData.isNotEmpty ? (minYRange.floor() - 5.0) : 0,
+          // maximum: widget.heartRateVarData.isNotEmpty
+          //     ? roundNumb(maxYRange.ceil() + 5.0)
+          //     : 1,
+          // interval: widget.heartRateVarData.isNotEmpty
+          //     ? calculateIntervalStepSize((maxYRange - minYRange + 10), 5)
+          //     : 1,
+          ),
       series: <ChartSeries>[
         // Renders line chart
         LineSeries<PlottingData, DateTime>(
