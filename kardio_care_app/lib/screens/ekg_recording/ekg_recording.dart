@@ -96,25 +96,35 @@ class _EKGRecordingState extends State<EKGRecording> {
             print("EKG DATA COLLECTED");
             List<List<List<double>>> ekgDataCollected =
                 List.from(widget.deviceScannerProvider.ekgDataToStore);
-            widget.deviceScannerProvider.doneRecording = true;
-            widget.deviceScannerProvider.turnOffNotifyAllLeads();
 
-            print("Heart Rate Data Collected");
-            List<double> heartRateDataCollected =
-                widget.deviceScannerProvider.recordedHeartRateData;
-            print(heartRateDataCollected);
+            // print("Heart Rate Data Collected");
+            // List<double> heartRateDataCollected =
+            //     widget.deviceScannerProvider.recordedHeartRateData;
+            // print(heartRateDataCollected);
 
-            print("Hear Rate Var Data Collected");
-            List<double> heartRateVarDataCollected =
-                widget.deviceScannerProvider.recordedHeartRateVarData;
-            print(heartRateVarDataCollected);
+            // print("Hear Rate Var Data Collected");
+            // List<double> heartRateVarDataCollected =
+            //     widget.deviceScannerProvider.recordedHeartRateVarData;
+            // print(heartRateVarDataCollected);
 
-            // heartRateData[DateTime.now()] = mean(Array(heartRateDataCollected));
             heartRateData =
                 Map.from(widget.deviceScannerProvider.recordedHeartRateMap);
+            if (heartRateData.isEmpty) {
+              print(
+                  "No heart rate data collected from recording, adding a single value of 0 to avoid crashing");
+              heartRateData[DateTime.now()] = 0.0;
+            }
 
             heartRateVarData =
                 Map.from(widget.deviceScannerProvider.recordedHeartRateVarMap);
+            if (heartRateVarData.isEmpty) {
+              print(
+                  "No heart rate variability data collected from recording, adding a single value of 0 to avoid crashing");
+              heartRateVarData[DateTime.now()] = 0.0;
+            }
+
+            widget.deviceScannerProvider.doneRecording = true;
+            widget.deviceScannerProvider.turnOffNotifyAllLeads();
 
             print("Going to ekg_results screen");
             Navigator.pushReplacementNamed(context, '/ekg_results', arguments: {
@@ -218,7 +228,7 @@ class _EKGRecordingState extends State<EKGRecording> {
                   ? FittedBox(
                       fit: BoxFit.fitHeight,
                       child: Text(
-                        'Recording EKG. Stay calm and stationary.',
+                        'Recording EKG.\nStay calm and stationary.',
                         style: TextStyle(
                             color: KardioCareAppTheme.detailGray, fontSize: 19),
                         textAlign: TextAlign.center,

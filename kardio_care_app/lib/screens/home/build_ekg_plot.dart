@@ -20,7 +20,7 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
   List<LeadData> dataList = <LeadData>[LeadData(0, 0)];
   ChartSeriesController _chartSeriesController;
   int xIndex = 0;
-  int defaultNumberPoints = 250;
+  int defaultNumberPoints = 200;
 
   int index = 0;
   int downsampleFactor = 2;
@@ -100,7 +100,7 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
               }
             }
 
-            if (numberPoints >= defaultNumberPoints) {
+            if (numberPoints >= 3 * defaultNumberPoints) {
               yRangeReady = true;
               print("Min y range: $minYRange, Max y range: $maxYRange");
             }

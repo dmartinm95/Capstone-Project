@@ -112,29 +112,6 @@ class _GeneratePDFState extends State<GeneratePDF> {
     print("min: $minYValue, max: $maxYValue");
 
     return Scaffold(
-      // bottomNavigationBar: BottomAppBar(
-      //   color: KardioCareAppTheme.actionBlue,
-      //   child: Row(
-      //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      //     children: [
-      //       TextButton(
-      //         child: Text("Share"),
-      //         style: ButtonStyle(),
-      //         onPressed: () {
-      //           print("Pressed share");
-      //         },
-      //       ),
-      //       TextButton(
-      //         child: Text("Save"),
-      //         onPressed: () {
-      //           print("Pressed save");
-      //           _saveAsFile(context, PdfPageFormat.a4 );
-      //         },
-      //       ),
-      //     ],
-      //   ),
-      // ),
-
       appBar: AppBar(
         title: Text(
           "EKG Report",

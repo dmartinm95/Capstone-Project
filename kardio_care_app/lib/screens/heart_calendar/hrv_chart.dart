@@ -109,18 +109,20 @@ class _HRVChartState extends State<HRVChart> {
             duration = Duration(seconds: 60);
           }
 
-          // Whenever the difference between DateTime entries is greater than 30 sec we know it will be from a different recording
-          if (duration.inSeconds > 30) {
+          // Whenever the difference between DateTime entries is greater than 5 sec we know it will be from a different recording
+          if (duration.inSeconds > 10) {
             // Choose the median as the x value and the average of HRV values for the y value when plotting
-            dateTimeList.add(widget.heartRateVarData.entries
-                .elementAt(prevIndex + (index ~/ 2))
-                .key);
+            // dateTimeList.add(widget.heartRateVarData.entries
+            //     .elementAt(prevIndex + (index ~/ 2))
+            //     .key);
+            dateTimeList
+                .add(widget.heartRateVarData.entries.elementAt(prevIndex).key);
             double hrvAverage = sumHRV / index;
             hrvList.add(hrvAverage);
-            if (hrvAverage > maxYRange) {
+            if (hrvAverage > maxYRange && hrvAverage != 0) {
               maxYRange = hrvAverage;
             }
-            if (hrvAverage < minYRange) {
+            if (hrvAverage < minYRange && hrvAverage != 0) {
               minYRange = hrvAverage;
             }
             sumHRV = 0;
@@ -130,7 +132,10 @@ class _HRVChartState extends State<HRVChart> {
         }
 
         for (int i = 0; i < dateTimeList.length; i++) {
-          chartData.add(PlottingData(dateTimeList[i], hrvList[i]));
+          if (hrvList[i] != 0) {
+            // Only add points no-zero values to avoid messing up chart view
+            chartData.add(PlottingData(dateTimeList[i], hrvList[i]));
+          }
         }
       }
     } else {
@@ -172,12 +177,15 @@ class _HRVChartState extends State<HRVChart> {
             animationDuration: 0,
             markerSettings: MarkerSettings(
                 shape: DataMarkerType.circle,
+                borderWidth: 1,
                 color: KardioCareAppTheme.detailRed,
                 borderColor: Colors.red.shade100,
                 isVisible: true),
-            color: Colors.red.shade100,
+            color: widget.fromResultsScreen
+                ? Colors.transparent
+                : Colors.red.shade100,
             dataSource: chartData,
-            dashArray: <double>[5, 5],
+            dashArray: widget.fromResultsScreen ? null : <double>[5, 5],
             xValueMapper: (PlottingData data, _) => data.sampleTime,
             yValueMapper: (PlottingData data, _) => data.hrv),
       ],
