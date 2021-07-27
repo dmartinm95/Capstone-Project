@@ -5,7 +5,7 @@ import 'package:kardio_care_app/screens/rhythm_analysis/heart_event_card.dart';
 import 'package:kardio_care_app/screens/rhythm_analysis/heart_rhythm_percents.dart';
 import 'package:kardio_care_app/util/data_storage.dart';
 import 'package:hive/hive.dart';
-
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:kardio_care_app/constants/app_constants.dart';
 
 class RhythmAnalysis extends StatefulWidget {
@@ -76,129 +76,135 @@ class _RhythmAnalysisState extends State<RhythmAnalysis> {
       ),
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
-              child: Text(
-                "Heartbeat Rhythm Breakdown",
-                style: KardioCareAppTheme.subTitle,
-              ),
-            ),
-            const Divider(
-              color: KardioCareAppTheme.dividerPurple,
-              height: 20,
-              thickness: 1,
-              indent: 19,
-              endIndent: 19,
-            ),
-            HeartRhythmPercents(
-              changeRhythmCallback: changeRhythmCallback,
-              rhythmFreq: rhythmFreq,
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
-              child: FittedBox(
-                child: Text(
-                  (currRhythmIndex == 0)
-                      ? 'All Rhythms'
-                      : 'Recordings With ' +
-                          rhythmLabels[currRhythmIndex - 1] +
-                          ' Detected',
-                  style: TextStyle(
-                    fontSize: 14,
+        child: ValueListenableBuilder<Box<RecordingData>>(
+          valueListenable: box.listenable(),
+          builder: (context, box, _) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
+                  child: Text(
+                    "Heartbeat Rhythm Breakdown",
+                    style: KardioCareAppTheme.subTitle,
                   ),
                 ),
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            const Divider(
-              color: KardioCareAppTheme.dividerPurple,
-              height: 0,
-              thickness: 1,
-              indent: 19,
-              endIndent: 19,
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            anyRecordingsWithRhythm
-                ? Expanded(
-                    child:
-                        // get all recordings
-                        Padding(
-                      padding: const EdgeInsets.fromLTRB(10, 0, 3, 0),
-                      child: CupertinoScrollbar(
-                        isAlwaysShown: true,
-                        thickness: 7,
-                        controller: _scrollController,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 7, 0),
-                          child: ListView.builder(
+                const Divider(
+                  color: KardioCareAppTheme.dividerPurple,
+                  height: 20,
+                  thickness: 1,
+                  indent: 19,
+                  endIndent: 19,
+                ),
+                HeartRhythmPercents(
+                  changeRhythmCallback: changeRhythmCallback,
+                  rhythmFreq: rhythmFreq,
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(19, 20, 19, 0),
+                  child: FittedBox(
+                    child: Text(
+                      (currRhythmIndex == 0)
+                          ? 'All Rhythms'
+                          : 'Recordings With ' +
+                              rhythmLabels[currRhythmIndex - 1] +
+                              ' Detected',
+                      style: TextStyle(
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                const Divider(
+                  color: KardioCareAppTheme.dividerPurple,
+                  height: 0,
+                  thickness: 1,
+                  indent: 19,
+                  endIndent: 19,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                anyRecordingsWithRhythm
+                    ? Expanded(
+                        child:
+                            // get all recordings
+                            Padding(
+                          padding: const EdgeInsets.fromLTRB(10, 0, 3, 0),
+                          child: CupertinoScrollbar(
+                            isAlwaysShown: true,
+                            thickness: 7,
                             controller: _scrollController,
-                            // padding: EdgeInsets.zero,
-                            // shrinkWrap: true,
-                            primary: false,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 0, 7, 0),
+                              child: ListView.builder(
+                                controller: _scrollController,
+                                // padding: EdgeInsets.zero,
+                                // shrinkWrap: true,
+                                primary: false,
 
-                            // physics: NeverScrollableScrollPhysics(),
-                            physics: BouncingScrollPhysics(),
+                                // physics: NeverScrollableScrollPhysics(),
+                                physics: BouncingScrollPhysics(),
 
-                            itemCount: box.keys.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              // reverse the index
-                              index = box.keys.length - index - 1;
+                                itemCount: box.keys.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  // reverse the index
+                                  index = box.keys.length - index - 1;
 
-                              if (currRhythmIndex != 0) {
-                                if (!box.values
-                                    .elementAt(index)
-                                    .rhythms
-                                    .toSet()
-                                    .contains(
-                                        rhythmLabels[currRhythmIndex - 1])) {
-                                  return Container();
-                                }
-                              }
+                                  if (currRhythmIndex != 0) {
+                                    if (!box.values
+                                        .elementAt(index)
+                                        .rhythms
+                                        .toSet()
+                                        .contains(rhythmLabels[
+                                            currRhythmIndex - 1])) {
+                                      return Container();
+                                    }
+                                  }
 
-                              return HeartEventCard(
-                                context: context,
-                                index: index,
-                                rhythms: box.values
-                                    .elementAt(index)
-                                    .rhythms
-                                    .toSet()
-                                    .toList(),
-                                rhythmColors: getRhythmColors(box.values
-                                    .elementAt(index)
-                                    .rhythms
-                                    .toSet()
-                                    .toList()),
-                                recordingData: box.values.elementAt(index),
-                              );
-                            },
+                                  return HeartEventCard(
+                                    context: context,
+                                    index: index,
+                                    rhythms: box.values
+                                        .elementAt(index)
+                                        .rhythms
+                                        .toSet()
+                                        .toList(),
+                                    rhythmColors: getRhythmColors(box.values
+                                        .elementAt(index)
+                                        .rhythms
+                                        .toSet()
+                                        .toList()),
+                                    recordingData: box.values.elementAt(index),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    : Container(
+                        height: MediaQuery.of(context).size.height * 0.1,
+                        child: Center(
+                          child: Text(
+                            currRhythmIndex == 0
+                                ? 'No recordings saved.'
+                                : 'No recordings with this rhythm.',
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: KardioCareAppTheme.detailGray),
                           ),
                         ),
                       ),
-                    ),
-                  )
-                : Container(
-                    height: MediaQuery.of(context).size.height * 0.1,
-                    child: Center(
-                      child: Text(
-                        currRhythmIndex == 0
-                            ? 'No recordings saved.'
-                            : 'No recordings with this rhythm.',
-                        style: TextStyle(
-                            fontSize: 18, color: KardioCareAppTheme.detailGray),
-                      ),
-                    ),
-                  ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.10,
-            )
-          ],
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.10,
+                )
+              ],
+            );
+          },
         ),
       ),
     );
