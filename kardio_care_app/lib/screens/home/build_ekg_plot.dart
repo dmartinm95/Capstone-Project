@@ -100,7 +100,7 @@ class _BuildEKGPlotState extends State<BuildEKGPlot> {
               }
             }
 
-            if (numberPoints >= defaultNumberPoints) {
+            if (numberPoints >= 3 * defaultNumberPoints) {
               yRangeReady = true;
               print("Min y range: $minYRange, Max y range: $maxYRange");
             }
