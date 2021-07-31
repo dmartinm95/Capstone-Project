@@ -474,6 +474,10 @@ class PanTomkpins with ChangeNotifier {
         // In beats per minute (bpm)
         currentHeartRate = 60 ~/ mean(timeDiffBetweenPeaks);
         print("HR: $currentHeartRate (bpm). ");
+      } else {
+        currentHeartRate = 0;
+        currentHeartRateVar = 0;
+        print("Not enough points to calculate HR and HRV");
       }
     } catch (e) {
       currentHeartRate = 0;

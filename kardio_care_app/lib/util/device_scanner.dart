@@ -463,7 +463,9 @@ class DeviceScanner with ChangeNotifier {
   }
 
   Future turnOffNotifyAllLeads() async {
+    await Future.delayed(Duration(milliseconds: 150));
     if (bleAllLeadsCharacteristic.isNotifying) {
+      // TODO: It crashed once after 5 recordings right after recording was done
       await bleAllLeadsCharacteristic.setNotifyValue(false);
       print("Waiting for 250 ms");
       await Future.delayed(Duration(milliseconds: 250));
