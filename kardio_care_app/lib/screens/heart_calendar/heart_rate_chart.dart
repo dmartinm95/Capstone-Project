@@ -68,16 +68,16 @@ class _HeartRateChartState extends State<HeartRateChart> {
     List<double> hrList = List.empty(growable: true);
 
     DateTime today = DateTime.now();
-    String todayMonth = today.month.toString();
-    if (today.month < 10) {
-      todayMonth = "0$todayMonth";
-    }
-    String todayString = "${today.year}-$todayMonth-${today.day}";
-    today = DateTime.parse(todayString);
+    // String todayMonth = today.month.toString();
+    // if (today.month < 10) {
+    //   todayMonth = "0$todayMonth";
+    // }
+    // String todayString = "${today.year}-$todayMonth-${today.day}";
+    // today = DateTime.parse(todayString);
 
-    DateTime startDay = today;
+    DateTime startDay = DateTime(today.year, today.month, today.day);
     DateTime endDay =
-        today.add(Duration(days: 1)).subtract(Duration(milliseconds: 3));
+        startDay.add(Duration(days: 1)).subtract(Duration(milliseconds: 3));
 
     if (widget.heartRateData != null) {
       if (widget.fromResultsScreen) {
