@@ -192,10 +192,11 @@ class _GeneratePDFState extends State<GeneratePDF> {
             ],
             pdfFileName: DateFormat.MMMMEEEEd()
                     .format(recordingData.startTime) +
-                '-EKG-Recording-' +
+                '_EKG_Recording' +
                 (userInfoBox.keys.length != 0
-                    ? "${userInfoBox.getAt(0).firstName} ${userInfoBox.getAt(0).lastName}"
-                    : ""),
+                    ? "_${userInfoBox.getAt(0).firstName}_${userInfoBox.getAt(0).lastName}"
+                    : "") +
+                '.pdf',
             allowSharing: true,
             canChangePageFormat: false,
             allowPrinting: false,
